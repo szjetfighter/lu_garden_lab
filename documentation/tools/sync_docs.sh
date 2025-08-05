@@ -96,11 +96,13 @@ push_to_docs() {
         exit 1
     fi
     
+    # 先保存源分支名（在切换分支之前）
+    SOURCE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    
     # 切换到docs/shared分支
     git checkout docs/shared
     
-    # 从当前分支拉取文档
-    SOURCE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    # 从源分支拉取文档
     for doc in "${SHARED_DOCS[@]}"; do
         if [ -f "$doc" ]; then
             echo -e "${YELLOW}📝 更新文档: $doc${NC}"
@@ -121,8 +123,14 @@ push_to_docs() {
     fi
     
     # 检查是否有变更
-    if ! git diff --quiet; then
-        git add "${SHARED_DOCS[@]}" documentation/ tools/
+    if ! git diff --quiet || ! git diff --cached --quiet; then
+        # 构建要添加的文件列表
+        ADD_FILES=("${SHARED_DOCS[@]}" "documentation/")
+        if [ -d "tools" ]; then
+            ADD_FILES+=("tools/")
+        fi
+        
+        git add "${ADD_FILES[@]}"
         git commit -m "docs: 同步共享文档更新"
         git push origin docs/shared
         echo -e "${GREEN}✅ 文档已推送到docs/shared分支${NC}"

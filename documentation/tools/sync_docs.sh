@@ -117,7 +117,7 @@ push_to_docs() {
     fi
     
     # 同步tools文件夹
-    if [ -d "tools" ]; then
+    if [ -d "tools" ] && git ls-tree "$SOURCE_BRANCH" tools/ >/dev/null 2>&1; then
         echo -e "${YELLOW}🔧 更新tools文件夹${NC}"
         git checkout "$SOURCE_BRANCH" -- tools/
     fi
@@ -126,7 +126,7 @@ push_to_docs() {
     if ! git diff --quiet || ! git diff --cached --quiet; then
         # 构建要添加的文件列表
         ADD_FILES=("${SHARED_DOCS[@]}" "documentation/")
-        if [ -d "tools" ]; then
+        if [ -d "tools" ] && git ls-tree "$SOURCE_BRANCH" tools/ >/dev/null 2>&1; then
             ADD_FILES+=("tools/")
         fi
         

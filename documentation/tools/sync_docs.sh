@@ -99,9 +99,15 @@ push_to_docs() {
     
     # 检查是否有未推送的提交
     if [ "$(git rev-list HEAD...origin/$(git rev-parse --abbrev-ref HEAD) --count)" -gt 0 ]; then
-        echo -e "${RED}❌ 请先推送当前分支的提交到远程${NC}"
-        echo -e "${YELLOW}💡 提示: 确保所有开发工作都已推送到远程仓库${NC}"
-        exit 1
+        echo -e "${YELLOW}⚠️  检测到未推送的提交${NC}"
+        echo -e "${YELLOW}💡 建议: 先推送当前分支的提交到远程，确保工作已备份${NC}"
+        echo -e "${YELLOW}💡 是否继续同步文档? (y/N)${NC}"
+        read -r response
+        if [[ ! "$response" =~ ^[Yy]$ ]]; then
+            echo -e "${RED}❌ 用户取消操作${NC}"
+            exit 1
+        fi
+        echo -e "${GREEN}✅ 继续执行文档同步${NC}"
     fi
     
     # 先保存源分支名（在切换分支之前）
@@ -129,12 +135,12 @@ push_to_docs() {
         echo -e "${YELLOW}⚠️  documentation文件夹不存在${NC}"
     fi
     
-    # 同步tools文件夹（只同步已commit的内容）
-    if git ls-tree "$SOURCE_BRANCH" tools/ >/dev/null 2>&1; then
-        echo -e "${YELLOW}🔧 同步tools文件夹${NC}"
-        git checkout "$SOURCE_BRANCH" -- tools/
+    # 同步documentation/tools文件夹（包含脚本本身）
+    if git ls-tree "$SOURCE_BRANCH" documentation/tools/ >/dev/null 2>&1; then
+        echo -e "${YELLOW}🔧 同步documentation/tools文件夹${NC}"
+        git checkout "$SOURCE_BRANCH" -- documentation/tools/
     else
-        echo -e "${YELLOW}⚠️  tools文件夹不存在${NC}"
+        echo -e "${YELLOW}⚠️  documentation/tools文件夹不存在${NC}"
     fi
     
     # 检查是否有实际变更
@@ -156,9 +162,9 @@ push_to_docs() {
             CHANGED_FILES+=("documentation/")
         fi
         
-        # 检查tools文件夹
-        if [ -d "tools" ] && (! git diff --quiet tools/ 2>/dev/null || ! git diff --cached --quiet tools/ 2>/dev/null); then
-            CHANGED_FILES+=("tools/")
+        # 检查documentation/tools文件夹
+        if git ls-tree "$SOURCE_BRANCH" documentation/tools/ >/dev/null 2>&1 && (! git diff --quiet documentation/tools/ 2>/dev/null || ! git diff --cached --quiet documentation/tools/ 2>/dev/null); then
+            CHANGED_FILES+=("documentation/tools/")
         fi
         
         if [ ${#CHANGED_FILES[@]} -gt 0 ]; then

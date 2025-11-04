@@ -305,28 +305,35 @@
 
 ---
 
-#### - [ ] 任务C.4：在共笔结果页添加"保存到我的作品"提示
+#### - [x] 任务C.4：在共笔结果页添加"保存到我的作品"提示
 
 - **核心思想**：让用户知道作品已保存（如果已登录），引导未登录用户注册/登录，提升用户转化率。
 
 - 交付物：
   - `lugarden_universal/frontend_vue/src/modules/zhou/views/GongBiView.vue`更新
+  - `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts`更新
+  - `lugarden_universal/frontend_vue/src/modules/zhou/services/gongBiApi.ts`更新
 
 - 验收标准：
-  - [ ] 已登录显示"✅ 已保存到我的作品集"
-  - [ ] 未登录显示"💡 登录后可以保存作品 [去登录]"
-  - [ ] 点击"去登录"跳转到/login
-  - [ ] 提示样式不突兀，位于诗歌下方
-  - [ ] 移动端显示正常
+  - [x] 已登录显示"✅ 已保存到我的作品集"
+  - [x] 未登录显示"💡 登录后可以保存作品 [去登录]"
+  - [x] 点击"去登录"跳转到/login
+  - [x] 提示样式不突兀，位于诗歌下方
+  - [x] 移动端显示正常
 
 - **风险评估**：低风险（纯UI提示，不影响核心功能）
 
 - 预期改动文件（预判）：
   - `lugarden_universal/frontend_vue/src/modules/zhou/views/GongBiView.vue`
 
-- 实际改动文件：[待记录]
+- 实际改动文件：
+  - `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts` (saveGongBiWork函数)
+  - `lugarden_universal/frontend_vue/src/modules/zhou/services/gongBiApi.ts` (metadata支持)
+  - `lugarden_universal/frontend_vue/src/modules/zhou/views/GongBiView.vue` (自动保存+UI)
 
-- 完成状态：⏳ 待执行
+- 完成状态：✅ 已完成
+- Git提交：17b58ce "feat: 完成用户系统阶段C任务4-共笔作品自动保存"
+- 测试报告：共笔功能测试报告.md
 
 - 执行步骤：
   - [ ] 步骤C.4.1：在GongBiView.vue添加保存状态提示组件
@@ -343,6 +350,55 @@
     - 已登录状态验证
     - 未登录状态验证
     - 点击"去登录"跳转验证
+
+---
+
+#### - [ ] 任务FIX4.1：修复未登录共笔后登录诗歌丢失问题
+
+- **问题来源**：测试报告场景1-2
+  - 未登录生成诗歌，提示"登录后可以保存作品"
+  - 用户登录后，诗歌永久丢失
+  - 提示语与实际行为不符，用户体验差
+
+- **核心思想**：未登录时将诗歌临时存储在浏览器，登录后自动保存到服务器。
+
+- 交付物：
+  - `lugarden_universal/frontend_vue/src/modules/zhou/views/GongBiView.vue`更新
+  - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue`更新
+
+- 验收标准：
+  - [ ] 未登录生成诗歌后，数据存储到localStorage（临时key）
+  - [ ] 用户点击"去登录"，完成登录
+  - [ ] 登录成功后，检测到临时数据，自动调用保存API
+  - [ ] 保存成功后，清除临时数据
+  - [ ] 跳转到/my-works，能看到刚才生成的诗歌
+  - [ ] 临时数据包含时间戳，超过30分钟自动过期
+
+- **风险评估**：低风险（客户端localStorage，不涉及服务端缓存）
+
+- 预期改动文件（预判）：
+  - `lugarden_universal/frontend_vue/src/modules/zhou/views/GongBiView.vue`
+  - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue`
+
+- 实际改动文件：[待记录]
+
+- 完成状态：⏳ 待执行
+
+- 执行步骤：
+  - [ ] 步骤FIX4.1.1：GongBiView存储临时数据
+    - 在handleSubmit生成诗歌后，存储到localStorage
+    - key: `pending_gongbi_work`
+    - value: `{ poem, urlParams, timestamp }`
+  
+  - [ ] 步骤FIX4.1.2：LoginView检测并保存
+    - 登录成功后，检测localStorage的`pending_gongbi_work`
+    - 如果存在且未过期（30分钟内），调用saveGongBiWork
+    - 保存成功后，清除临时数据
+  
+  - [ ] 步骤FIX4.1.3：测试完整流程
+    - 未登录生成诗歌 → 登录 → 验证诗歌已保存
+    - 验证临时数据过期机制（30分钟）
+    - 验证localStorage隔离（不同浏览器/用户）
 
 ---
 

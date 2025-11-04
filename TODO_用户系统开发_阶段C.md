@@ -85,7 +85,7 @@
 
 ### **阶段11-04_C：前端界面开发**
 
-#### - [ ] 任务C.1：创建登录注册页面（LoginView.vue）
+#### - [x] 任务C.1：创建登录注册页面（LoginView.vue）
 
 - **核心思想**：提供用户进入认证体系的入口，单页面tab切换设计，简洁友好，降低用户注册门槛。
 
@@ -94,14 +94,14 @@
   - 路由配置更新（`/login`）
 
 - 验收标准：
-  - [ ] 页面可访问（/login）
-  - [ ] 登录功能正常（正确密码返回token并跳转）
-  - [ ] 注册功能正常（成功注册后切换到登录tab）
-  - [ ] 输入验证生效（用户名3-20字符，密码至少6字符，确认密码一致）
-  - [ ] 错误提示友好（中文错误信息）
-  - [ ] 移动端显示正常（响应式布局）
-  - [ ] 登录成功保存token到localStorage
-  - [ ] 登录成功后跳转到"我的作品"或redirect参数指定页面
+  - [x] 页面可访问（/login）
+  - [x] 登录功能正常（正确密码返回token并跳转）
+  - [x] 注册功能正常（成功注册后切换到登录tab）
+  - [x] 输入验证生效（用户名3-20字符，密码至少6字符，确认密码一致）
+  - [x] 错误提示友好（中文错误信息）
+  - [x] 移动端显示正常（响应式布局）
+  - [x] 登录成功保存token到localStorage
+  - [x] 登录成功后跳转到"我的作品"或redirect参数指定页面
 
 - **风险评估**：低风险（新增页面，不影响现有功能）
 
@@ -110,9 +110,14 @@
   - `lugarden_universal/frontend_vue/src/router/index.ts`（路由配置）
   - `lugarden_universal/frontend_vue/src/core/auth/index.ts`（可能需要创建auth模块入口）
 
-- 实际改动文件：[待记录]
+- 实际改动文件：
+  - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue`（新增）
+  - `lugarden_universal/frontend_vue/src/router/index.ts`（路由配置）
+  - `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts`（新增）
 
-- 完成状态：⏳ 待执行
+- 完成状态：✅ 已完成
+- Git提交：[Phase C早期提交]
+- 测试报告：c5完整测试（包含登录测试）
 
 - 执行步骤：
   - [ ] 步骤C.1.1：创建auth模块目录结构
@@ -162,7 +167,7 @@
 
 ---
 
-#### - [ ] 任务C.2：创建"我的作品"页面（MyWorksView.vue）
+#### - [x] 任务C.2：创建"我的作品"页面（MyWorksView.vue）
 
 - **核心思想**：展示用户的共笔创作历史，给用户成就感和归属感，复用PoemViewer组件保持视觉一致性。
 
@@ -171,12 +176,12 @@
   - 路由配置更新（`/my-works`）
 
 - 验收标准：
-  - [ ] 页面可访问（/my-works，需登录）
-  - [ ] 作品列表正常展示（使用PoemViewer组件）
-  - [ ] 空状态显示正常（"去创作"按钮）
-  - [ ] 顶部导航显示用户名和退出按钮
-  - [ ] 退出登录功能正常（清除token，跳转登录页）
-  - [ ] 移动端显示正常
+  - [x] 页面可访问（/my-works，需登录）
+  - [x] 作品列表正常展示（使用PoemViewer组件）
+  - [x] 空状态显示正常（"去创作"按钮）
+  - [x] 顶部导航显示用户名和退出按钮
+  - [x] 退出登录功能正常（清除token，跳转登录页）
+  - [x] 移动端显示正常
 
 - **风险评估**：低风险（新增页面，复用现有组件）
 
@@ -185,9 +190,14 @@
   - `lugarden_universal/frontend_vue/src/router/index.ts`（路由配置）
   - `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts`（添加查询作品API）
 
-- 实际改动文件：[待记录]
+- 实际改动文件：
+  - `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue`（新增）
+  - `lugarden_universal/frontend_vue/src/router/index.ts`（路由配置）
+  - `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts`（getMyWorks函数）
 
-- 完成状态：⏳ 待执行
+- 完成状态：✅ 已完成
+- Git提交：[Phase C早期提交]
+- 测试报告：c5完整测试
 
 - 执行步骤：
   - [ ] 步骤C.2.1：创建MyWorksView.vue组件
@@ -233,7 +243,7 @@
 
 ---
 
-#### - [ ] 任务C.3：实现路由守卫（401拦截+未登录重定向）
+#### - [x] 任务C.3：实现路由守卫（401拦截+未登录重定向）
 
 - **核心思想**：统一的认证拦截机制，未登录用户自动跳转登录页，Token过期时axios拦截器统一处理401响应。
 
@@ -242,10 +252,10 @@
   - axios拦截器增强（`shared/services/interceptors.ts`）
 
 - 验收标准：
-  - [ ] 未登录访问/my-works，自动跳转到/login?redirect=/my-works
-  - [ ] 登录成功后，自动跳转回redirect参数指定的页面
-  - [ ] Token过期时，API返回401，axios拦截器清除token并跳转登录页
-  - [ ] 跳转时显示友好提示："登录已过期，请重新登录"
+  - [x] 未登录访问/my-works，自动跳转到/login?redirect=/my-works
+  - [x] 登录成功后，自动跳转回redirect参数指定的页面
+  - [x] Token过期时，API返回401，axios拦截器清除token并跳转登录页
+  - [x] 跳转时显示友好提示："登录已过期，请重新登录"
 
 - **风险评估**：低风险（纯前端逻辑，不影响后端）
 
@@ -253,9 +263,15 @@
   - `lugarden_universal/frontend_vue/src/router/index.ts`（路由守卫）
   - `lugarden_universal/frontend_vue/src/shared/services/interceptors.ts`（axios拦截器）
 
-- 实际改动文件：[待记录]
+- 实际改动文件：
+  - `lugarden_universal/frontend_vue/src/router/index.ts`（路由守卫）
+  - `lugarden_universal/frontend_vue/src/shared/services/api.ts`（ApiClient 401处理）
+  - `lugarden_universal/frontend_vue/src/main.ts`（全局401处理）
+  - `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts`（401检测）
 
-- 完成状态：⏳ 待执行
+- 完成状态：✅ 已完成
+- Git提交：[Phase C中期提交]
+- 测试报告：c5完整测试
 
 - 执行步骤：
   - [ ] 步骤C.3.1：在router/index.ts添加路由守卫逻辑
@@ -406,28 +422,33 @@
 
 ---
 
-#### - [ ] 任务C.5：在Portal首页添加"我的作品"入口
+#### - [x] 任务C.5：在Portal首页添加"我的作品"入口
 
 - **核心思想**：让用户可以方便地访问作品集，提升用户粘性，建立完整的导航体系。
 
 - 交付物：
   - `lugarden_universal/frontend_vue/src/modules/portal/views/UniversePortal.vue`更新
+  - `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts`更新
 
 - 验收标准：
-  - [ ] 已登录显示导航栏（用户名 | 我的作品 | 退出）
-  - [ ] 未登录显示"登录/注册"按钮
-  - [ ] 点击"我的作品"跳转到/my-works
-  - [ ] 点击"退出"清除token，刷新页面
-  - [ ] 移动端简化为图标显示
+  - [x] 已登录显示导航栏（用户名 | 我的作品 | 退出）
+  - [x] 未登录显示"登录/注册"按钮
+  - [x] 点击"我的作品"跳转到/my-works
+  - [x] 点击"退出"清除token，刷新页面
+  - [x] 移动端简化为图标显示
 
 - **风险评估**：低风险（UI改动，不影响现有功能）
 
 - 预期改动文件（预判）：
   - `lugarden_universal/frontend_vue/src/modules/portal/views/UniversePortal.vue`
 
-- 实际改动文件：[待记录]
+- 实际改动文件：
+  - `lugarden_universal/frontend_vue/src/modules/portal/views/UniversePortal.vue` (header UI, logout函数)
+  - `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts` (getUsername函数, JWT解析)
 
-- 完成状态：⏳ 待执行
+- 完成状态：✅ 已完成
+- Git提交：[待记录]
+- 测试报告：c5完整测试
 
 - 执行步骤：
   - [ ] 步骤C.5.1：在UniversePortal.vue添加顶部导航栏

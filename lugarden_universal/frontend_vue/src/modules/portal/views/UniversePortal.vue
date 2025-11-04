@@ -2,8 +2,29 @@
   <div class="universe-portal">
     <!-- 主标题区域 -->
     <header class="portal-header">
-      <h1 class="portal-title">陆家花园</h1>
-      <p class="portal-subtitle">诗歌宇宙的探索入口</p>
+      <div class="header-content">
+        <div class="title-section">
+          <h1 class="portal-title">陆家花园</h1>
+          <p class="portal-subtitle">诗歌宇宙的探索入口</p>
+        </div>
+        
+        <!-- 用户导航 -->
+        <nav class="user-nav">
+          <!-- 已登录状态 -->
+          <div v-if="isLoggedIn" class="user-nav-logged-in">
+            <span class="user-name">{{ username }}</span>
+            <span class="nav-divider">|</span>
+            <router-link to="/my-works" class="nav-link">我的作品</router-link>
+            <span class="nav-divider">|</span>
+            <button @click="handleLogout" class="nav-link logout-btn">退出</button>
+          </div>
+          
+          <!-- 未登录状态 -->
+          <div v-else class="user-nav-logged-out">
+            <router-link to="/login" class="login-btn">登录/注册</router-link>
+          </div>
+        </nav>
+      </div>
     </header>
 
     <!-- 宇宙卡片列表区域 -->
@@ -84,6 +105,7 @@ import { useRouter } from 'vue-router'
 import { LoadingSpinner, ErrorState, EmptyState, NotificationToast } from '@/shared/components'
 import { UniverseCard } from '@/modules/portal/components'
 import { usePortalStore } from '@/modules/portal/stores'
+import { isAuthenticated, getUsername } from '@/core/auth/services/authApi'
 import type { Universe } from '@/modules/portal/types'
 
 // 路由
@@ -91,6 +113,10 @@ const router = useRouter()
 
 // Portal状态管理
 const portalStore = usePortalStore()
+
+// 用户登录状态
+const isLoggedIn = computed(() => isAuthenticated())
+const username = computed(() => getUsername() || '用户')
 
 // Toast通知状态
 const showToast = ref(false)
@@ -137,6 +163,14 @@ const navigateToUniverse = async (universe: Universe) => {
   router.push(navigationPath)
 }
 
+// 退出登录
+const handleLogout = () => {
+  localStorage.removeItem('token')
+  showToastMessage('已退出登录', 'success')
+  // 刷新页面以更新登录状态
+  window.location.reload()
+}
+
 // 生命周期
 onMounted(async () => {
   // 预加载数据，如果已有缓存则不重新加载
@@ -154,9 +188,21 @@ onMounted(async () => {
 
 /* 头部样式 - 简洁诗意 */
 .portal-header {
-  text-align: center;
   margin-bottom: 3rem;
-  margin-top: 2rem; /* 额外顶部间距 */
+  margin-top: 2rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title-section {
+  text-align: center;
+  flex: 1;
 }
 
 .portal-title {
@@ -172,6 +218,74 @@ onMounted(async () => {
   color: var(--text-tertiary); /* #6b7280 */
   margin: 0;
   font-weight: 400;
+}
+
+/* 用户导航样式 */
+.user-nav {
+  position: absolute;
+  right: 2rem;
+  top: 2rem;
+  z-index: 10;
+}
+
+.user-nav-logged-in {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.user-name {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.nav-divider {
+  color: var(--text-tertiary);
+  opacity: 0.4;
+}
+
+.nav-link {
+  color: var(--color-primary-300);
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--color-primary-400);
+}
+
+.logout-btn {
+  font-weight: 400;
+}
+
+.user-nav-logged-out {
+  display: flex;
+  align-items: center;
+}
+
+.login-btn {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  background-color: var(--color-primary-300);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  background-color: var(--color-primary-400);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
 /* 宇宙容器 */
@@ -246,6 +360,33 @@ onMounted(async () => {
   .site-footer {
     margin-top: 2rem;
     padding: 1rem 0;
+  }
+  
+  /* 移动端用户导航 */
+  .user-nav {
+    right: 1rem;
+    top: 1rem;
+  }
+  
+  .user-nav-logged-in {
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+  
+  .nav-divider {
+    display: none;
+  }
+  
+  .user-name {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .login-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
   }
 }
 </style>

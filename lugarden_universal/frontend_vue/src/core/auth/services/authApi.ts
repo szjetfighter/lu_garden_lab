@@ -186,9 +186,28 @@ export function getCurrentUser(): { username: string } | null {
   const token = getToken()
   if (!token) return null
   
-  // 简单实现：后续可以解析JWT payload
-  // 现在先返回null，等登录后再完善
-  return null
+  try {
+    // JWT格式：header.payload.signature
+    const parts = token.split('.')
+    if (parts.length !== 3) return null
+    
+    // 解码payload（base64）
+    const payload = JSON.parse(atob(parts[1]))
+    return {
+      username: payload.username || payload.sub || '用户'
+    }
+  } catch (error) {
+    console.error('[authApi] 解析token失败:', error)
+    return null
+  }
+}
+
+/**
+ * 获取当前用户名
+ */
+export function getUsername(): string | null {
+  const user = getCurrentUser()
+  return user?.username || null
 }
 
 // ================================

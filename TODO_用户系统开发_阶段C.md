@@ -549,6 +549,53 @@
 
 ---
 
+#### - [x] 任务C.7：统一登录页返回按钮样式
+
+- **核心思想**：
+  - 将登录页的自定义返回按钮改为复用 `BackButton` 组件
+  - 与周与春秋页面等其他页面保持视觉一致性
+
+- 交付物：
+  - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue`（统一返回按钮）
+
+- 验收标准：
+  - [x] 登录页返回按钮使用 `BackButton` 组件
+  - [x] 样式与其他页面（如周与春秋）一致
+  - [x] 位置保持在左上角（2rem, 移动端1.5rem）
+  - [x] 文字显示"返回"
+
+- **风险评估**：低风险（UI统一，组件复用）
+
+- 预期改动文件（预判）：
+  - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue`
+
+- 实际改动文件：
+  - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue`
+    - 引入 `BackButton` 组件
+    - 替换自定义返回按钮为 `BackButton`
+    - 删除 `.back-home-btn` 自定义样式
+    - 调整文字为"返回"（与其他页面一致）
+
+- 完成状态：✅ 已完成
+- Git提交：d3f67ff - refactor(前端): 统一登录页返回按钮样式
+
+- 执行步骤：
+  - [x] 步骤C.7.1：在LoginView.vue引入BackButton组件
+    ```typescript
+    import BackButton from '@/shared/components/BackButton.vue'
+    ```
+  
+  - [x] 步骤C.7.2：替换自定义返回按钮
+    - 将 `<button class="back-home-btn">` 改为 `<BackButton>`
+    - 文字改为"返回"
+    - 保持 `@click="goHome"` 事件
+  
+  - [x] 步骤C.7.3：删除自定义样式
+    - 删除 `.back-home-btn` 及其 hover 样式
+    - 保留 `.back-button-container` 定位容器
+
+---
+
 ## 测试与验收
 
 ### 端到端测试场景

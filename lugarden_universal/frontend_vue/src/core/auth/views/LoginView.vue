@@ -2,9 +2,10 @@
   <div class="login-container">
     <!-- 返回首页按钮 -->
     <div class="back-button-container">
-      <button @click="goHome" class="back-home-btn">
-        ← 返回首页
-      </button>
+      <BackButton 
+        text="返回"
+        @click="goHome"
+      />
     </div>
 
     <!-- 登录注册卡片 -->
@@ -120,6 +121,7 @@
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { login, register, saveToken, saveGongBiWork } from '../services/authApi'
+import BackButton from '@/shared/components/BackButton.vue'
 
 // 路由
 const router = useRouter()
@@ -313,23 +315,6 @@ const handleRegister = async () => {
   left: 2rem;
 }
 
-.back-home-btn {
-  background: transparent;
-  border: 1px solid var(--color-primary-300);
-  color: var(--text-secondary);
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-size: var(--font-size-sm);
-  transition: all var(--duration-fast) var(--ease-out);
-}
-
-.back-home-btn:hover {
-  background: var(--bg-secondary);
-  border-color: var(--color-brand-primary);
-  transform: translateX(-2px);
-}
-
 /* 登录卡片 */
 .login-card {
   max-width: 450px;
@@ -485,8 +470,8 @@ const handleRegister = async () => {
   }
 
   .back-button-container {
-    top: 1rem;
-    left: 1rem;
+    top: 1.5rem;
+    left: 1.5rem;
   }
 
   .login-card {

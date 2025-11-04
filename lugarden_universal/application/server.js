@@ -9,6 +9,8 @@ import { ProxyAgent, setGlobalDispatcher } from 'undici';
 import adminRouter from './src/routes/admin.js';
 import portalRouter from './src/routes/portal.js';
 import universesRouter from './src/routes/universes.js';
+import authRouter from './src/routes/auth.js';
+import myWorksRouter from './src/routes/myWorks.js';
 import { errorHandler } from './src/middlewares/errorHandler.js';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -653,6 +655,9 @@ ta的感受是：${userFeeling}
 app.use('/api/universes', universesRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/portal', portalRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/my-works', myWorksRouter);
+app.use('/api/diagnose', diagnoseRouter);
 
 // 健康检查（仅 DB）
 app.get('/api/health', async (_req, res) => {

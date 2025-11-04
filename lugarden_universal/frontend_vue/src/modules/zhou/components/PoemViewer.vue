@@ -179,6 +179,7 @@ const props = withDefaults(defineProps<Props>(), {
   animationDelay: '0s',
   showActions: false,
   showDownload: false,
+  showShare: false,
   showAiLabel: false
 })
 
@@ -314,7 +315,7 @@ const actionButtons = computed(() => [
     handler: sharePoem,
     disabled: isActionLoading.value,
     title: '分享诗歌',
-    visible: true
+    visible: props.showShare
   },
   {
     key: 'download',

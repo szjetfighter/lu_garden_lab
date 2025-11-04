@@ -85,6 +85,15 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false
     }
   },
+  {
+    path: '/my-works',
+    name: 'MyWorks',
+    component: () => import('@/core/auth/views/MyWorksView.vue'),
+    meta: {
+      title: '我的作品 - 陆家花园',
+      requiresAuth: true
+    }
+  },
   // 404 重定向
   {
     path: '/:pathMatch(.*)*',

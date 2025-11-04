@@ -75,6 +75,16 @@ const routes: Array<RouteRecordRaw> = [
       step: 6
     }
   },
+  // 用户认证
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/core/auth/views/LoginView.vue'),
+    meta: {
+      title: '登录/注册 - 陆家花园',
+      requiresAuth: false
+    }
+  },
   // 404 重定向
   {
     path: '/:pathMatch(.*)*',

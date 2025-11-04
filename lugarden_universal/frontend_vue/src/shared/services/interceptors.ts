@@ -102,6 +102,19 @@ export const authInterceptor: RequestInterceptor = (config) => {
     // 这里可以添加session或token处理
     config.headers!['X-Requested-With'] = 'XMLHttpRequest'
   }
+  
+  // 为需要认证的API自动添加JWT token
+  const token = localStorage.getItem('token')
+  if (token) {
+    // 如果URL包含/my-works或其他需要认证的端点，添加Authorization header
+    if (config.url.includes('/my-works') || config.url.includes('/auth/delete-account')) {
+      if (!config.headers) {
+        config.headers = {}
+      }
+      config.headers['Authorization'] = `Bearer ${token}`
+    }
+  }
+  
   return config
 }
 

@@ -657,7 +657,6 @@ app.use('/api/admin', adminRouter);
 app.use('/api/portal', portalRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/my-works', myWorksRouter);
-app.use('/api/diagnose', diagnoseRouter);
 
 // 健康检查（仅 DB）
 app.get('/api/health', async (_req, res) => {

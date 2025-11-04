@@ -26,6 +26,11 @@ export interface GeneratedPoem {
     quoteCitation: string
     content: string
   }
+  metadata?: {
+    conversationId: string
+    messageId: string
+    tokens: number
+  }
 }
 
 export interface GongBiResponse {
@@ -123,7 +128,13 @@ export async function createGongBi(request: GongBiRequest): Promise<GeneratedPoe
       tokens: data.metadata?.tokens || 0
     })
 
-    return data.poem
+    // 合并metadata到poem对象中
+    const poemWithMetadata: GeneratedPoem = {
+      ...data.poem,
+      metadata: data.metadata
+    }
+
+    return poemWithMetadata
 
   } catch (error) {
     console.error('[gongBiApi] 共笔请求失败:', error)

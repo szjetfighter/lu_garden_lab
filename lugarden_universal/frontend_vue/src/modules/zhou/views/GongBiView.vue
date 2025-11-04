@@ -121,6 +121,36 @@
             :show-ai-label="true"
           />
           
+          <!-- 保存状态提示 -->
+          <div class="save-status-tip animate-fadeInUp" style="animation-delay: 0.3s;">
+            <!-- 已登录：保存中 -->
+            <div v-if="isLoggedIn && saving" class="tip-card tip-saving">
+              <span class="tip-icon">⏳</span>
+              <span class="tip-text">正在保存到作品集...</span>
+            </div>
+            
+            <!-- 已登录：保存成功 -->
+            <div v-else-if="isLoggedIn && saved" class="tip-card tip-success">
+              <span class="tip-icon">✅</span>
+              <span class="tip-text">已保存到我的作品集</span>
+              <router-link to="/my-works" class="tip-link">查看作品</router-link>
+            </div>
+            
+            <!-- 已登录：保存失败 -->
+            <div v-else-if="isLoggedIn && saveError" class="tip-card tip-error">
+              <span class="tip-icon">❌</span>
+              <span class="tip-text">保存失败：{{ saveError }}</span>
+              <button @click="handleAutoSave" class="tip-retry">重试</button>
+            </div>
+            
+            <!-- 未登录：引导登录 -->
+            <div v-else-if="!isLoggedIn" class="tip-card tip-info">
+              <span class="tip-icon">💡</span>
+              <span class="tip-text">登录后可以保存作品到作品集</span>
+              <router-link to="/login" class="tip-login">去登录</router-link>
+            </div>
+          </div>
+          
           <!-- 操作按钮 -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fadeInUp" style="animation-delay: 0.2s;">
             <button 
@@ -145,10 +175,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useZhouStore } from '@/modules/zhou/stores/zhou'
 import { createGongBi, getGongBiErrorMessage } from '@/modules/zhou/services/gongBiApi'
+import { saveGongBiWork, isAuthenticated } from '@/core/auth/services/authApi'
 import PoemViewer from '@/modules/zhou/components/PoemViewer.vue'
 import ErrorState from '@/shared/components/ErrorState.vue'
 
@@ -179,7 +210,20 @@ const generatedPoem = ref<{
   quoteSource: string
   content: string
   userFeeling: string
+  metadata?: {
+    conversationId: string
+    messageId: string
+    tokens: number
+  }
 } | null>(null)
+
+// 保存状态
+const saving = ref(false)
+const saved = ref(false)
+const saveError = ref<string | null>(null)
+
+// 计算属性：是否已登录
+const isLoggedIn = computed(() => isAuthenticated())
 
 // URL参数（用于API调用）
 const urlParams = ref<{
@@ -270,11 +314,65 @@ const handleSubmit = async () => {
     
     console.log('[GongBiView] 诗歌生成成功:', poem.title)
     
+    // 如果已登录，自动保存作品
+    if (isLoggedIn.value) {
+      await handleAutoSave()
+    }
+    
   } catch (err) {
     console.error('[GongBiView] 生成诗歌失败:', err)
     error.value = getGongBiErrorMessage(err)
   } finally {
     loading.value = false
+  }
+}
+
+// 自动保存作品（已登录用户）
+const handleAutoSave = async () => {
+  if (!generatedPoem.value || !urlParams.value) {
+    return
+  }
+  
+  saving.value = true
+  saved.value = false
+  saveError.value = null
+  
+  try {
+    // 构造sourcePoemId和mappingId
+    const sourcePoemId = `zhou_${urlParams.value.chapter}_${urlParams.value.poem}`
+    const mappingId = `${urlParams.value.chapter}_${urlParams.value.pattern}`
+    
+    console.log('[GongBiView] 自动保存作品:', {
+      sourcePoemId,
+      mappingId,
+      hasMetadata: !!generatedPoem.value.metadata
+    })
+    
+    const result = await saveGongBiWork({
+      sourcePoemId,
+      mappingId,
+      userInput: generatedPoem.value.userFeeling,
+      poemTitle: generatedPoem.value.title,
+      poemContent: generatedPoem.value.content,
+      poemQuote: generatedPoem.value.quote || null,
+      poemQuoteSource: generatedPoem.value.quoteSource || null,
+      conversationId: generatedPoem.value.metadata?.conversationId || '',
+      messageId: generatedPoem.value.metadata?.messageId || '',
+      usageMetadata: generatedPoem.value.metadata || {}
+    })
+    
+    if (result.success) {
+      saved.value = true
+      console.log('[GongBiView] 作品保存成功')
+    } else {
+      saveError.value = result.error || '保存失败'
+      console.error('[GongBiView] 作品保存失败:', result.error)
+    }
+  } catch (err: any) {
+    saveError.value = err.message || '保存失败'
+    console.error('[GongBiView] 作品保存异常:', err)
+  } finally {
+    saving.value = false
   }
 }
 
@@ -284,6 +382,8 @@ const resetAndRetry = () => {
   generatedPoem.value = null
   error.value = null
   showSourcePoem.value = true
+  saved.value = false
+  saveError.value = null
 }
 
 // 返回上一页
@@ -458,11 +558,103 @@ const goBack = () => {
   opacity: 0.9;
 }
 
+/* 保存状态提示 */
+.save-status-tip {
+  width: 100%;
+  max-width: 800px; /* 与PoemViewer对齐 */
+  margin: 0 auto;
+}
+
+.tip-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-lg);
+  background: rgba(var(--card-bg-rgb), 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.tip-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  flex: 1;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+}
+
+.tip-link,
+.tip-login {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-primary-600);
+  text-decoration: none;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-base);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.tip-link:hover,
+.tip-login:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary-700);
+}
+
+.tip-retry {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-error);
+  background: none;
+  border: none;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.tip-retry:hover {
+  background-color: rgba(var(--color-error-rgb, 239, 68, 68), 0.1);
+}
+
+.tip-success {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.tip-error {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.tip-info {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.tip-saving {
+  border-color: rgba(251, 191, 36, 0.3);
+  background: rgba(251, 191, 36, 0.05);
+}
+
 /* 响应式调整 */
 @media (max-width: 480px) {
   .feeling-input {
     padding: 0.75rem;
     font-size: var(--font-size-sm);
+  }
+  
+  .tip-card {
+    padding: 0.75rem 1rem;
+    font-size: var(--font-size-sm);
+  }
+  
+  .tip-icon {
+    font-size: 1rem;
   }
 }
 </style>

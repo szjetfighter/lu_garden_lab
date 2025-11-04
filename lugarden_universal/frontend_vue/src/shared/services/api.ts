@@ -24,10 +24,18 @@ const DEFAULT_CONFIG: Required<RequestConfig> = {
 export class ApiClient {
   private baseURL: string
   private defaultConfig: Required<RequestConfig>
+  private on401Handler?: () => void
 
   constructor(baseURL: string = '/api', config: Partial<RequestConfig> = {}) {
     this.baseURL = baseURL.replace(/\/$/, '') // 移除尾部斜杠
     this.defaultConfig = { ...DEFAULT_CONFIG, ...config }
+  }
+
+  /**
+   * 设置401处理函数（由外部注入，避免循环依赖）
+   */
+  public set401Handler(handler: () => void): void {
+    this.on401Handler = handler
   }
 
   /**
@@ -64,6 +72,22 @@ export class ApiClient {
       try {
         const response = await fetch(url, requestOptions)
         clearTimeout(timeoutId)
+
+        // 401拦截：认证失败
+        if (response.status === 401) {
+          console.warn('[ApiClient] 检测到401认证失败，清除token并触发401处理')
+          localStorage.removeItem('token')
+          this.on401Handler?.()
+          
+          // 继续抛出错误，让调用方也能感知
+          const errorBody = await this.parseErrorResponse(response)
+          throw new ApiError(
+            'HTTP_401',
+            errorBody.message || '认证失败，请重新登录',
+            401,
+            errorBody
+          )
+        }
 
         if (!response.ok) {
           const errorBody = await this.parseErrorResponse(response)

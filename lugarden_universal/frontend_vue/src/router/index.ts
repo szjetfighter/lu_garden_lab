@@ -122,7 +122,23 @@ router.beforeEach((to, from, next) => {
     document.title = to.meta.title as string
   }
 
-  // 路由守卫逻辑：检查页面访问权限和状态
+  // ================================
+  // 认证守卫：检查是否需要登录
+  // ================================
+  if (to.meta.requiresAuth) {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      console.warn('Route guard: 访问需要认证的页面，但未登录，重定向到登录页')
+      return next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    }
+  }
+
+  // ================================
+  // 项目访问守卫
+  // ================================
   if (to.meta.requiresProject) {
     // 检查是否已选择项目 - 如果直接访问需要项目的页面，重定向到项目选择
     const projectId = to.params.projectId

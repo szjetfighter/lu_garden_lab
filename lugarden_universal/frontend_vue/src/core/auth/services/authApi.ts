@@ -105,7 +105,8 @@ export async function getMyWorks(): Promise<MyWorksResponse> {
       }
     }
 
-    // 手动创建带Authorization header的请求
+    // 使用原生fetch（因为ApiClient暂时不支持自定义headers）
+    // 但手动检测401并清除token
     const response = await fetch('/api/my-works', {
       method: 'GET',
       headers: {
@@ -113,6 +114,21 @@ export async function getMyWorks(): Promise<MyWorksResponse> {
         'Authorization': `Bearer ${token}`
       }
     })
+
+    // 检测401：认证失败
+    if (response.status === 401) {
+      console.warn('[authApi] 检测到401，清除token并跳转登录页')
+      localStorage.removeItem('token')
+      
+      // 跳转到登录页（保留当前路径作为redirect）
+      const currentPath = window.location.pathname + window.location.search
+      window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+      
+      return {
+        success: false,
+        error: '认证失败，请重新登录'
+      }
+    }
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: '获取作品列表失败' }))

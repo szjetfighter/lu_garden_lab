@@ -317,6 +317,9 @@ const handleSubmit = async () => {
     // 如果已登录，自动保存作品
     if (isLoggedIn.value) {
       await handleAutoSave()
+    } else {
+      // 未登录：存储到localStorage，登录后自动保存
+      storePendingWork()
     }
     
   } catch (err) {
@@ -324,6 +327,26 @@ const handleSubmit = async () => {
     error.value = getGongBiErrorMessage(err)
   } finally {
     loading.value = false
+  }
+}
+
+// 存储待保存的作品到localStorage（未登录用户）
+const storePendingWork = () => {
+  if (!generatedPoem.value || !urlParams.value) {
+    return
+  }
+  
+  try {
+    const pendingWork = {
+      poem: generatedPoem.value,
+      urlParams: urlParams.value,
+      timestamp: Date.now()
+    }
+    
+    localStorage.setItem('pending_gongbi_work', JSON.stringify(pendingWork))
+    console.log('[GongBiView] 临时数据已存储，等待登录后保存')
+  } catch (err) {
+    console.error('[GongBiView] 存储临时数据失败:', err)
   }
 }
 

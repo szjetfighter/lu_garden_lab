@@ -353,7 +353,7 @@
 
 ---
 
-#### - [ ] 任务FIX4.1：修复未登录共笔后登录诗歌丢失问题
+#### - [x] 任务FIX4.1：修复未登录共笔后登录诗歌丢失问题
 
 - **问题来源**：测试报告场景1-2
   - 未登录生成诗歌，提示"登录后可以保存作品"
@@ -367,12 +367,12 @@
   - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue`更新
 
 - 验收标准：
-  - [ ] 未登录生成诗歌后，数据存储到localStorage（临时key）
-  - [ ] 用户点击"去登录"，完成登录
-  - [ ] 登录成功后，检测到临时数据，自动调用保存API
-  - [ ] 保存成功后，清除临时数据
-  - [ ] 跳转到/my-works，能看到刚才生成的诗歌
-  - [ ] 临时数据包含时间戳，超过30分钟自动过期
+  - [x] 未登录生成诗歌后，数据存储到localStorage（临时key）
+  - [x] 用户点击"去登录"，完成登录
+  - [x] 登录成功后，检测到临时数据，自动调用保存API
+  - [x] 保存成功后，清除临时数据
+  - [x] 跳转到/my-works，能看到刚才生成的诗歌
+  - [x] 临时数据包含时间戳，超过30分钟自动过期
 
 - **风险评估**：低风险（客户端localStorage，不涉及服务端缓存）
 
@@ -380,9 +380,13 @@
   - `lugarden_universal/frontend_vue/src/modules/zhou/views/GongBiView.vue`
   - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue`
 
-- 实际改动文件：[待记录]
+- 实际改动文件：
+  - `lugarden_universal/frontend_vue/src/modules/zhou/views/GongBiView.vue` (storePendingWork函数)
+  - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue` (checkAndSavePendingWork函数)
 
-- 完成状态：⏳ 待执行
+- 完成状态：✅ 已完成
+- Git提交：7064eb9 "fix: 修复未登录共笔后登录诗歌丢失问题（FIX4.1）"
+- 测试报告：fix4.1完整测试
 
 - 执行步骤：
   - [ ] 步骤FIX4.1.1：GongBiView存储临时数据

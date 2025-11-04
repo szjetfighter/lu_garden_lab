@@ -119,7 +119,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { login, register, saveToken } from '../services/authApi'
+import { login, register, saveToken, saveGongBiWork } from '../services/authApi'
 
 // 路由
 const router = useRouter()
@@ -154,6 +154,57 @@ const goHome = () => {
   router.push('/')
 }
 
+// 检测并保存未登录时生成的共笔作品
+const checkAndSavePendingWork = async () => {
+  try {
+    const pendingWorkStr = localStorage.getItem('pending_gongbi_work')
+    if (!pendingWorkStr) {
+      return
+    }
+    
+    const pendingWork = JSON.parse(pendingWorkStr)
+    const { poem, urlParams, timestamp } = pendingWork
+    
+    // 检查是否过期（30分钟 = 1800000毫秒）
+    const now = Date.now()
+    const expireTime = 30 * 60 * 1000
+    if (now - timestamp > expireTime) {
+      console.log('[LoginView] 临时数据已过期，清除')
+      localStorage.removeItem('pending_gongbi_work')
+      return
+    }
+    
+    console.log('[LoginView] 检测到未保存的共笔作品，开始保存')
+    
+    // 构造保存数据
+    const sourcePoemId = `zhou_${urlParams.chapter}_${urlParams.poem}`
+    const mappingId = `${urlParams.chapter}_${urlParams.pattern}`
+    
+    const result = await saveGongBiWork({
+      sourcePoemId,
+      mappingId,
+      userInput: poem.userFeeling,
+      poemTitle: poem.title,
+      poemContent: poem.content,
+      poemQuote: poem.quote || null,
+      poemQuoteSource: poem.quoteSource || null,
+      conversationId: poem.metadata?.conversationId || '',
+      messageId: poem.metadata?.messageId || '',
+      usageMetadata: poem.metadata || {}
+    })
+    
+    if (result.success) {
+      console.log('[LoginView] 临时作品保存成功')
+      localStorage.removeItem('pending_gongbi_work')
+    } else {
+      console.error('[LoginView] 临时作品保存失败:', result.error)
+      // 保存失败不清除数据，下次登录还能尝试
+    }
+  } catch (err) {
+    console.error('[LoginView] 处理临时作品异常:', err)
+  }
+}
+
 // 处理登录
 const handleLogin = async () => {
   errorMessage.value = ''
@@ -168,6 +219,9 @@ const handleLogin = async () => {
     if (response.success && response.token) {
       // 保存token
       saveToken(response.token)
+      
+      // 检测并保存未登录时生成的共笔作品
+      await checkAndSavePendingWork()
       
       // 跳转：如果有redirect参数，跳转到指定页面；否则跳转到我的作品
       const redirect = route.query.redirect as string

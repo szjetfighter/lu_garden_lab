@@ -62,45 +62,51 @@
         @action="goToCreate"
       />
 
-      <!-- 作品列表 -->
-      <div v-else class="works-grid">
+      <!-- 作品列表（列表形式，折叠展开） -->
+      <div v-else class="works-list">
         <div 
           v-for="(work, index) in works" 
           :key="work.id"
           class="work-item"
         >
-          <!-- 作品元信息 -->
-          <div class="work-meta">
-            <div class="meta-row">
-              <span class="meta-label">原诗</span>
-              <span class="meta-value">《{{ work.sourcePoemTitle }}》</span>
+          <!-- 摘要区（点击展开/收起） -->
+          <div class="work-summary" @click="toggleWork(work)">
+            <div class="summary-header">
+              <h3 class="work-title">{{ work.poemTitle }}</h3>
+              <button class="toggle-icon" :class="{ expanded: work.isExpanded }">
+                {{ work.isExpanded ? '▲' : '▼' }}
+              </button>
             </div>
-            <div class="meta-row">
-              <span class="meta-label">章节</span>
-              <span class="meta-value">{{ work.sourcePoemChapter }}</span>
-            </div>
-            <div class="meta-row">
-              <span class="meta-label">创作时间</span>
-              <span class="meta-value">{{ formatDate(work.createdAt) }}</span>
+            <div class="summary-meta">
+              <span class="meta-tag">原诗：《{{ work.sourcePoemTitle }}》</span>
+              <span class="meta-separator">•</span>
+              <span class="meta-tag">{{ work.sourcePoemChapter }}</span>
+              <span class="meta-separator">•</span>
+              <span class="meta-tag">{{ formatDate(work.createdAt) }}</span>
             </div>
           </div>
 
-          <!-- 使用PoemViewer展示作品 -->
-          <PoemViewer
-            :poem-title="work.poemTitle"
-            :quote-text="work.poemQuote || ''"
-            :quote-citation="work.poemQuoteSource || ''"
-            :main-text="work.poemContent"
-            author="陆家明 × 您"
-            :show-actions="true"
-            :animation-delay="`${index * 0.1}s`"
-          />
+          <!-- 完整内容区（折叠状态） -->
+          <transition name="expand">
+            <div v-if="work.isExpanded" class="work-content">
+              <!-- 用户输入 -->
+              <div class="user-input-section">
+                <div class="user-feeling-label">您的思绪</div>
+                <div class="user-feeling-content">{{ work.userInput }}</div>
+              </div>
 
-          <!-- 用户输入回顾 -->
-          <div class="user-input-section">
-            <p class="input-label">您的感受：</p>
-            <p class="input-content">{{ work.userInput }}</p>
-          </div>
+              <!-- 使用PoemViewer展示完整作品 -->
+              <PoemViewer
+                :poem-title="work.poemTitle"
+                :quote-text="work.poemQuote || ''"
+                :quote-citation="work.poemQuoteSource || ''"
+                :main-text="work.poemContent"
+                :author="`陆家明 × ${username}`"
+                :show-actions="true"
+                :animation-delay="`${index * 0.1}s`"
+              />
+            </div>
+          </transition>
         </div>
       </div>
     </main>
@@ -154,7 +160,11 @@ const loadWorks = async () => {
     const response = await getMyWorks()
     
     if (response.success && response.works) {
-      works.value = response.works
+      // 给每个作品添加isExpanded属性（默认折叠）
+      works.value = response.works.map(work => ({
+        ...work,
+        isExpanded: false
+      }))
     } else {
       error.value = true
       errorMessage.value = response.error || '加载作品失败'
@@ -165,6 +175,11 @@ const loadWorks = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 切换作品展开/收起状态
+const toggleWork = (work: any) => {
+  work.isExpanded = !work.isExpanded
 }
 
 // 退出登录
@@ -432,37 +447,122 @@ onUnmounted(() => {
 /* 主内容区 */
 .works-main {
   flex: 1;
-  max-width: 1400px;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   padding: 3rem 2rem;
 }
 
-/* 作品网格 */
-.works-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
-  gap: 3rem;
-}
-
-/* 作品项 */
-.work-item {
+/* 作品列表（垂直列表） */
+.works-list {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* 作品元信息 */
-.work-meta {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(248, 250, 252, 0.8) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(226, 232, 240, 0.6);
+/* 作品项（列表项） */
+.work-item {
+  background: white;
   border-radius: 0.75rem;
-  padding: 1rem 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.work-item:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* 摘要区（可点击） */
+.work-summary {
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.work-summary:hover {
+  background: var(--bg-secondary);
+}
+
+.summary-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.work-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+}
+
+.toggle-icon {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.toggle-icon:hover {
+  color: var(--color-brand-primary);
+  transform: scale(1.1);
+}
+
+.toggle-icon.expanded {
+  color: var(--color-brand-primary);
+}
+
+.summary-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+.meta-tag {
+  color: var(--text-secondary);
+}
+
+.meta-separator {
+  color: var(--color-primary-300);
+}
+
+/* 完整内容区 */
+.work-content {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--color-primary-100);
+}
+
+/* 用户输入区 */
+.user-input-section {
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+}
+
+.user-feeling-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.user-feeling-content {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 400;
+  line-height: 1.6;
 }
 
 .meta-row {
@@ -478,33 +578,29 @@ onUnmounted(() => {
 }
 
 .meta-value {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-align: right;
 }
 
-/* 用户输入回顾 */
-.user-input-section {
-  background: linear-gradient(135deg, rgba(240, 249, 255, 0.6) 0%, rgba(224, 242, 254, 0.8) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  border-radius: 0.75rem;
-  padding: 1.25rem 1.5rem;
+/* 展开/收起动画 */
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
-.input-label {
-  font-size: 0.875rem;
-  color: var(--text-tertiary);
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+.expand-enter-from,
+.expand-leave-to {
+  max-height: 0;
+  opacity: 0;
 }
 
-.input-content {
-  font-size: 1rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0;
+.expand-enter-to,
+.expand-leave-from {
+  max-height: 2000px;
+  opacity: 1;
 }
 
 /* 页脚 */
@@ -523,12 +619,6 @@ onUnmounted(() => {
 }
 
 /* 响应式设计 */
-@media (max-width: 1024px) {
-  .works-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 768px) {
   .nav-content {
     padding: 1rem 1.5rem;
@@ -542,16 +632,24 @@ onUnmounted(() => {
     padding: 2rem 1.5rem;
   }
 
-  .works-grid {
-    gap: 2rem;
+  .works-list {
+    gap: 1.25rem;
   }
 
-  .work-meta {
-    padding: 0.875rem 1.25rem;
-  }
-
-  .user-input-section {
+  .work-summary {
     padding: 1rem 1.25rem;
+  }
+
+  .work-content {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+  }
+
+  .work-title {
+    font-size: 1.125rem;
+  }
+
+  .summary-meta {
+    font-size: 0.8125rem;
   }
 }
 
@@ -579,6 +677,39 @@ onUnmounted(() => {
 
   .works-main {
     padding: 1.5rem 1rem;
+  }
+
+  .works-list {
+    gap: 1rem;
+  }
+
+  .work-summary {
+    padding: 0.875rem 1rem;
+  }
+
+  .work-content {
+    padding: 0 1rem 1rem 1rem;
+  }
+
+  .user-input-section {
+    padding: 0.875rem 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .work-title {
+    font-size: 1rem;
+  }
+
+  .summary-meta {
+    font-size: 0.75rem;
+  }
+
+  .user-feeling-content {
+    font-size: 0.75rem;
+  }
+
+  .meta-tag {
+    flex-shrink: 0;
   }
 }
 </style>

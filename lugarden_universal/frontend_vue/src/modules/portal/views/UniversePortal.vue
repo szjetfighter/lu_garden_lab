@@ -4,8 +4,8 @@
     <header class="portal-header">
       <div class="header-content">
         <div class="title-section">
-          <h1 class="portal-title">陆家花园</h1>
-          <p class="portal-subtitle">诗歌宇宙的探索入口</p>
+      <h1 class="portal-title">陆家花园</h1>
+      <p class="portal-subtitle">诗歌宇宙的探索入口</p>
         </div>
         
         <!-- 用户导航 -->

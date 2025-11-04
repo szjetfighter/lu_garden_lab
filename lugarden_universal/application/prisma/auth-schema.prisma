@@ -1,0 +1,65 @@
+// 用户数据库 Schema - auth.db
+// 独立于lugarden.db，专门管理用户认证和作品数据
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../data/auth.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/auth-prisma"
+}
+
+// 用户表
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String               // bcrypt hash
+  createdAt DateTime @default(now())
+  
+  gongBiWorks UserGongBiWork[]
+}
+
+// 用户共笔作品表
+model UserGongBiWork {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // 外部引用（无外键约束，仅存ID）
+  sourcePoemId String       // 关联到lugarden.db的ZhouPoem.id
+  mappingId    String       // 关联到lugarden.db的ZhouMapping.id
+  
+  // 冗余字段（来自ZhouPoem）
+  sourcePoemTitle String     // 原诗标题
+  sourcePoemChapter String   // 章节（如"河仲"）
+  
+  // 冗余字段（来自ZhouMapping）
+  mappingChapter String      // 章节（如"河仲"）
+  mappingCombination String  // 答题组合（如"AA", "AB"）
+  mappingMeaning String?     // 用户原型解读
+  
+  // 用户输入
+  userInput   String    // 用户输入的50字感受
+  
+  // 陆家明生成的共笔作品
+  poemTitle   String
+  poemContent String
+  poemQuote   String?   // 可选：前端支持无引文展示
+  poemQuoteSource String?   // 可选：引文来源可能为空
+  
+  // Dify API追溯字段（必填，确保数据可追溯）
+  conversationId  String
+  messageId       String
+  
+  // 完整的Dify usage metadata (JSON)
+  usageMetadata   String    // JSON格式存储完整usage数据
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([userId])
+  @@index([createdAt])
+  @@index([conversationId])
+}
+

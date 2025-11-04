@@ -106,7 +106,25 @@
           />
         </div>
 
-        <button type="submit" class="btn-primary" :disabled="loading">
+        <!-- 协议同意 -->
+        <div class="form-group agreement-group">
+          <label class="agreement-checkbox">
+            <input
+              id="agree-to-terms"
+              v-model="agreeToTerms"
+              type="checkbox"
+              :disabled="loading"
+            />
+            <span class="agreement-text">
+              我已阅读并同意
+              <router-link :to="{ path: '/terms', query: { from: 'register' } }" class="agreement-link">《用户协议》</router-link>
+              和
+              <router-link :to="{ path: '/privacy', query: { from: 'register' } }" class="agreement-link">《隐私政策》</router-link>
+            </span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary" :disabled="loading || !agreeToTerms">
           {{ loading ? '注册中...' : '注册' }}
         </button>
 
@@ -128,7 +146,9 @@ const router = useRouter()
 const route = useRoute()
 
 // 状态
-const activeTab = ref<'login' | 'register'>('login')
+const activeTab = ref<'login' | 'register'>(
+  (route.query.tab as 'login' | 'register') || 'login'
+)
 const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
@@ -139,16 +159,28 @@ const loginForm = ref({
   password: ''
 })
 
-const registerForm = ref({
+// 尝试从localStorage恢复注册表单数据
+const savedRegisterData = localStorage.getItem('temp_register_form')
+const registerForm = ref(savedRegisterData ? JSON.parse(savedRegisterData) : {
   username: '',
   password: '',
   confirmPassword: ''
 })
 
-// 切换tab时清空消息
+const agreeToTerms = ref(false)
+
+// 监听注册表单变化，临时保存到localStorage
+watch(registerForm, (newValue) => {
+  if (newValue.username || newValue.password || newValue.confirmPassword) {
+    localStorage.setItem('temp_register_form', JSON.stringify(newValue))
+  }
+}, { deep: true })
+
+// 切换tab时清空消息和协议同意状态
 watch(activeTab, () => {
   errorMessage.value = ''
   successMessage.value = ''
+  agreeToTerms.value = false
 })
 
 // 返回首页
@@ -259,6 +291,11 @@ const handleRegister = async () => {
     return
   }
 
+  if (!agreeToTerms.value) {
+    errorMessage.value = '请阅读并同意用户协议和隐私政策'
+    return
+  }
+
   loading.value = true
 
   try {
@@ -271,12 +308,13 @@ const handleRegister = async () => {
     if (response.success) {
       successMessage.value = '注册成功！正在跳转到登录...'
       
-      // 清空注册表单
+      // 清空注册表单和localStorage
       registerForm.value = {
         username: '',
         password: '',
         confirmPassword: ''
       }
+      localStorage.removeItem('temp_register_form')
       
       // 2秒后切换到登录tab
       setTimeout(() => {
@@ -410,6 +448,43 @@ const handleRegister = async () => {
   background: var(--bg-secondary);
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+/* 协议同意checkbox */
+.agreement-group {
+  margin: -0.5rem 0;
+}
+
+.agreement-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.agreement-checkbox input[type="checkbox"] {
+  margin-top: 0.25rem;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.agreement-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.agreement-link {
+  color: var(--color-brand-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.agreement-link:hover {
+  text-decoration: underline;
 }
 
 /* 按钮 */

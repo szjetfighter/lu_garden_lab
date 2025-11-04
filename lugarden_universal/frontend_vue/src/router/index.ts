@@ -94,6 +94,25 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: true
     }
   },
+  // 法律文档
+  {
+    path: '/terms',
+    name: 'Terms',
+    component: () => import('@/core/auth/views/TermsView.vue'),
+    meta: {
+      title: '用户协议 - 陆家花园',
+      requiresAuth: false
+    }
+  },
+  {
+    path: '/privacy',
+    name: 'Privacy',
+    component: () => import('@/core/auth/views/PrivacyView.vue'),
+    meta: {
+      title: '隐私政策 - 陆家花园',
+      requiresAuth: false
+    }
+  },
   // 404 重定向
   {
     path: '/:pathMatch(.*)*',

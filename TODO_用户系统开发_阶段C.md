@@ -478,6 +478,77 @@
 
 ---
 
+#### - [x] 任务C.6：移动端导航优化（展开式菜单）
+
+- **核心思想**：
+  - 原计划：在"我的作品"页面添加返回按钮
+  - 实际执行：升级为全站移动端展开式菜单，统一移动端导航体验
+  - 设计决策：基于前期决策9（移动端响应式简化），采用展开式菜单替代多按钮排列
+
+- 交付物：
+  - `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue`（展开式菜单）
+  - `lugarden_universal/frontend_vue/src/modules/portal/views/UniversePortal.vue`（展开式菜单）
+
+- 验收标准：
+  - [x] "我的作品"页面：桌面端显示`username | 返回陆家花园 | 退出登录`
+  - [x] "我的作品"页面：移动端显示展开式菜单（`username ⋮`）
+  - [x] Portal首页：桌面端显示`username | 我的作品 | 退出`
+  - [x] Portal首页：移动端显示展开式菜单（已登录）或透明按钮（未登录）
+  - [x] 下拉菜单包含陆家花园logo图标
+  - [x] 点击外部区域自动关闭菜单
+  - [x] 移动端样式低调融入（透明背景，文字颜色与页脚一致）
+
+- **风险评估**：低风险（UI改动，新增交互逻辑）
+
+- 预期改动文件（预判）：
+  - `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue`
+
+- 实际改动文件：
+  - `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue`
+    - 添加桌面端/移动端双导航结构
+    - 桌面端：黑色"返回陆家花园"按钮 + 透明"退出登录"按钮
+    - 移动端：展开式菜单（username ⋮），包含logo图标
+    - 响应式断点：480px
+  - `lugarden_universal/frontend_vue/src/modules/portal/views/UniversePortal.vue`
+    - 添加桌面端/移动端双导航结构
+    - 移动端：展开式菜单（已登录）或透明按钮（未登录）
+    - 样式优化：透明背景，文字颜色 `var(--text-tertiary)`
+    - 移动端标题间距优化：`margin-top: 4rem`
+    - 响应式断点：768px
+
+- 完成状态：✅ 已完成
+- Git提交：f6583c8 - feat(前端): 实现移动端展开式菜单导航
+
+- 技术实现细节：
+  - Vue3 Composition API：`ref(isMenuOpen)`状态管理
+  - 事件监听：`document.addEventListener('click', handleClickOutside)`
+  - CSS动画：`transition name="dropdown"`（scale + fade效果）
+  - 图片资源：`/lujiaming_icon.png`（陆家花园logo）
+  - 响应式：`@media (max-width: 480px)` 和 `@media (max-width: 768px)`
+
+- 执行步骤：
+  - [x] 步骤C.6.1：在MyWorksView.vue实现桌面端导航
+    - 添加"返回陆家花园"黑色按钮
+    - 添加"退出登录"透明边框按钮
+    - 修复768px断点的布局问题（移除flex-direction: column）
+  
+  - [x] 步骤C.6.2：在MyWorksView.vue实现移动端展开式菜单
+    - 菜单按钮：`username ⋮`
+    - 下拉菜单：logo图标 + "返回陆家花园"、"↗ 退出登录"
+    - 点击外部关闭逻辑
+  
+  - [x] 步骤C.6.3：在UniversePortal.vue实现移动端展开式菜单
+    - 已登录：`username ⋮` 展开菜单
+    - 未登录：透明"登录/注册"按钮
+    - 移动端间距优化（标题 margin-top: 4rem）
+  
+  - [x] 步骤C.6.4：样式统一优化
+    - 移动端按钮完全透明（无边框、无背景）
+    - 文字颜色统一为 `var(--text-tertiary)`
+    - Hover效果：`opacity: 0.7`
+
+---
+
 ## 测试与验收
 
 ### 端到端测试场景

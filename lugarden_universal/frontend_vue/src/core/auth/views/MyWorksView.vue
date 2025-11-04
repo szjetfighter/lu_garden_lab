@@ -5,8 +5,32 @@
       <div class="nav-content">
         <h1 class="page-title">我的作品集</h1>
         <div class="nav-actions">
-          <span class="username">{{ username }}</span>
-          <button @click="logout" class="logout-btn">退出登录</button>
+          <!-- 桌面端：完整显示 -->
+          <div class="desktop-nav">
+            <span class="username">{{ username }}</span>
+            <button @click="goBack" class="back-btn">返回陆家花园</button>
+            <button @click="logout" class="logout-btn">退出登录</button>
+          </div>
+          
+          <!-- 移动端：展开式菜单 -->
+          <div class="mobile-nav">
+            <button @click="toggleMenu" class="menu-toggle-btn">
+              <span class="username-mobile">{{ username }}</span>
+              <span class="menu-icon">{{ isMenuOpen ? '✕' : '⋮' }}</span>
+            </button>
+            
+            <transition name="dropdown">
+              <div v-if="isMenuOpen" class="dropdown-menu" @click.stop>
+                <button @click="handleMenuAction(goBack)" class="menu-item">
+                  <img src="/lujiaming_icon.png" alt="陆家花园" class="menu-icon-img" />
+                  返回陆家花园
+                </button>
+                <button @click="handleMenuAction(logout)" class="menu-item menu-item-logout">
+                  ↗ 退出登录
+                </button>
+              </div>
+            </transition>
+          </div>
         </div>
       </div>
     </header>
@@ -89,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { LoadingSpinner, ErrorState, EmptyState } from '@/shared/components'
 import { PoemViewer } from '@/modules/zhou/components'
@@ -104,6 +128,7 @@ const loading = ref(true)
 const error = ref(false)
 const errorMessage = ref('')
 const works = ref<Work[]>([])
+const isMenuOpen = ref(false)
 
 // 从token中解析用户名（简单实现）
 const username = computed(() => {
@@ -153,6 +178,21 @@ const goToCreate = () => {
   router.push('/zhou')
 }
 
+// 返回陆家花园
+const goBack = () => {
+  router.push('/')
+}
+
+// 移动端菜单控制
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value
+}
+
+const handleMenuAction = (action: () => void) => {
+  action()
+  isMenuOpen.value = false
+}
+
 // 格式化日期
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -165,9 +205,22 @@ const formatDate = (dateString: string) => {
   return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 
+// 点击外部关闭菜单
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as HTMLElement
+  if (isMenuOpen.value && !target.closest('.mobile-nav')) {
+    isMenuOpen.value = false
+  }
+}
+
 // 生命周期
 onMounted(() => {
   loadWorks()
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -213,12 +266,50 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  position: relative;
+}
+
+/* 桌面端导航 - 默认显示 */
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* 移动端导航 - 默认隐藏 */
+.mobile-nav {
+  display: none;
+  position: relative;
 }
 
 .username {
   font-size: 1rem;
   color: var(--text-secondary);
   font-weight: 500;
+}
+
+.back-btn {
+  padding: 0.5rem 1.25rem;
+  background: linear-gradient(145deg, var(--color-brand-dark), #1a2e2e);
+  color: var(--text-light);
+  border: 1px solid #1a2e2e;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn:hover {
+  background: linear-gradient(145deg, #1a2e2e, #0f1a1a);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.back-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .logout-btn {
@@ -237,6 +328,105 @@ onMounted(() => {
   background: var(--bg-secondary);
   border-color: var(--color-brand-primary);
   transform: translateY(-1px);
+}
+
+/* 移动端菜单按钮 */
+.menu-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--color-primary-300);
+  border-radius: 0.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.menu-toggle-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--color-brand-primary);
+}
+
+.username-mobile {
+  font-size: 0.875rem;
+  font-weight: 500;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* 下拉菜单 */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: white;
+  border: 1px solid var(--color-primary-200);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  min-width: 180px;
+  z-index: 1000;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: white;
+  border: none;
+  text-align: left;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.menu-icon-img {
+  width: 1.25rem;
+  height: 1.25rem;
+  object-fit: contain;
+}
+
+.menu-item:hover {
+  background: var(--bg-secondary);
+}
+
+.menu-item + .menu-item {
+  border-top: 1px solid var(--color-primary-100);
+}
+
+.menu-item-logout {
+  color: var(--color-primary-300);
+}
+
+/* 下拉动画 */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease;
+  transform-origin: top right;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: scale(0.95) translateY(-8px);
+}
+
+.dropdown-enter-to,
+.dropdown-leave-from {
+  opacity: 1;
+  transform: scale(1) translateY(0);
 }
 
 /* 主内容区 */
@@ -342,18 +532,10 @@ onMounted(() => {
 @media (max-width: 768px) {
   .nav-content {
     padding: 1rem 1.5rem;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
   }
 
   .page-title {
     font-size: 1.25rem;
-  }
-
-  .nav-actions {
-    width: 100%;
-    justify-content: space-between;
   }
 
   .works-main {
@@ -376,19 +558,23 @@ onMounted(() => {
 @media (max-width: 480px) {
   .nav-content {
     padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .page-title {
     font-size: 1.125rem;
   }
 
-  .username {
-    font-size: 0.875rem;
+  /* 移动端：隐藏桌面端导航，显示移动端菜单 */
+  .desktop-nav {
+    display: none;
   }
 
-  .logout-btn {
-    padding: 0.375rem 1rem;
-    font-size: 0.8125rem;
+  .mobile-nav {
+    display: block;
   }
 
   .works-main {

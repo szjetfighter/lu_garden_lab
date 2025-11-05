@@ -122,7 +122,17 @@
 
     <!-- 页脚 -->
     <footer class="works-footer">
-      <p>共创作 {{ works.length }} 首诗歌</p>
+      <p class="works-count">共创作 {{ works.length }} 首诗歌</p>
+      <p class="copyright">© {{ currentYear }} 陆家花园</p>
+      <div class="footer-links">
+        <router-link to="/terms?from=my-works" class="footer-link">
+          用户协议
+        </router-link>
+        <span class="footer-separator">|</span>
+        <router-link to="/privacy?from=my-works" class="footer-link">
+          隐私政策
+        </router-link>
+      </div>
     </footer>
 
     <!-- 删除账号确认对话框 -->
@@ -143,6 +153,10 @@
               <li>您的用户名将不可复用</li>
               <li><strong>您的历史共笔作品将保留，但不会与您的身份关联</strong></li>
             </ul>
+
+            <p class="delete-contact-hint">
+              如有疑虑，请查看用户协议，或与我们联系：lujiaming@lugarden.space
+            </p>
 
             <div class="confirm-input">
               <label for="confirm-password">请先输入密码验证身份：</label>
@@ -231,6 +245,9 @@ const username = computed(() => {
     return '用户'
   }
 })
+
+// 当前年份（用于版权信息）
+const currentYear = new Date().getFullYear()
 
 // 加载作品列表
 const loadWorks = async () => {
@@ -800,13 +817,48 @@ onUnmounted(() => {
   border-top: 1px solid rgba(226, 232, 240, 0.8);
   padding: 1.5rem 2rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.works-footer p {
+.works-count {
   margin: 0;
   font-size: 0.875rem;
   color: var(--text-tertiary);
   font-weight: 500;
+}
+
+.copyright {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  opacity: 0.6;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.footer-link {
+  color: var(--text-tertiary);
+  text-decoration: none;
+  transition: all var(--duration-fast) var(--ease-out);
+  opacity: 0.5;
+}
+
+.footer-link:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+.footer-separator {
+  color: var(--text-tertiary);
+  opacity: 0.3;
 }
 
 /* 删除账号模态框 */
@@ -881,6 +933,14 @@ onUnmounted(() => {
 
 .delete-info-list li:last-child {
   margin-bottom: 0;
+}
+
+.delete-contact-hint {
+  margin: 1rem 0 0 0;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  line-height: 1.5;
 }
 
 .confirm-input {

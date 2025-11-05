@@ -976,6 +976,90 @@ frontend_vue:
        └─ VPS资源 >= 2G → 可行
 ```
 
+---
+
+#### ⚠️ **本项目实际采用策略（2025-11-05更新）**
+
+**当前策略**：策略B（VPS本地构建，dist不提交到Git）
+
+**策略演进历史**：
+
+| 时期 | 策略 | 原因 |
+|------|------|------|
+| **2025-10 初始部署** | 策略A（dist提交到Git） | ⚠️ 担心VPS资源不足（2c2G配置），规避构建风险 |
+| **2025-11-05 迁移** | 策略B（VPS本地构建） | ✅ 验证VPS能力充足（Node v22.20.0 + 2GB内存），构建时间可接受（~3分钟） |
+
+**迁移理由**：
+
+1. **VPS能力验证通过**：
+   - ✅ Node.js环境：v22.20.0（最新LTS）
+   - ✅ npm版本：11.6.2
+   - ✅ 内存充足：构建峰值<500MB，系统内存2GB
+   - ✅ 构建速度：完整构建13.69秒，可接受
+
+2. **避免Git仓库膨胀**：
+   - ❌ dist文件每次构建都会改变（hash文件名）
+   - ❌ 导致git历史混乱，难以code review
+   - ✅ 不跟踪dist符合前端项目最佳实践
+
+3. **符合现代CI/CD理念**：
+   - ✅ 源代码与构建产物分离
+   - ✅ "构建一次，部署多次"原则
+   - ✅ 便于未来接入GitHub Actions等CI/CD
+
+**VPS部署流程（更新后）**：
+
+```bash
+# 1. 拉取最新代码
+cd /root/lu_garden_lab
+git pull
+
+# 2. 构建前端（必需步骤）
+cd lugarden_universal/frontend_vue
+npm install  # 如果package.json有更新
+npm run build
+
+# 3. 返回项目根目录
+cd ../..
+
+# 4. 重启服务
+docker-compose down
+docker-compose build app  # ⚠️ 如果后端代码有变更，必须rebuild
+docker-compose up -d
+
+# 5. 验证部署
+docker-compose ps
+docker-compose logs app --tail=30
+```
+
+**关键注意事项**：
+
+| 变更类型 | 是否需要前端构建 | 是否需要后端rebuild | 命令 |
+|---------|-----------------|-------------------|------|
+| **前端代码变更** | ✅ 必需 | ❌ 不需要 | `npm run build` |
+| **后端代码变更** | ❌ 不需要 | ✅ 必需 | `docker-compose build app` |
+| **依赖变更（package.json）** | ✅ 必需 | ✅ 必需 | `npm install && npm run build` + rebuild |
+| **配置变更（.env, nginx.conf）** | ❌ 不需要 | ❌ 不需要 | `docker-compose up -d --force-recreate` |
+
+**回退方案**：
+
+如果未来VPS资源不足或希望简化部署，可随时回退到策略A：
+
+```bash
+# 1. 本地构建
+cd lugarden_universal/frontend_vue
+npm run build
+
+# 2. 提交dist到Git
+git add -f dist/  # -f 强制添加（因为在.gitignore中）
+git commit -m "build: 添加前端构建产物（回退到策略A）"
+
+# 3. 更新.gitignore（注释掉dist规则）
+# lugarden_universal/frontend_vue/dist/  # ← 注释掉
+```
+
+---
+
 #### 完整配置
 
 ```yaml

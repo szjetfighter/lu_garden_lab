@@ -137,12 +137,18 @@
           </div>
           
           <div class="modal-body">
-            <p class="warning-text">此操作不可恢复！删除账号后：</p>
-            <ul class="warning-list">
-              <li>您的个人信息将被永久删除</li>
-              <li>您将无法再次登录此账号</li>
-              <li>您的作品将匿名化保留在平台上</li>
-            </ul>
+            <!-- 删除说明区域 -->
+            <div class="delete-notice">
+              <InformationCircleIcon class="notice-icon" />
+              <div class="notice-content">
+                <p class="notice-title">删除账号后：</p>
+                <ul class="notice-list">
+                  <li>您将无法再登录陆家花园</li>
+                  <li>您的用户名将不可复用</li>
+                  <li>您的历史共笔作品将保留（但不会与您的身份关联）</li>
+                </ul>
+              </div>
+            </div>
 
             <div class="confirm-input">
               <label for="confirm-password">请先输入密码验证身份：</label>
@@ -860,23 +866,50 @@ onUnmounted(() => {
   padding: 1.5rem;
 }
 
-.warning-text {
-  margin: 0 0 1rem 0;
-  font-size: 1rem;
-  color: var(--text-primary);
-  font-weight: 600;
+/* 删除说明区域样式 */
+.delete-notice {
+  display: flex;
+  gap: 0.75rem;
+  background: rgba(254, 243, 199, 0.5); /* 浅黄色背景 */
+  border-left: 3px solid rgb(234, 179, 8); /* 黄色边框 */
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
-.warning-list {
-  margin: 0 0 1.5rem 0;
-  padding-left: 1.5rem;
-  color: var(--text-secondary);
+.notice-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: rgb(161, 98, 7); /* 深黄色图标 */
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.notice-content {
+  flex: 1;
+}
+
+.notice-title {
+  margin: 0 0 0.5rem 0;
   font-size: 0.9375rem;
+  font-weight: 600;
+  color: rgb(120, 53, 15); /* 深棕色标题 */
+}
+
+.notice-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: rgb(146, 64, 14); /* 棕色列表 */
+  font-size: 0.875rem;
   line-height: 1.6;
 }
 
-.warning-list li {
-  margin-bottom: 0.5rem;
+.notice-list li {
+  margin-bottom: 0.375rem;
+}
+
+.notice-list li:last-child {
+  margin-bottom: 0;
 }
 
 .confirm-input {

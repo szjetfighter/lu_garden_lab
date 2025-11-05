@@ -33,11 +33,11 @@
 
 ### **阶段11-05_A：用户名提示与校验**
 
-#### - [ ] 任务A.1：用户名输入框添加用途提示
+#### - [x] 任务A.1：用户名输入框添加用途提示
 
 - **核心思想**: 在用户填写表单前明确告知用户名的用途（共笔署名）和限制（注册后不可修改），避免用户随意起名后悔
 - **交付物**：
-  - 修改后的`RegisterView.vue`，包含ⓘ图标和提示弹框
+  - 修改后的`LoginView.vue`（注：RegisterView在LoginView中），包含ⓘ图标和提示弹框
   - 弹框样式复用现有AI提示框设计
 - **验收标准**：
   - ⓘ图标正确显示在"用户名"label右侧，半透明灰色，hover时显示
@@ -46,19 +46,22 @@
   - 移动端和桌面端显示正常，点击背景或"知道了"按钮可关闭
 - **风险评估**: 零风险（纯UI优化，不涉及业务逻辑）
 - **预期改动文件（预判）**：
-  - `lugarden_universal/frontend_vue/src/core/auth/views/RegisterView.vue`
-- **实际改动文件**: [执行后填写]
-- **完成状态**：🔄 待开始
+  - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue`
+- **实际改动文件**: 
+  - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue`
+- **完成状态**：✅ 已完成
+- **完成日期**：2025-11-05
+- **Git提交**: `feat: 完成A.1 添加用户名用途提示图标`
 - **执行步骤**：
-  - [ ] 步骤A.1.1：在`RegisterView.vue`中导入`InformationCircleIcon`（HeroIcons）
-  - [ ] 步骤A.1.2：添加`showUsernameInfo` ref控制弹框显示状态
-  - [ ] 步骤A.1.3：在"用户名"label右侧添加ⓘ图标，绑定点击事件
-  - [ ] 步骤A.1.4：创建提示弹框组件，复用AI提示框样式
-  - [ ] 步骤A.1.5：测试桌面端和移动端显示效果
+  - [x] 步骤A.1.1：在`LoginView.vue`中导入`InformationCircleIcon`（HeroIcons）
+  - [x] 步骤A.1.2：添加`showUsernameInfo` ref控制弹框显示状态
+  - [x] 步骤A.1.3：在"用户名"label右侧添加ⓘ图标，绑定点击事件
+  - [x] 步骤A.1.4：创建提示弹框组件，复用AI提示框样式
+  - [x] 步骤A.1.5：测试桌面端和移动端显示效果
 
 ---
 
-#### - [ ] 任务A.2：用户名实时校验功能 - 后端实现
+#### - [x] 任务A.2：用户名实时校验功能 - 后端实现
 
 - **核心思想**: 提供API端点供前端实时检查用户名可用性，统一处理活跃用户、软删除用户和格式错误，不泄露账号状态
 - **交付物**：
@@ -83,20 +86,25 @@
 - **预期改动文件（预判）**：
   - `lugarden_universal/application/src/routes/checkUsername.js`（新建）
   - `lugarden_universal/application/src/services/usernameCheckService.js`（新建）
-  - `lugarden_universal/application/src/app.js`
-- **实际改动文件**: [执行后填写]
-- **完成状态**：🔄 待开始
+  - `lugarden_universal/application/server.js`
+- **实际改动文件**: 
+  - `lugarden_universal/application/src/services/usernameCheckService.js` (新建，91行)
+  - `lugarden_universal/application/src/routes/checkUsername.js` (新建，79行)
+  - `lugarden_universal/application/server.js` (新增中间件和路由注册)
+- **完成状态**：✅ 已完成
+- **完成日期**：2025-11-05
+- **Git提交**: `feat: 完成A.2 实现用户名实时校验API - 后端`
 - **执行步骤**：
-  - [ ] 步骤A.2.1：创建`usernameCheckService.js`，实现格式校验函数（正则表达式：3-20字符，中英文数字下划线）
-  - [ ] 步骤A.2.2：在`usernameCheckService.js`中实现唯一性校验函数（Prisma查询`User`表，不过滤`deletedAt`）
-  - [ ] 步骤A.2.3：创建`checkUsername.js`路由，实现GET接口逻辑
-  - [ ] 步骤A.2.4：在路由中添加简单限流中间件（使用Map记录IP和时间戳）
-  - [ ] 步骤A.2.5：在`app.js`中注册新路由：`app.use('/api/auth', checkUsernameRouter)`
-  - [ ] 步骤A.2.6：使用Postman或curl测试API各种场景（可用/重复/格式错误/限流）
+  - [x] 步骤A.2.1：创建`usernameCheckService.js`，实现格式校验函数（正则表达式：3-20字符，中英文数字下划线）
+  - [x] 步骤A.2.2：在`usernameCheckService.js`中实现唯一性校验函数（Prisma查询`User`表，不过滤`deletedAt`）
+  - [x] 步骤A.2.3：创建`checkUsername.js`路由，实现GET接口逻辑
+  - [x] 步骤A.2.4：在路由中添加简单限流中间件（使用Map记录IP和时间戳）
+  - [x] 步骤A.2.5：在`app.js`中注册新路由：`app.use('/api/auth', checkUsernameRouter)`
+  - [x] 步骤A.2.6：使用Postman或curl测试API各种场景（可用/重复/格式错误/限流）
 
 ---
 
-#### - [ ] 任务A.3：用户名实时校验功能 - 前端实现
+#### - [x] 任务A.3：用户名实时校验功能 - 前端实现
 
 - **核心思想**: 在用户输入用户名后实时调用后端API检查可用性，提供即时反馈，避免提交后才发现错误
 - **交付物**：
@@ -114,25 +122,29 @@
   - 移动端和桌面端交互流畅
 - **风险评估**: 低风险（前端逻辑优化，需注意debounce实现和按钮禁用条件）
 - **预期改动文件（预判）**：
-  - `lugarden_universal/frontend_vue/src/core/auth/views/RegisterView.vue`
+  - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue`
   - `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts`
-- **实际改动文件**: [执行后填写]
-- **完成状态**：🔄 待开始
+- **实际改动文件**: 
+  - `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts` (新增checkUsername函数)
+  - `lugarden_universal/frontend_vue/src/core/auth/views/LoginView.vue` (新增实时校验逻辑和UI)
+- **完成状态**：✅ 已完成
+- **完成日期**：2025-11-05
+- **Git提交**: `feat: 完成A.3 实现用户名实时校验前端交互`
 - **执行步骤**：
-  - [ ] 步骤A.3.1：在`authApi.ts`中新增`checkUsername`函数，调用后端API
-  - [ ] 步骤A.3.2：在`RegisterView.vue`中添加`usernameCheckStatus` ref（状态：idle/checking/available/unavailable/invalid）
-  - [ ] 步骤A.3.3：添加`usernameCheckMessage` ref存储提示文案
-  - [ ] 步骤A.3.4：实现`handleUsernameBlur`函数，debounce 500ms后调用`checkUsername` API
-  - [ ] 步骤A.3.5：根据API返回结果更新`usernameCheckStatus`和`usernameCheckMessage`
-  - [ ] 步骤A.3.6：在用户名输入框下方添加状态反馈UI（动态class和icon）
-  - [ ] 步骤A.3.7：更新注册按钮的`disabled`条件，包含`usernameCheckStatus !== 'available'`
-  - [ ] 步骤A.3.8：测试各种场景（可用/重复/格式错误/网络错误）
+  - [x] 步骤A.3.1：在`authApi.ts`中新增`checkUsername`函数，调用后端API
+  - [x] 步骤A.3.2：在`RegisterView.vue`中添加`usernameCheckStatus` ref（状态：idle/checking/available/unavailable/invalid）
+  - [x] 步骤A.3.3：添加`usernameCheckMessage` ref存储提示文案
+  - [x] 步骤A.3.4：实现`handleUsernameBlur`函数，debounce 500ms后调用`checkUsername` API
+  - [x] 步骤A.3.5：根据API返回结果更新`usernameCheckStatus`和`usernameCheckMessage`
+  - [x] 步骤A.3.6：在用户名输入框下方添加状态反馈UI（动态class和icon）
+  - [x] 步骤A.3.7：更新注册按钮的`disabled`条件，包含`usernameCheckStatus !== 'available'`
+  - [x] 步骤A.3.8：测试各种场景（可用/重复/格式错误/网络错误）
 
 ---
 
 ### **阶段11-05_B：删除账号确认弹框优化**
 
-#### - [ ] 任务B.1：删除账号确认弹框文案优化
+#### - [x] 任务B.1：删除账号确认弹框文案优化
 
 - **核心思想**: 在用户删除账号前明确告知"用户名不可复用"和"历史作品保留"，避免用户误以为删除后可重新注册同名账号
 - **交付物**：
@@ -146,20 +158,23 @@
 - **风险评估**: 零风险（纯文案和样式优化）
 - **预期改动文件（预判）**：
   - `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue`
-- **实际改动文件**: [执行后填写]
-- **完成状态**：🔄 待开始
+- **实际改动文件**: 
+  - `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue` (删除弹框文案和样式优化)
+- **完成状态**：✅ 已完成
+- **完成日期**：2025-11-05
+- **Git提交**: `docs: 简化删除账号确认弹框设计`
 - **执行步骤**：
-  - [ ] 步骤B.1.1：在删除确认弹框模板中，密码输入框前添加说明区域
-  - [ ] 步骤B.1.2：添加ⓘ图标（`InformationCircleIcon`）
-  - [ ] 步骤B.1.3：编写三条说明文案（无法登录、用户名不可复用、历史作品保留）
-  - [ ] 步骤B.1.4：添加CSS样式（浅黄色背景、左侧图标、合适间距）
-  - [ ] 步骤B.1.5：测试桌面端和移动端显示效果
+  - [x] 步骤B.1.1：在删除确认弹框模板中，密码输入框前添加说明区域
+  - [x] 步骤B.1.2：移除黄色背景卡片，采用简洁列表样式
+  - [x] 步骤B.1.3：编写三条说明文案（无法登录、用户名不可复用、历史作品保留）
+  - [x] 步骤B.1.4：标题和图标改为普通文字颜色，只保留删除按钮为红色
+  - [x] 步骤B.1.5：测试桌面端和移动端显示效果
 
 ---
 
 ### **阶段11-05_C：协议链接与联系方式优化**
 
-#### - [ ] 任务C.1：删除弹框添加协议和联系方式提示
+#### - [x] 任务C.1：删除弹框添加协议和联系方式提示
 
 - **核心思想**: 在删除确认弹框中提供协议查看入口和联系方式，方便用户在关键决策时获取更多信息
 - **交付物**：
@@ -174,16 +189,19 @@
 - **风险评估**: 零风险（纯文案添加）
 - **预期改动文件（预判）**：
   - `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue`
-- **实际改动文件**: [执行后填写]
-- **完成状态**：🔄 待开始
+- **实际改动文件**: 
+  - `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue` (删除弹框添加联系方式)
+- **完成状态**：✅ 已完成
+- **完成日期**：2025-11-05
+- **Git提交**: `feat: 完成C.1和C.2 添加协议链接与联系方式`
 - **执行步骤**：
-  - [ ] 步骤C.1.1：在删除说明列表下方添加提示文本段落
-  - [ ] 步骤C.1.2：添加CSS样式（小字号、50%透明、次级文字颜色）
-  - [ ] 步骤C.1.3：测试文本显示效果和间距
+  - [x] 步骤C.1.1：在删除说明列表下方添加提示文本段落
+  - [x] 步骤C.1.2：添加CSS样式（小字号、50%透明、次级文字颜色）
+  - [x] 步骤C.1.3：测试文本显示效果和间距
 
 ---
 
-#### - [ ] 任务C.2：MyWorks页面底部添加协议链接
+#### - [x] 任务C.2：MyWorks页面底部添加协议链接
 
 - **核心思想**: 在我的作品页面底部添加用户协议和隐私政策链接，提供全局访问入口，符合Web标准做法
 - **交付物**：
@@ -203,15 +221,18 @@
 - **风险评估**: 低风险（UI扩展，需注意样式一致性）
 - **预期改动文件（预判）**：
   - `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue`
-- **实际改动文件**: [执行后填写]
-- **完成状态**：🔄 待开始
+- **实际改动文件**: 
+  - `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue` (页脚添加版权和协议链接)
+- **完成状态**：✅ 已完成
+- **完成日期**：2025-11-05
+- **Git提交**: `feat: 完成C.1和C.2 添加协议链接与联系方式`
 - **执行步骤**：
-  - [ ] 步骤C.2.1：在script中添加currentYear计算
-  - [ ] 步骤C.2.2：修改footer模板，添加版权信息行
-  - [ ] 步骤C.2.3：添加协议链接行（使用router-link）
-  - [ ] 步骤C.2.4：添加CSS样式（参考Portal页面的.beian-link样式）
-  - [ ] 步骤C.2.5：测试链接跳转和hover效果
-  - [ ] 步骤C.2.6：测试桌面端和移动端显示
+  - [x] 步骤C.2.1：在script中添加currentYear计算
+  - [x] 步骤C.2.2：修改footer模板，添加版权信息行
+  - [x] 步骤C.2.3：添加协议链接行（使用router-link）
+  - [x] 步骤C.2.4：添加CSS样式（参考Portal页面的.beian-link样式）
+  - [x] 步骤C.2.5：测试链接跳转和hover效果
+  - [x] 步骤C.2.6：测试桌面端和移动端显示
 
 ---
 
@@ -309,7 +330,28 @@
 ---
 
 ## 当前状态
-🔄 待开始
+✅ 已完成（2025-11-05）
+
+### 完成情况
+- ✅ 阶段A（用户名提示与校验）：3个任务全部完成
+- ✅ 阶段B（删除确认优化）：1个任务完成
+- ✅ 阶段C（协议链接与联系方式）：2个任务完成
+
+### Git提交记录
+1. `feat: 完成A.1 添加用户名用途提示图标`
+2. `feat: 完成A.2 实现用户名实时校验API - 后端`
+3. `feat: 完成A.3 实现用户名实时校验前端交互`
+4. `docs: 简化删除账号确认弹框设计`
+5. `feat: 完成C.1和C.2 添加协议链接与联系方式`
+
+### 测试结果
+- ✅ 用户名提示弹框显示正常
+- ✅ 用户名实时校验功能正常（可用/不可用/格式错误）
+- ✅ 中文用户名正常支持
+- ✅ 限流机制生效
+- ✅ 删除确认弹框文案清晰
+- ✅ 协议链接正常跳转
+- ✅ 移动端和桌面端显示正常
 
 ---
 *本TODO基于陆家花园项目增强模板创建*

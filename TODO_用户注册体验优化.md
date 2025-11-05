@@ -1,0 +1,245 @@
+# 用户注册体验优化 TODO
+
+> **🤖 AI 助手注意 (AI Assistant Attention)**
+> 在执行本文件中的任何任务前，你必须首先阅读并严格遵守位于 `documentation/ai-collaboration-guide.md` 的全局协作指南。
+
+## 目标
+优化用户注册流程的用户体验，解决三个核心问题：
+1. **用户名用途说明缺失**：用户在注册时不知道用户名会用作共笔署名，可能导致随意起名后悔
+2. **实时反馈缺失**：用户填写完整表单后才发现用户名不可用，浪费时间且体验差
+3. **删除说明不清**：删除账号确认弹框未明确告知用户名不可复用和历史作品保留
+
+通过本次优化，建立"提前告知 + 实时反馈 + 明确后果"的完整用户体验闭环，提升注册转化率和用户满意度。
+
+## 范围与约束
+
+### 技术范围
+- **前端**: Vue3 + TypeScript，涉及`RegisterView.vue`和`MyWorksView.vue`
+- **后端**: Express.js + Prisma，新增用户名检查API
+- **数据库**: SQLite（auth.db），查询`User`表（含软删除记录）
+
+### 功能约束
+- **用户名唯一性**: 软删除用户的用户名不释放（保护历史作品署名）
+- **安全限流**: 用户名检查API需防止暴力枚举（60秒10次）
+- **信息保护**: 不泄露账号状态，统一返回"用户名不可使用"
+
+### 设计原则
+- **匿名化承诺**: 数据分析时不使用userId追踪，但署名保留不等于追踪
+- **艺术完整性**: 历史共笔作品署名应保持唯一性和可追溯性
+
+---
+
+## 任务列表
+
+### **阶段11-05_A：用户名提示与校验**
+
+#### - [ ] 任务A.1：用户名输入框添加用途提示
+
+- **核心思想**: 在用户填写表单前明确告知用户名的用途（共笔署名）和限制（注册后不可修改），避免用户随意起名后悔
+- **交付物**：
+  - 修改后的`RegisterView.vue`，包含ⓘ图标和提示弹框
+  - 弹框样式复用现有AI提示框设计
+- **验收标准**：
+  - ⓘ图标正确显示在"用户名"label右侧，半透明灰色，hover时显示
+  - 点击图标弹出提示框，文案准确："您的用户名会用在共笔功能的署名处。建议使用有意义的笔名，而非随意的字符组合。注册后用户名无法修改。"
+  - 提示框样式与`MyWorksView.vue`中AI提示框一致（毛玻璃背景 + 白色卡片）
+  - 移动端和桌面端显示正常，点击背景或"知道了"按钮可关闭
+- **风险评估**: 零风险（纯UI优化，不涉及业务逻辑）
+- **预期改动文件（预判）**：
+  - `lugarden_universal/frontend_vue/src/core/auth/views/RegisterView.vue`
+- **实际改动文件**: [执行后填写]
+- **完成状态**：🔄 待开始
+- **执行步骤**：
+  - [ ] 步骤A.1.1：在`RegisterView.vue`中导入`InformationCircleIcon`（HeroIcons）
+  - [ ] 步骤A.1.2：添加`showUsernameInfo` ref控制弹框显示状态
+  - [ ] 步骤A.1.3：在"用户名"label右侧添加ⓘ图标，绑定点击事件
+  - [ ] 步骤A.1.4：创建提示弹框组件，复用AI提示框样式
+  - [ ] 步骤A.1.5：测试桌面端和移动端显示效果
+
+---
+
+#### - [ ] 任务A.2：用户名实时校验功能 - 后端实现
+
+- **核心思想**: 提供API端点供前端实时检查用户名可用性，统一处理活跃用户、软删除用户和格式错误，不泄露账号状态
+- **交付物**：
+  - 新增路由文件：`lugarden_universal/application/src/routes/checkUsername.js`
+  - 新增服务文件：`lugarden_universal/application/src/services/usernameCheckService.js`
+  - 更新`app.js`注册新路由
+- **验收标准**：
+  - API端点`GET /api/auth/check-username?username=xxx`可正常访问
+  - 返回格式正确：
+    ```json
+    {
+      "available": true/false,
+      "reason": "username_taken" | "invalid_format" | null,
+      "message": "用户名可用" | "用户名不可使用" | "用户名格式不符合规则"
+    }
+    ```
+  - 格式校验正确：3-20个字符，支持中英文、数字、下划线
+  - 唯一性校验正确：查询`User`表（含`deletedAt`非空的记录）
+  - 活跃用户和软删除用户统一返回"用户名不可使用"，不泄露账号状态
+  - 限流机制生效：同一IP 60秒内最多10次请求，超出返回429状态码
+- **风险评估**: 低风险（新增接口，不影响现有功能；需注意限流实现和信息安全）
+- **预期改动文件（预判）**：
+  - `lugarden_universal/application/src/routes/checkUsername.js`（新建）
+  - `lugarden_universal/application/src/services/usernameCheckService.js`（新建）
+  - `lugarden_universal/application/src/app.js`
+- **实际改动文件**: [执行后填写]
+- **完成状态**：🔄 待开始
+- **执行步骤**：
+  - [ ] 步骤A.2.1：创建`usernameCheckService.js`，实现格式校验函数（正则表达式：3-20字符，中英文数字下划线）
+  - [ ] 步骤A.2.2：在`usernameCheckService.js`中实现唯一性校验函数（Prisma查询`User`表，不过滤`deletedAt`）
+  - [ ] 步骤A.2.3：创建`checkUsername.js`路由，实现GET接口逻辑
+  - [ ] 步骤A.2.4：在路由中添加简单限流中间件（使用Map记录IP和时间戳）
+  - [ ] 步骤A.2.5：在`app.js`中注册新路由：`app.use('/api/auth', checkUsernameRouter)`
+  - [ ] 步骤A.2.6：使用Postman或curl测试API各种场景（可用/重复/格式错误/限流）
+
+---
+
+#### - [ ] 任务A.3：用户名实时校验功能 - 前端实现
+
+- **核心思想**: 在用户输入用户名后实时调用后端API检查可用性，提供即时反馈，避免提交后才发现错误
+- **交付物**：
+  - 修改后的`RegisterView.vue`，包含实时校验逻辑和状态反馈UI
+  - 更新`authApi.ts`，新增`checkUsername`函数
+- **验收标准**：
+  - 用户名输入框`@blur`事件触发检查（debounce 500ms）
+  - 正确显示四种状态：
+    - ⏳ 检查中：浅灰色"检查中..."
+    - ✅ 可用：绿色文字"用户名可用" + `CheckCircleIcon`
+    - ❌ 不可用：红色文字"用户名不可使用" + `XCircleIcon`
+    - ⚠️ 格式错误：橙色文字"用户名格式不符合规则" + `ExclamationTriangleIcon`
+  - 用户名未通过校验时，注册按钮禁用（`disabled`）
+  - 校验结果响应及时（<500ms）
+  - 移动端和桌面端交互流畅
+- **风险评估**: 低风险（前端逻辑优化，需注意debounce实现和按钮禁用条件）
+- **预期改动文件（预判）**：
+  - `lugarden_universal/frontend_vue/src/core/auth/views/RegisterView.vue`
+  - `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts`
+- **实际改动文件**: [执行后填写]
+- **完成状态**：🔄 待开始
+- **执行步骤**：
+  - [ ] 步骤A.3.1：在`authApi.ts`中新增`checkUsername`函数，调用后端API
+  - [ ] 步骤A.3.2：在`RegisterView.vue`中添加`usernameCheckStatus` ref（状态：idle/checking/available/unavailable/invalid）
+  - [ ] 步骤A.3.3：添加`usernameCheckMessage` ref存储提示文案
+  - [ ] 步骤A.3.4：实现`handleUsernameBlur`函数，debounce 500ms后调用`checkUsername` API
+  - [ ] 步骤A.3.5：根据API返回结果更新`usernameCheckStatus`和`usernameCheckMessage`
+  - [ ] 步骤A.3.6：在用户名输入框下方添加状态反馈UI（动态class和icon）
+  - [ ] 步骤A.3.7：更新注册按钮的`disabled`条件，包含`usernameCheckStatus !== 'available'`
+  - [ ] 步骤A.3.8：测试各种场景（可用/重复/格式错误/网络错误）
+
+---
+
+### **阶段11-05_B：删除账号确认弹框优化**
+
+#### - [ ] 任务B.1：删除账号确认弹框文案优化
+
+- **核心思想**: 在用户删除账号前明确告知"用户名不可复用"和"历史作品保留"，避免用户误以为删除后可重新注册同名账号
+- **交付物**：
+  - 修改后的`MyWorksView.vue`，删除确认弹框包含新增说明文案
+- **验收标准**：
+  - 删除确认弹框在密码输入框前添加说明区域
+  - 文案准确："删除账号后：您将无法再登录陆家花园；您的用户名将不可复用；您的历史共笔作品将保留（但不会与您的身份关联）"
+  - 说明区域使用浅黄色背景框（警告色调），左侧添加ⓘ图标
+  - 字号略小于正文，但清晰可读
+  - 样式与整体设计协调，移动端和桌面端显示正常
+- **风险评估**: 零风险（纯文案和样式优化）
+- **预期改动文件（预判）**：
+  - `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue`
+- **实际改动文件**: [执行后填写]
+- **完成状态**：🔄 待开始
+- **执行步骤**：
+  - [ ] 步骤B.1.1：在删除确认弹框模板中，密码输入框前添加说明区域
+  - [ ] 步骤B.1.2：添加ⓘ图标（`InformationCircleIcon`）
+  - [ ] 步骤B.1.3：编写三条说明文案（无法登录、用户名不可复用、历史作品保留）
+  - [ ] 步骤B.1.4：添加CSS样式（浅黄色背景、左侧图标、合适间距）
+  - [ ] 步骤B.1.5：测试桌面端和移动端显示效果
+
+---
+
+## 测试与验收
+
+### 注册流程完整测试
+- [ ] 新用户注册流程（从打开页面到注册成功）
+- [ ] 用户名提示弹框正常显示和关闭
+- [ ] 用户名实时校验各种场景（可用/重复/格式错误）
+- [ ] 注册按钮在用户名不可用时正确禁用
+- [ ] 限流机制测试（快速连续请求10次以上）
+
+### 删除账号流程测试
+- [ ] 删除确认弹框新增说明正确显示
+- [ ] 删除成功后无法登录
+- [ ] 删除后的用户名立即尝试注册，返回"用户名不可使用"
+
+### 跨设备兼容性
+- [ ] Chrome桌面端测试
+- [ ] 移动端测试（Chrome Mobile或Safari iOS）
+- [ ] 不同屏幕尺寸响应式测试
+
+### 代码质量
+- [ ] TypeScript类型检查通过（`npm run type-check`）
+- [ ] ESLint检查通过（`npm run lint`）
+- [ ] 前端构建成功（`npm run build`）
+
+---
+
+## 更新日志关联
+
+- **预计更新类型**: 功能更新
+- **更新目录**: `documentation/changelog/2025-11-05_用户注册体验优化/`
+- **更新日志文件**: `更新日志.md`
+- **测试验证点**: 
+  - [ ] 用户名提示功能正常
+  - [ ] 用户名实时校验API正常工作
+  - [ ] 前端实时校验反馈及时准确
+  - [ ] 删除确认文案正确显示
+  - [ ] 限流机制有效
+
+---
+
+## 注意事项
+
+### 开发规范
+- 每完成一个任务都要测试功能（本地运行`npm run dev`）
+- 如果出现问题立即回滚（`git reset --hard`或`git checkout`）
+- 保持Git提交记录清晰：
+  - **任务A.1**: `feat(auth): 添加用户名用途提示图标`
+  - **任务A.2**: `feat(auth): 实现用户名实时校验API`
+  - **任务A.3**: `feat(auth): 实现用户名实时校验前端交互`
+  - **任务B.1**: `docs(auth): 优化删除账号确认弹框文案`
+
+### 技术细节
+- **debounce实现**: 使用`setTimeout`和`clearTimeout`，或引入lodash的debounce
+- **限流实现**: 简单Map记录IP和时间戳即可，生产环境可考虑Redis
+- **图标引入**: 从`@heroicons/vue/24/outline`导入`InformationCircleIcon`、`CheckCircleIcon`、`XCircleIcon`、`ExclamationTriangleIcon`
+
+### 设计哲学说明
+- **为什么不释放软删除用户的用户名？**
+  - 保护历史共笔作品署名的唯一性和可追溯性
+  - 防止新用户注册同名账号导致身份混淆
+  - 符合陆家花园"活的艺术项目"定位
+
+- **"匿名化承诺"的正确理解**
+  - 承诺的是：数据分析时不使用userId追踪用户
+  - 不是：物理删除所有用户痕迹
+  - 署名保留 ≠ 追踪用户，我们承诺不做用户画像分析
+
+---
+
+## 完成后的操作
+
+- [ ] 创建更新目录：`documentation/changelog/2025-11-05_用户注册体验优化/`
+- [ ] 将本TODO文件移动到更新目录并重命名为 `TODO.md`
+- [ ] 创建对应的更新日志文档：`更新日志.md`
+- [ ] 更新项目的`当前进展.md`文件
+- [ ] 提交所有更改到Git（按任务分别提交）
+- [ ] 本地测试完整注册和删除流程
+- [ ] VPS生产环境部署（`git pull` + `npm run build` + 重启服务）
+
+---
+
+## 当前状态
+🔄 待开始
+
+---
+*本TODO基于陆家花园项目增强模板创建*

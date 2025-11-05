@@ -114,7 +114,53 @@
     <!-- 页脚 -->
     <footer class="works-footer">
       <p>共创作 {{ works.length }} 首诗歌</p>
+      <button @click="showDeleteConfirm" class="delete-account-btn">删除账号</button>
     </footer>
+
+    <!-- 删除账号确认对话框 -->
+    <transition name="modal">
+      <div v-if="isDeleteModalOpen" class="modal-overlay" @click="closeDeleteModal">
+        <div class="modal-content" @click.stop>
+          <div class="modal-header">
+            <h2>⚠️ 删除账号</h2>
+          </div>
+          
+          <div class="modal-body">
+            <p class="warning-text">此操作不可恢复！删除账号后：</p>
+            <ul class="warning-list">
+              <li>您的个人信息将被永久删除</li>
+              <li>您将无法再次登录此账号</li>
+              <li>您的作品将匿名化保留在平台上</li>
+            </ul>
+            
+            <div class="confirm-input">
+              <label for="confirm-username">请输入用户名 <strong>{{ username }}</strong> 以确认删除：</label>
+              <input
+                id="confirm-username"
+                v-model="confirmUsername"
+                type="text"
+                placeholder="输入用户名"
+                @keyup.enter="confirmDelete"
+              />
+              <p v-if="deleteError" class="error-message">{{ deleteError }}</p>
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <button @click="closeDeleteModal" class="cancel-btn" :disabled="isDeleting">
+              取消
+            </button>
+            <button 
+              @click="confirmDelete" 
+              class="confirm-delete-btn"
+              :disabled="isDeleting || !confirmUsername"
+            >
+              {{ isDeleting ? '删除中...' : '确认删除' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -123,7 +169,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { LoadingSpinner, ErrorState, EmptyState } from '@/shared/components'
 import { PoemViewer } from '@/modules/zhou/components'
-import { getMyWorks, clearToken, getToken } from '../services/authApi'
+import { getMyWorks, clearToken, getToken, deleteAccount } from '../services/authApi'
 import type { Work } from '../services/authApi'
 
 // 路由
@@ -135,6 +181,12 @@ const error = ref(false)
 const errorMessage = ref('')
 const works = ref<Work[]>([])
 const isMenuOpen = ref(false)
+
+// 删除账号相关状态
+const isDeleteModalOpen = ref(false)
+const confirmUsername = ref('')
+const isDeleting = ref(false)
+const deleteError = ref('')
 
 // 从token中解析用户名（简单实现）
 const username = computed(() => {
@@ -225,6 +277,48 @@ const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as HTMLElement
   if (isMenuOpen.value && !target.closest('.mobile-nav')) {
     isMenuOpen.value = false
+  }
+}
+
+// 删除账号相关函数
+const showDeleteConfirm = () => {
+  isDeleteModalOpen.value = true
+  confirmUsername.value = ''
+  deleteError.value = ''
+}
+
+const closeDeleteModal = () => {
+  if (isDeleting.value) return // 删除中不允许关闭
+  isDeleteModalOpen.value = false
+  confirmUsername.value = ''
+  deleteError.value = ''
+}
+
+const confirmDelete = async () => {
+  // 验证用户名
+  if (confirmUsername.value !== username.value) {
+    deleteError.value = '用户名不匹配，请重新输入'
+    return
+  }
+
+  deleteError.value = ''
+  isDeleting.value = true
+
+  try {
+    const response = await deleteAccount(confirmUsername.value)
+    
+    if (response.success) {
+      // 删除成功：清除token并跳转到登录页
+      clearToken()
+      alert('账号已成功删除')
+      router.push('/login')
+    } else {
+      deleteError.value = response.error || '删除账号失败'
+    }
+  } catch (err: any) {
+    deleteError.value = err.message || '网络错误，请稍后重试'
+  } finally {
+    isDeleting.value = false
   }
 }
 
@@ -609,6 +703,10 @@ onUnmounted(() => {
   border-top: 1px solid rgba(226, 232, 240, 0.8);
   padding: 1.5rem 2rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
 }
 
 .works-footer p {
@@ -616,6 +714,196 @@ onUnmounted(() => {
   font-size: 0.875rem;
   color: var(--text-tertiary);
   font-weight: 500;
+}
+
+.delete-account-btn {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.delete-account-btn:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+/* 删除账号模态框 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.warning-text {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.warning-list {
+  margin: 0 0 1.5rem 0;
+  padding-left: 1.5rem;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.warning-list li {
+  margin-bottom: 0.5rem;
+}
+
+.confirm-input {
+  margin-top: 1.5rem;
+}
+
+.confirm-input label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.confirm-input label strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.confirm-input input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 2px solid rgba(226, 232, 240, 0.8);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.confirm-input input:focus {
+  border-color: #ef4444;
+}
+
+.error-message {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.875rem;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.cancel-btn {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background: rgba(226, 232, 240, 0.3);
+}
+
+.cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.confirm-delete-btn {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  color: white;
+  background: #ef4444;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.confirm-delete-btn:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.confirm-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 模态框动画 */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-active .modal-content,
+.modal-leave-active .modal-content {
+  transition: transform 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-content,
+.modal-leave-to .modal-content {
+  transform: scale(0.9) translateY(20px);
 }
 
 /* 响应式设计 */

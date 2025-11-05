@@ -11,6 +11,7 @@ import portalRouter from './src/routes/portal.js';
 import universesRouter from './src/routes/universes.js';
 import authRouter from './src/routes/auth.js';
 import myWorksRouter from './src/routes/myWorks.js';
+import deleteAccountRouter from './src/routes/deleteAccount.js';
 import { errorHandler } from './src/middlewares/errorHandler.js';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -657,6 +658,7 @@ app.use('/api/admin', adminRouter);
 app.use('/api/portal', portalRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/my-works', myWorksRouter);
+app.use('/api', deleteAccountRouter);
 
 // 健康检查（仅 DB）
 app.get('/api/health', async (_req, res) => {

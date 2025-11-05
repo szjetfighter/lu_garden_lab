@@ -287,3 +287,72 @@ export async function saveGongBiWork(data: SaveGongBiWorkRequest): Promise<SaveW
   }
 }
 
+// ================================
+// 删除账号
+// ================================
+
+export interface DeleteAccountRequest {
+  username: string
+}
+
+export interface DeleteAccountResponse {
+  success: boolean
+  message?: string
+  error?: string
+}
+
+/**
+ * 删除账号
+ * @param username - 用户输入的用户名（用于二次确认）
+ */
+export async function deleteAccount(username: string): Promise<DeleteAccountResponse> {
+  try {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      return {
+        success: false,
+        error: '未登录'
+      }
+    }
+
+    const response = await fetch('/api/user/delete', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ username })
+    })
+
+    // 检测401：认证失败
+    if (response.status === 401) {
+      console.warn('[authApi] 检测到401，清除token并跳转登录页')
+      localStorage.removeItem('token')
+      
+      // 跳转到登录页
+      window.location.href = '/login'
+      
+      return {
+        success: false,
+        error: '认证失败，请重新登录'
+      }
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: '删除账号失败' }))
+      return {
+        success: false,
+        error: errorData.message || errorData.error || '删除账号失败'
+      }
+    }
+
+    const result = await response.json()
+    return result
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || '删除账号失败'
+    }
+  }
+}
+

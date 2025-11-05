@@ -10,6 +10,10 @@
             <span class="username">{{ username }}</span>
             <button @click="goBack" class="back-btn">返回陆家花园</button>
             <button @click="logout" class="logout-btn">退出登录</button>
+            <button @click="showDeleteConfirm" class="farewell-btn">
+              <HandRaisedIcon class="farewell-icon" />
+              Farewell
+            </button>
           </div>
           
           <!-- 移动端：展开式菜单 -->
@@ -26,7 +30,12 @@
                   返回陆家花园
                 </button>
                 <button @click="handleMenuAction(logout)" class="menu-item menu-item-logout">
-                  ↗ 退出登录
+                  <span class="menu-logout-icon">↗</span>
+                  退出登录
+                </button>
+                <button @click="handleMenuAction(showDeleteConfirm)" class="menu-item menu-item-farewell">
+                  <HandRaisedIcon class="menu-farewell-icon" />
+                  Farewell
                 </button>
               </div>
             </transition>
@@ -114,7 +123,6 @@
     <!-- 页脚 -->
     <footer class="works-footer">
       <p>共创作 {{ works.length }} 首诗歌</p>
-      <button @click="showDeleteConfirm" class="delete-account-btn">删除账号</button>
     </footer>
 
     <!-- 删除账号确认对话框 -->
@@ -122,7 +130,10 @@
       <div v-if="isDeleteModalOpen" class="modal-overlay" @click="closeDeleteModal">
         <div class="modal-content" @click.stop>
           <div class="modal-header">
-            <h2>⚠️ 删除账号</h2>
+            <h2>
+              <ExclamationTriangleIcon class="warning-icon" />
+              删除账号
+            </h2>
           </div>
           
           <div class="modal-body">
@@ -167,6 +178,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { ExclamationTriangleIcon, HandRaisedIcon } from '@heroicons/vue/24/outline'
 import { LoadingSpinner, ErrorState, EmptyState } from '@/shared/components'
 import { PoemViewer } from '@/modules/zhou/components'
 import { getMyWorks, clearToken, getToken, deleteAccount } from '../services/authApi'
@@ -423,20 +435,55 @@ onUnmounted(() => {
 
 .logout-btn {
   padding: 0.5rem 1.25rem;
-  background: transparent;
-  border: 1px solid var(--color-primary-300);
-  color: var(--text-secondary);
+  background: linear-gradient(145deg, var(--color-brand-dark), #1a2e2e);
+  color: var(--text-light);
+  border: 1px solid #1a2e2e;
   border-radius: 0.5rem;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-out);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .logout-btn:hover {
+  background: linear-gradient(145deg, #1a2e2e, #0f1a1a);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.farewell-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--color-primary-300);
+  color: var(--text-primary);
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  opacity: 0.5;
+}
+
+.farewell-btn:hover {
   background: var(--bg-secondary);
   border-color: var(--color-brand-primary);
   transform: translateY(-1px);
+}
+
+.farewell-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--text-primary);
+  flex-shrink: 0;
 }
 
 /* 移动端菜单按钮 */
@@ -505,6 +552,26 @@ onUnmounted(() => {
   width: 1.25rem;
   height: 1.25rem;
   object-fit: contain;
+  flex-shrink: 0;
+}
+
+.menu-logout-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.menu-farewell-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--text-primary);
+  flex-shrink: 0;
+  opacity: 0.5;
 }
 
 .menu-item:hover {
@@ -516,7 +583,23 @@ onUnmounted(() => {
 }
 
 .menu-item-logout {
-  color: var(--color-primary-300);
+  color: var(--text-primary);
+  font-weight: 500;
+  background: linear-gradient(145deg, rgba(42, 74, 74, 0.05), rgba(26, 46, 46, 0.05));
+}
+
+.menu-item-logout:hover {
+  background: linear-gradient(145deg, rgba(42, 74, 74, 0.1), rgba(26, 46, 46, 0.1));
+}
+
+.menu-item-farewell {
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  opacity: 0.5;
+}
+
+.menu-item-farewell:hover {
+  background: var(--bg-secondary);
 }
 
 /* 下拉动画 */
@@ -703,10 +786,6 @@ onUnmounted(() => {
   border-top: 1px solid rgba(226, 232, 240, 0.8);
   padding: 1.5rem 2rem;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: center;
 }
 
 .works-footer p {
@@ -714,24 +793,6 @@ onUnmounted(() => {
   font-size: 0.875rem;
   color: var(--text-tertiary);
   font-weight: 500;
-}
-
-.delete-account-btn {
-  padding: 0.5rem 1.25rem;
-  font-size: 0.875rem;
-  color: var(--text-tertiary);
-  background: transparent;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
-}
-
-.delete-account-btn:hover {
-  color: #ef4444;
-  border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.05);
 }
 
 /* 删除账号模态框 */
@@ -769,6 +830,16 @@ onUnmounted(() => {
   font-size: 1.25rem;
   color: #ef4444;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.warning-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #ef4444;
+  flex-shrink: 0;
 }
 
 .modal-body {

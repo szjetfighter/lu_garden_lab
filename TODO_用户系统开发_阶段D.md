@@ -265,6 +265,73 @@
 
 ---
 
+#### - [x] 任务D.4：删除功能UI优化
+
+**核心思想**：基于D.3删除账号功能，优化UI交互体验，使删除操作更低调且符合诗意表达。
+
+**交付物**：
+- ✅ 删除按钮位置调整：从页脚移至顶部导航栏
+- ✅ 重命名为"Farewell"：更诗意的表达
+- ✅ Emoji替换为SVG图标：更清晰的视觉效果
+- ✅ 样式优化：透明度、颜色统一、对齐优化
+
+**验收标准**：
+- [x] 删除按钮移至导航栏（桌面端和移动端） ✓
+- [x] 按钮文案改为"Farewell" ✓
+- [x] 添加HandRaisedIcon（招手图标） ✓
+- [x] 其他emoji也替换为SVG（DocumentTextIcon、ExclamationTriangleIcon） ✓
+- [x] 样式统一：50%透明度区分层次 ✓
+- [x] 菜单项完美对齐 ✓
+
+**设计决策**：
+1. **位置调整**：删除账号是低频操作，不应在页脚显眼位置，移至导航栏菜单更合理
+2. **命名诗意化**："Farewell"比"删除账号"更符合陆家花园的气质
+3. **SVG替代Emoji**：
+   - 📝 → `DocumentTextIcon`（我的作品）
+   - ⚠️ → `ExclamationTriangleIcon`（删除警告）
+   - 👋 → `HandRaisedIcon`（Farewell）
+4. **透明度层次**：
+   - 主要操作（返回、退出）：100%不透明
+   - 次要操作（Farewell）：50%透明度
+5. **颜色统一**：所有元素使用`var(--text-primary)`，通过透明度区分重要性
+
+**实际改动文件**：
+- ✅ `lugarden_universal/frontend_vue/src/modules/portal/views/UniversePortal.vue`（修改，+8行）
+  - 首页菜单：📝 → DocumentTextIcon
+  - 添加menu-item-icon样式
+- ✅ `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue`（修改，+60行/-35行）
+  - 导入HandRaisedIcon、ExclamationTriangleIcon
+  - 删除页脚的"删除账号"按钮
+  - 在桌面端导航栏添加Farewell按钮
+  - 在移动端菜单添加Farewell选项
+  - 删除对话框：⚠️ → ExclamationTriangleIcon
+  - 调整退出登录样式（改为深色，与返回陆家花园一致）
+  - 优化菜单项对齐（统一图标宽度1.25rem）
+  - 添加透明度样式（Farewell 50%透明）
+
+**完成状态**：✅ 已完成（2025-11-05）
+**Git提交**：[待提交]
+
+**执行步骤**：
+- [x] 步骤D.4.1：首页菜单emoji替换为SVG ✓
+  - 📝 → DocumentTextIcon
+- [x] 步骤D.4.2：删除按钮从页脚移至导航栏 ✓
+  - 重命名为"Farewell"
+  - 添加HandRaisedIcon图标
+- [x] 步骤D.4.3：删除对话框emoji替换为SVG ✓
+  - ⚠️ → ExclamationTriangleIcon
+- [x] 步骤D.4.4：优化退出登录样式 ✓
+  - 改为深色（与返回陆家花园一致）
+  - 桌面端和移动端统一
+- [x] 步骤D.4.5：优化菜单项对齐 ✓
+  - 统一所有图标宽度为1.25rem
+  - 退出登录↗用span包装
+- [x] 步骤D.4.6：添加透明度层次 ✓
+  - Farewell整体50%透明度
+  - 颜色统一为var(--text-primary)
+
+---
+
 ## 合规检查清单
 
 ### AI内容标识合规

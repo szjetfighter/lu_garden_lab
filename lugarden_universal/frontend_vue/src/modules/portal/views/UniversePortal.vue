@@ -37,7 +37,8 @@
             <transition name="dropdown">
               <div v-if="isMenuOpen" class="dropdown-menu" @click.stop>
                 <router-link to="/my-works" @click="closeMenu" class="menu-item">
-                  📝 我的作品
+                  <DocumentTextIcon class="menu-item-icon" />
+                  我的作品
                 </router-link>
                 <button @click="handleMenuLogout" class="menu-item menu-item-logout">
                   ↗ 退出
@@ -129,6 +130,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { DocumentTextIcon } from '@heroicons/vue/24/outline'
 import { LoadingSpinner, ErrorState, EmptyState, NotificationToast } from '@/shared/components'
 import { UniverseCard } from '@/modules/portal/components'
 import { usePortalStore } from '@/modules/portal/stores'
@@ -442,6 +444,13 @@ onUnmounted(() => {
 
 .menu-item + .menu-item {
   border-top: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.menu-item-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
 }
 
 .menu-item-logout {

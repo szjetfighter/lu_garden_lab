@@ -17,6 +17,7 @@ model User {
   username  String   @unique
   password  String               // bcrypt hash
   createdAt DateTime @default(now())
+  deletedAt DateTime?            // 软删除标记：非空表示已删除
   
   gongBiWorks UserGongBiWork[]
 }

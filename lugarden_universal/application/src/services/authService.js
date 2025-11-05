@@ -72,6 +72,14 @@ export async function loginUser({ username, password }) {
       };
     }
     
+    // 检查账号是否已删除（在验证密码前检查，避免泄露账号存在性）
+    if (user.deletedAt) {
+      return {
+        success: false,
+        error: '用户名或密码错误'
+      };
+    }
+    
     // 验证密码
     const isPasswordValid = await comparePassword(password, user.password);
     

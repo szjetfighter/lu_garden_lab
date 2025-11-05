@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/UniversePortal-D0cNZIKj.js","assets/ErrorState-DE6rNWWA.js","assets/ErrorState.C2YI13gB.css","assets/BackButton-_BnDcdOi.js","assets/BackButton.DNt2rx5K.css","assets/enhancedApi-9fV76Vys.js","assets/LoadingSpinner-B-ZUe7SV.js","assets/LoadingSpinner.Dddw_4jr.css","assets/ProgressBar-42JUQZi9.js","assets/ProgressBar.D2F_dA9z.css","assets/UniversePortal.Cjt8S2bF.css","assets/MainProjectSelection-DQWTiQe9.js","assets/zhou-BIBg485p.js","assets/MainProjectSelection.AEyygfS2.css","assets/SubProjectSelection-yXI_R71k.js","assets/QuizScreen-Cg1iSHRC.js","assets/ArrowDownTrayIcon-WdJwsKtb.js","assets/QuizScreen.Dusenml7.css","assets/ClassicalEchoScreen-DO_OLhM9.js","assets/ClassicalEchoScreen.B7m1uuZD.css","assets/ResultScreen-C1OgISvH.js","assets/PoemViewer-BLcdSmCy.js","assets/PoemViewer.DUEWYnRO.css","assets/ResultScreen.BWwKDtFn.css","assets/GongBiView-B6VXOusx.js","assets/GongBiView.DSrfEypy.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/UniversePortal-Bw73c-SS.js","assets/ErrorState-CQCVaoCj.js","assets/ErrorState.C2YI13gB.css","assets/EmptyState-BeqYa-By.js","assets/EmptyState.DEZyfoQL.css","assets/authApi-DMUWcRXB.js","assets/enhancedApi-D-VVpnBX.js","assets/components-BfT3xTN5.js","assets/components.BIQYwEV9.css","assets/BackButton-CfwVcQyt.js","assets/BackButton.uMNisWYP.css","assets/LoadingSpinner-DLftEDJi.js","assets/LoadingSpinner.Dddw_4jr.css","assets/ProgressBar-BzUeofeR.js","assets/ProgressBar.D2F_dA9z.css","assets/UniversePortal.MvnGaeWi.css","assets/MainProjectSelection-N5nu5-Sm.js","assets/zhou-DNmAmoD0.js","assets/MainProjectSelection.AEyygfS2.css","assets/SubProjectSelection-BrIjMiby.js","assets/QuizScreen-BCrjNgBY.js","assets/ArrowDownTrayIcon-CKLH6yP-.js","assets/QuestionCard-Bmr4xy-T.js","assets/QuestionCard.Dusenml7.css","assets/QuizScreen.tn0RQdqM.css","assets/ClassicalEchoScreen-BZ7p0uPv.js","assets/ClassicalEchoDisplay-MS9ARgA4.js","assets/ClassicalEchoScreen.B7m1uuZD.css","assets/ResultScreen-BZgmSq0U.js","assets/ControlButtons-1EwphGFZ.js","assets/PoemViewer-CQ5QcNjH.js","assets/PoemViewer.BM4afsGC.css","assets/ControlButtons.4Qoo0JXG.css","assets/ResultScreen.CGU0SRya.css","assets/GongBiView-CcJLGuQT.js","assets/lujiaming_icon-D6-oGle1.js","assets/GongBiView.CuJ9Vnp2.css","assets/LoginView-BSrO_FZr.js","assets/LoginView.DV8ewfk0.css","assets/MyWorksView-Ctx0-L0x.js","assets/MyWorksView.CuV6S_6W.css","assets/TermsView-CV1Zg8vX.js","assets/TermsView.DsZsrho_.css","assets/PrivacyView-BB1fF3Gz.js","assets/PrivacyView.BXD13Ukc.css"])))=>i.map(i=>d[i]);
 //#region \0vite/modulepreload-polyfill.js
 (function polyfill() {
 	const relList = document.createElement("link").relList;
@@ -60,6 +60,7 @@ const hasOwn = (val, key) => hasOwnProperty$1.call(val, key);
 const isArray$1 = Array.isArray;
 const isMap = (val) => toTypeString(val) === "[object Map]";
 const isSet = (val) => toTypeString(val) === "[object Set]";
+const isDate = (val) => toTypeString(val) === "[object Date]";
 const isFunction = (val) => typeof val === "function";
 const isString = (val) => typeof val === "string";
 const isSymbol = (val) => typeof val === "symbol";
@@ -160,6 +161,41 @@ const isSpecialBooleanAttr = /* @__PURE__ */ makeMap(specialBooleanAttrs);
 const isBooleanAttr = /* @__PURE__ */ makeMap(specialBooleanAttrs + `,async,autofocus,autoplay,controls,default,defer,disabled,hidden,inert,loop,open,required,reversed,scoped,seamless,checked,muted,multiple,selected`);
 function includeBooleanAttr(value) {
 	return !!value || value === "";
+}
+function looseCompareArrays(a, b) {
+	if (a.length !== b.length) return false;
+	let equal = true;
+	for (let i = 0; equal && i < a.length; i++) equal = looseEqual(a[i], b[i]);
+	return equal;
+}
+function looseEqual(a, b) {
+	if (a === b) return true;
+	let aValidType = isDate(a);
+	let bValidType = isDate(b);
+	if (aValidType || bValidType) return aValidType && bValidType ? a.getTime() === b.getTime() : false;
+	aValidType = isSymbol(a);
+	bValidType = isSymbol(b);
+	if (aValidType || bValidType) return a === b;
+	aValidType = isArray$1(a);
+	bValidType = isArray$1(b);
+	if (aValidType || bValidType) return aValidType && bValidType ? looseCompareArrays(a, b) : false;
+	aValidType = isObject(a);
+	bValidType = isObject(b);
+	if (aValidType || bValidType) {
+		if (!aValidType || !bValidType) return false;
+		const aKeysCount = Object.keys(a).length;
+		const bKeysCount = Object.keys(b).length;
+		if (aKeysCount !== bKeysCount) return false;
+		for (const key in a) {
+			const aHasKey = a.hasOwnProperty(key);
+			const bHasKey = b.hasOwnProperty(key);
+			if (aHasKey && !bHasKey || !aHasKey && bHasKey || !looseEqual(a[key], b[key])) return false;
+		}
+	}
+	return String(a) === String(b);
+}
+function looseIndexOf(arr, val) {
+	return arr.findIndex((item) => looseEqual(item, val));
 }
 const isRef$1 = (val) => {
 	return !!(val && val["__v_isRef"] === true);
@@ -4026,6 +4062,11 @@ function cloneVNode(vnode, extraProps, mergeRef = false, cloneTransition = false
 function createTextVNode(text = " ", flag = 0) {
 	return createVNode(Text, null, text, flag);
 }
+function createStaticVNode(content, numberOfNodes) {
+	const vnode = createVNode(Static, null, content);
+	vnode.staticCount = numberOfNodes;
+	return vnode;
+}
 function createCommentVNode(text = "", asBlock = false) {
 	return asBlock ? (openBlock(), createBlock(Comment, null, text)) : createVNode(Comment, null, text);
 }
@@ -4887,6 +4928,56 @@ const vModelText = {
 		el.value = newValue;
 	}
 };
+const vModelCheckbox = {
+	deep: true,
+	created(el, _, vnode) {
+		el[assignKey] = getModelAssigner(vnode);
+		addEventListener(el, "change", () => {
+			const modelValue = el._modelValue;
+			const elementValue = getValue(el);
+			const checked = el.checked;
+			const assign$3 = el[assignKey];
+			if (isArray$1(modelValue)) {
+				const index = looseIndexOf(modelValue, elementValue);
+				const found = index !== -1;
+				if (checked && !found) assign$3(modelValue.concat(elementValue));
+				else if (!checked && found) {
+					const filtered = [...modelValue];
+					filtered.splice(index, 1);
+					assign$3(filtered);
+				}
+			} else if (isSet(modelValue)) {
+				const cloned = new Set(modelValue);
+				if (checked) cloned.add(elementValue);
+				else cloned.delete(elementValue);
+				assign$3(cloned);
+			} else assign$3(getCheckboxValue(el, checked));
+		});
+	},
+	mounted: setChecked,
+	beforeUpdate(el, binding, vnode) {
+		el[assignKey] = getModelAssigner(vnode);
+		setChecked(el, binding, vnode);
+	}
+};
+function setChecked(el, { value, oldValue }, vnode) {
+	el._modelValue = value;
+	let checked;
+	if (isArray$1(value)) checked = looseIndexOf(value, vnode.props.value) > -1;
+	else if (isSet(value)) checked = value.has(vnode.props.value);
+	else {
+		if (value === oldValue) return;
+		checked = looseEqual(value, getCheckboxValue(el, true));
+	}
+	if (el.checked !== checked) el.checked = checked;
+}
+function getValue(el) {
+	return "_value" in el ? el._value : el.value;
+}
+function getCheckboxValue(el, checked) {
+	const key = checked ? "_trueValue" : "_falseValue";
+	return key in el ? el[key] : checked;
+}
 const systemModifiers = [
 	"ctrl",
 	"shift",
@@ -4915,6 +5006,24 @@ const withModifiers = (fn, modifiers) => {
 			if (guard && guard(event, modifiers)) return;
 		}
 		return fn(event, ...args);
+	});
+};
+const keyNames = {
+	esc: "escape",
+	space: " ",
+	up: "arrow-up",
+	left: "arrow-left",
+	right: "arrow-right",
+	down: "arrow-down",
+	delete: "backspace"
+};
+const withKeys = (fn, modifiers) => {
+	const cache = fn._withKeys || (fn._withKeys = {});
+	const cacheKey = modifiers.join(".");
+	return cache[cacheKey] || (cache[cacheKey] = (event) => {
+		if (!("key" in event)) return;
+		const eventKey = hyphenate(event.key);
+		if (modifiers.some((k) => k === eventKey || keyNames[k] === eventKey)) return fn(event);
 	});
 };
 const rendererOptions = /* @__PURE__ */ extend({ patchProp }, nodeOps);
@@ -7352,7 +7461,7 @@ const routes = [
 	{
 		path: "/",
 		name: "UniversePortal",
-		component: () => __vitePreload(() => import("./UniversePortal-D0cNZIKj.js"), true               ? __vite__mapDeps([0,1,2,3,4,5,6,7,8,9,10]) : void 0),
+		component: () => __vitePreload(() => import("./UniversePortal-Bw73c-SS.js"), true               ? __vite__mapDeps([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]) : void 0),
 		meta: {
 			title: "陆家花园 - 宇宙门户",
 			requiresAuth: false,
@@ -7362,7 +7471,7 @@ const routes = [
 	{
 		path: "/zhou",
 		name: "MainProjectSelection",
-		component: () => __vitePreload(() => import("./MainProjectSelection-DQWTiQe9.js"), true               ? __vite__mapDeps([11,1,2,3,4,5,12,6,7,13]) : void 0),
+		component: () => __vitePreload(() => import("./MainProjectSelection-N5nu5-Sm.js"), true               ? __vite__mapDeps([16,1,2,3,4,6,17,9,10,11,12,18]) : void 0),
 		meta: {
 			title: "周与春秋 - 主项目选择",
 			requiresAuth: false,
@@ -7372,7 +7481,7 @@ const routes = [
 	{
 		path: "/project/:projectId?",
 		name: "SubProjectSelection",
-		component: () => __vitePreload(() => import("./SubProjectSelection-yXI_R71k.js"), true               ? __vite__mapDeps([14,3,4,5,12,6,7]) : void 0),
+		component: () => __vitePreload(() => import("./SubProjectSelection-BrIjMiby.js"), true               ? __vite__mapDeps([19,3,4,6,17,9,10,11,12]) : void 0),
 		meta: {
 			title: "子项目选择",
 			requiresAuth: false,
@@ -7383,7 +7492,7 @@ const routes = [
 	{
 		path: "/quiz/:chapter?",
 		name: "QuizScreen",
-		component: () => __vitePreload(() => import("./QuizScreen-Cg1iSHRC.js"), true               ? __vite__mapDeps([15,16,1,2,3,4,5,12,6,7,8,9,17]) : void 0),
+		component: () => __vitePreload(() => import("./QuizScreen-BCrjNgBY.js"), true               ? __vite__mapDeps([20,21,1,2,3,4,6,22,23,17,9,10,11,12,13,14,24]) : void 0),
 		meta: {
 			title: "问答测试",
 			requiresAuth: false,
@@ -7394,7 +7503,7 @@ const routes = [
 	{
 		path: "/classical-echo",
 		name: "ClassicalEchoScreen",
-		component: () => __vitePreload(() => import("./ClassicalEchoScreen-DO_OLhM9.js"), true               ? __vite__mapDeps([18,5,12,19]) : void 0),
+		component: () => __vitePreload(() => import("./ClassicalEchoScreen-BZ7p0uPv.js"), true               ? __vite__mapDeps([25,6,26,24,17,27]) : void 0),
 		meta: {
 			title: "古典回响",
 			requiresAuth: false,
@@ -7405,7 +7514,7 @@ const routes = [
 	{
 		path: "/result",
 		name: "ResultScreen",
-		component: () => __vitePreload(() => import("./ResultScreen-C1OgISvH.js"), true               ? __vite__mapDeps([20,16,21,22,1,2,5,12,6,7,23]) : void 0),
+		component: () => __vitePreload(() => import("./ResultScreen-BZgmSq0U.js"), true               ? __vite__mapDeps([28,29,30,21,31,1,2,32,6,17,11,12,33]) : void 0),
 		meta: {
 			title: "您的诗歌",
 			requiresAuth: false,
@@ -7416,11 +7525,47 @@ const routes = [
 	{
 		path: "/gongbi",
 		name: "GongBiView",
-		component: () => __vitePreload(() => import("./GongBiView-B6VXOusx.js"), true               ? __vite__mapDeps([24,16,21,22,1,2,5,12,25]) : void 0),
+		component: () => __vitePreload(() => import("./GongBiView-CcJLGuQT.js"), true               ? __vite__mapDeps([34,35,21,30,31,1,2,5,6,17,36]) : void 0),
 		meta: {
 			title: "共笔 - 与陆家明一起创作",
 			requiresAuth: false,
 			step: 6
+		}
+	},
+	{
+		path: "/login",
+		name: "Login",
+		component: () => __vitePreload(() => import("./LoginView-BSrO_FZr.js"), true               ? __vite__mapDeps([37,5,9,10,38]) : void 0),
+		meta: {
+			title: "登录/注册 - 陆家花园",
+			requiresAuth: false
+		}
+	},
+	{
+		path: "/my-works",
+		name: "MyWorks",
+		component: () => __vitePreload(() => import("./MyWorksView-Ctx0-L0x.js"), true               ? __vite__mapDeps([39,35,29,30,21,31,1,2,32,3,4,5,26,24,22,23,7,8,9,10,11,12,13,14,40]) : void 0),
+		meta: {
+			title: "我的作品 - 陆家花园",
+			requiresAuth: true
+		}
+	},
+	{
+		path: "/terms",
+		name: "Terms",
+		component: () => __vitePreload(() => import("./TermsView-CV1Zg8vX.js"), true               ? __vite__mapDeps([41,9,10,42]) : void 0),
+		meta: {
+			title: "用户协议 - 陆家花园",
+			requiresAuth: false
+		}
+	},
+	{
+		path: "/privacy",
+		name: "Privacy",
+		component: () => __vitePreload(() => import("./PrivacyView-BB1fF3Gz.js"), true               ? __vite__mapDeps([43,9,10,44]) : void 0),
+		meta: {
+			title: "隐私政策 - 陆家花园",
+			requiresAuth: false
 		}
 	},
 	{
@@ -7439,6 +7584,16 @@ const router = createRouter({
 });
 router.beforeEach((to, from, next) => {
 	if (to.meta.title) document.title = to.meta.title;
+	if (to.meta.requiresAuth) {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			console.warn("Route guard: 访问需要认证的页面，但未登录，重定向到登录页");
+			return next({
+				path: "/login",
+				query: { redirect: to.fullPath }
+			});
+		}
+	}
 	if (to.meta.requiresProject) {
 		const projectId = to.params.projectId;
 		if (!projectId) {
@@ -7461,11 +7616,177 @@ router.afterEach((to, from) => {
 });
 
 //#endregion
+//#region src/shared/services/api.ts
+const DEFAULT_CONFIG = {
+	timeout: 1e4,
+	retries: 3,
+	retryDelay: 1e3,
+	signal: new AbortController().signal
+};
+/**
+* API客户端类
+* 提供统一的HTTP请求封装和错误处理
+*/
+var ApiClient = class {
+	constructor(baseURL = "/api", config = {}) {
+		this.baseURL = baseURL.replace(/\/$/, "");
+		this.defaultConfig = {
+			...DEFAULT_CONFIG,
+			...config
+		};
+	}
+	/**
+	* 设置401处理函数（由外部注入，避免循环依赖）
+	*/
+	set401Handler(handler) {
+		this.on401Handler = handler;
+	}
+	/**
+	* 执行HTTP请求
+	*/
+	async request(endpoint, options = {}, config = {}) {
+		const requestConfig = {
+			...this.defaultConfig,
+			...config
+		};
+		const url = `${this.baseURL}${endpoint}`;
+		const headers = new Headers({
+			"Content-Type": "application/json",
+			...options.headers
+		});
+		const abortController = new AbortController();
+		const timeoutId = setTimeout(() => abortController.abort(), requestConfig.timeout);
+		const requestOptions = {
+			...options,
+			headers,
+			signal: config.signal || abortController.signal
+		};
+		let lastError;
+		for (let attempt = 0; attempt <= requestConfig.retries; attempt++) try {
+			const response = await fetch(url, requestOptions);
+			clearTimeout(timeoutId);
+			if (response.status === 401) {
+				console.warn("[ApiClient] 检测到401认证失败，清除token并触发401处理");
+				localStorage.removeItem("token");
+				this.on401Handler?.();
+				const errorBody = await this.parseErrorResponse(response);
+				throw new ApiError("HTTP_401", errorBody.message || "认证失败，请重新登录", 401, errorBody);
+			}
+			if (!response.ok) {
+				const errorBody = await this.parseErrorResponse(response);
+				throw new ApiError(errorBody.code || `HTTP_${response.status}`, errorBody.message || response.statusText, response.status, errorBody);
+			}
+			return await response.json();
+		} catch (error) {
+			lastError = error instanceof Error ? error : new Error(String(error));
+			if (attempt === requestConfig.retries || !this.shouldRetry(error)) throw this.createApiError(lastError, url);
+			await this.delay(requestConfig.retryDelay * Math.pow(2, attempt));
+		}
+		throw this.createApiError(lastError, url);
+	}
+	/**
+	* 解析错误响应
+	*/
+	async parseErrorResponse(response) {
+		try {
+			return await response.json();
+		} catch {
+			return { message: response.statusText };
+		}
+	}
+	/**
+	* 判断是否应该重试
+	*/
+	shouldRetry(error) {
+		if (error.name === "AbortError") return false;
+		if (error instanceof ApiError) return error.statusCode >= 500 || error.statusCode === 0;
+		return true;
+	}
+	/**
+	* 创建标准化的API错误
+	*/
+	createApiError(error, url) {
+		if (error instanceof ApiError) return error;
+		if (error.name === "AbortError") return new ApiError("REQUEST_TIMEOUT", "请求超时", 408, { url });
+		return new ApiError("NETWORK_ERROR", "网络连接失败，请检查网络连接", 0, {
+			originalError: error.message,
+			url
+		});
+	}
+	/**
+	* 延迟函数
+	*/
+	delay(ms) {
+		return new Promise((resolve$1) => setTimeout(resolve$1, ms));
+	}
+	async get(endpoint, config) {
+		return this.request(endpoint, { method: "GET" }, config);
+	}
+	async post(endpoint, data, config) {
+		return this.request(endpoint, {
+			method: "POST",
+			body: data ? JSON.stringify(data) : void 0
+		}, config);
+	}
+	async put(endpoint, data, config) {
+		return this.request(endpoint, {
+			method: "PUT",
+			body: data ? JSON.stringify(data) : void 0
+		}, config);
+	}
+	async delete(endpoint, config) {
+		return this.request(endpoint, { method: "DELETE" }, config);
+	}
+};
+/**
+* 自定义API错误类
+*/
+var ApiError = class extends Error {
+	constructor(code, message, statusCode, details) {
+		super(message);
+		this.code = code;
+		this.statusCode = statusCode;
+		this.details = details;
+		this.name = "ApiError";
+	}
+};
+const apiClient = new ApiClient();
+/**
+* 判断是否为API错误
+*/
+function isApiError(error) {
+	return error instanceof ApiError;
+}
+/**
+* 获取用户友好的错误消息
+*/
+function getUserFriendlyErrorMessage(error) {
+	if (isApiError(error)) switch (error.code) {
+		case "REQUEST_TIMEOUT": return "请求超时，请检查网络连接后重试";
+		case "NETWORK_ERROR": return "网络连接失败，请检查网络后重试";
+		case "HTTP_404": return "请求的资源不存在";
+		case "HTTP_500": return "服务器内部错误，请稍后重试";
+		default: return error.message || "未知错误";
+	}
+	return error?.message || "操作失败，请重试";
+}
+
+//#endregion
 //#region src/main.ts
 const app = createApp(App_default);
 app.use(createPinia());
 app.use(router);
+apiClient.set401Handler(() => {
+	const currentPath = window.location.pathname + window.location.search;
+	if (currentPath !== "/login") {
+		console.warn("[401拦截器] Token已失效，跳转到登录页");
+		router.push({
+			path: "/login",
+			query: { redirect: currentPath }
+		});
+	}
+});
 app.mount("#app");
 
 //#endregion
-export { withCtx as A, withDirectives as B, reactive as C, ref as D, unref as E, normalizeClass as F, normalizeStyle as G, toDisplayString as H, useRoute as b, useRouter as c, __plugin_vue_export_helper_default as d, defineStore as e, Transition as f, vModelText as g, vShow as h, withModifiers as i, Fragment as j, Teleport as k, computed as l, createBaseVNode as m, createBlock as n, createCommentVNode as o, createElementBlock as p, createTextVNode as q, createVNode as r, defineComponent as s, onMounted as t, onUnmounted as u, openBlock as v, renderList as w, renderSlot as x, resolveDynamicComponent as y, watch as z };
+export { defineComponent as A, onMounted as B, onUnmounted as C, openBlock as D, renderList as E, renderSlot as F, resolveComponent as G, resolveDynamicComponent as H, watch as I, withCtx as J, withDirectives as K, reactive as L, ref as M, unref as N, normalizeClass as O, normalizeStyle as P, toDisplayString as Q, ApiClient as b, ApiError as c, apiClient as d, getUserFriendlyErrorMessage as e, isApiError as f, useRoute as g, useRouter as h, __plugin_vue_export_helper_default as i, defineStore as j, Transition as k, vModelCheckbox as l, vModelText as m, vShow as n, withKeys as o, withModifiers as p, Fragment as q, Teleport as r, computed as s, createBaseVNode as t, createBlock as u, createCommentVNode as v, createElementBlock as w, createStaticVNode as x, createTextVNode as y, createVNode as z };

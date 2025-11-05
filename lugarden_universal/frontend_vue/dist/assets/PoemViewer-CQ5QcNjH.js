@@ -1,5 +1,5 @@
-import { D as ref, E as unref, F as normalizeClass, G as normalizeStyle, H as toDisplayString, d as __plugin_vue_export_helper_default, i as withModifiers, j as Fragment, l as computed, m as createBaseVNode, n as createBlock, o as createCommentVNode, p as createElementBlock, q as createTextVNode, r as createVNode, s as defineComponent, v as openBlock, w as renderList, y as resolveDynamicComponent } from "./index-B1xTxyf1.js";
-import { b as render$2 } from "./ArrowDownTrayIcon-WdJwsKtb.js";
+import { A as defineComponent, D as openBlock, E as renderList, H as resolveDynamicComponent, M as ref, N as unref, O as normalizeClass, P as normalizeStyle, Q as toDisplayString, i as __plugin_vue_export_helper_default, p as withModifiers, q as Fragment, s as computed, t as createBaseVNode, u as createBlock, v as createCommentVNode, w as createElementBlock, y as createTextVNode, z as createVNode } from "./index-0cj-Hd_i.js";
+import { b as render$2 } from "./ArrowDownTrayIcon-CKLH6yP-.js";
 
 //#region node_modules/@heroicons/vue/24/outline/esm/CheckIcon.js
 function render$3(_ctx, _cache) {
@@ -194,6 +194,10 @@ var PoemViewer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
 			type: Boolean,
 			default: false
 		},
+		showShare: {
+			type: Boolean,
+			default: false
+		},
 		showAiLabel: {
 			type: Boolean,
 			default: false
@@ -280,7 +284,7 @@ var PoemViewer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
 				handler: sharePoem,
 				disabled: isActionLoading.value,
 				title: "分享诗歌",
-				visible: true
+				visible: props.showShare
 			},
 			{
 				key: "download",
@@ -492,7 +496,7 @@ var PoemViewer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
 
 //#endregion
 //#region src/modules/zhou/components/PoemViewer.vue
-var PoemViewer_default = /* @__PURE__ */ __plugin_vue_export_helper_default(PoemViewer_vue_vue_type_script_setup_true_lang_default, [["__scopeId", "data-v-0e77c47f"]]);
+var PoemViewer_default = /* @__PURE__ */ __plugin_vue_export_helper_default(PoemViewer_vue_vue_type_script_setup_true_lang_default, [["__scopeId", "data-v-66b24147"]]);
 
 //#endregion
 export { PoemViewer_default as b, render$5 as c };

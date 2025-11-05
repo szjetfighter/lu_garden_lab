@@ -412,6 +412,90 @@
 
 ---
 
+#### - [x] 任务D.6：删除账号安全性强化（密码验证）
+
+**核心思想**：在删除账号前增加密码验证步骤，防止他人操作已登录设备误删账号，提升安全性。
+
+**问题背景**：
+- 原实现：仅需输入用户名确认即可删除
+- 安全风险：他人可能操作已登录设备（如家人、朋友借用手机）
+- 用户反馈："只要输入用户名就删除，不太好"
+
+**改进方案**：
+- 采用双重验证：**先验证密码 → 再确认用户名**
+- 验证逻辑：
+  1. 用户输入密码 → 后端验证密码哈希
+  2. 验证通过后，用户输入用户名 → 后端验证用户名匹配
+  3. 两项验证都通过 → 执行软删除
+
+**交付物**：
+- ✅ 后端：增加密码验证函数（verifyPassword）
+- ✅ 后端：DELETE接口增加密码参数校验
+- ✅ 前端：删除对话框增加密码输入框
+- ✅ 前端：API调用增加密码参数
+
+**验收标准**：
+- [x] 删除对话框：先要求输入密码，再要求输入用户名 ✓
+- [x] 密码错误：显示"密码错误"提示，无法继续 ✓
+- [x] 用户名错误：显示"用户名不匹配"提示，无法继续 ✓
+- [x] 两项都正确：成功删除账号并退出登录 ✓
+- [x] 按钮禁用：密码和用户名都填写后才可点击"确认删除" ✓
+
+**设计亮点**：
+1. **分步验证**：密码验证身份 → 用户名确认意图
+2. **安全分层**：
+   - 第一层：身份验证（密码）→ 防止他人操作
+   - 第二层：意图确认（用户名）→ 防止误操作
+3. **复用现有工具**：使用`comparePassword`和`bcrypt`验证密码
+
+**实际改动文件**：
+- ✅ `lugarden_universal/application/src/services/deleteAccountService.js`（修改，+22行）
+  - 导入comparePassword函数
+  - 新增verifyPassword函数（验证用户密码）
+- ✅ `lugarden_universal/application/src/routes/deleteAccount.js`（修改，+17行）
+  - 增加password参数校验
+  - 调用verifyPassword验证密码
+  - 密码错误返回400状态码和错误信息
+- ✅ `lugarden_universal/frontend_vue/src/core/auth/services/authApi.ts`（修改，+4行）
+  - DeleteAccountRequest增加password字段
+  - deleteAccount函数增加password参数
+  - 请求body包含{password, username}
+- ✅ `lugarden_universal/frontend_vue/src/core/auth/views/MyWorksView.vue`（修改，+22行）
+  - 新增confirmPassword响应式变量
+  - 删除对话框增加密码输入框（type="password"）
+  - 按钮禁用逻辑：!confirmPassword || !confirmUsername
+  - showDeleteConfirm/closeDeleteModal清空密码字段
+  - confirmDelete移除前端用户名验证（后端已验证）
+
+**完成状态**：✅ 已完成（2025-11-05）
+**Git提交**：[待提交]
+
+**执行步骤**：
+- [x] 步骤D.6.1：后端增加密码验证函数 ✓
+  - 在deleteAccountService.js添加verifyPassword
+  - 查询用户密码哈希
+  - 使用comparePassword验证
+- [x] 步骤D.6.2：后端路由增加密码验证 ✓
+  - DELETE接口增加password参数校验
+  - 先验证密码，再验证用户名
+  - 分别返回对应错误信息
+- [x] 步骤D.6.3：前端UI增加密码输入框 ✓
+  - 在用户名输入框前添加密码框
+  - 标签说明："请先输入密码验证身份"
+  - type="password"隐藏输入内容
+- [x] 步骤D.6.4：前端API增加密码参数 ✓
+  - deleteAccount函数签名增加password参数
+  - 请求body包含password和username
+- [x] 步骤D.6.5：前端按钮状态调整 ✓
+  - disabled条件：!confirmPassword || !confirmUsername
+  - 确保两项都填写后才可提交
+- [x] 步骤D.6.6：用户测试验收 ✓
+  - 测试通过：密码+用户名验证
+
+**风险评估**：✅ 无风险，安全性提升
+
+---
+
 ## 合规检查清单
 
 ### AI内容标识合规

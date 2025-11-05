@@ -143,9 +143,20 @@
               <li>您将无法再次登录此账号</li>
               <li>您的作品将匿名化保留在平台上</li>
             </ul>
-            
+
             <div class="confirm-input">
-              <label for="confirm-username">请输入用户名 <strong>{{ username }}</strong> 以确认删除：</label>
+              <label for="confirm-password">请先输入密码验证身份：</label>
+              <input
+                id="confirm-password"
+                v-model="confirmPassword"
+                type="password"
+                placeholder="输入密码"
+                @keyup.enter="confirmDelete"
+              />
+            </div>
+
+            <div class="confirm-input">
+              <label for="confirm-username">再输入用户名 <strong>{{ username }}</strong> 确认删除：</label>
               <input
                 id="confirm-username"
                 v-model="confirmUsername"
@@ -153,18 +164,19 @@
                 placeholder="输入用户名"
                 @keyup.enter="confirmDelete"
               />
-              <p v-if="deleteError" class="error-message">{{ deleteError }}</p>
             </div>
+            
+            <p v-if="deleteError" class="error-message">{{ deleteError }}</p>
           </div>
           
           <div class="modal-footer">
             <button @click="closeDeleteModal" class="cancel-btn" :disabled="isDeleting">
               取消
             </button>
-            <button 
-              @click="confirmDelete" 
+            <button
+              @click="confirmDelete"
               class="confirm-delete-btn"
-              :disabled="isDeleting || !confirmUsername"
+              :disabled="isDeleting || !confirmPassword || !confirmUsername"
             >
               {{ isDeleting ? '删除中...' : '确认删除' }}
             </button>
@@ -184,6 +196,11 @@ import { PoemViewer } from '@/modules/zhou/components'
 import { getMyWorks, clearToken, getToken, deleteAccount } from '../services/authApi'
 import type { Work } from '../services/authApi'
 
+// 扩展Work类型，添加UI状态
+interface WorkWithExpanded extends Work {
+  isExpanded: boolean
+}
+
 // 路由
 const router = useRouter()
 
@@ -191,11 +208,12 @@ const router = useRouter()
 const loading = ref(true)
 const error = ref(false)
 const errorMessage = ref('')
-const works = ref<Work[]>([])
+const works = ref<WorkWithExpanded[]>([])
 const isMenuOpen = ref(false)
 
 // 删除账号相关状态
 const isDeleteModalOpen = ref(false)
+const confirmPassword = ref('')
 const confirmUsername = ref('')
 const isDeleting = ref(false)
 const deleteError = ref('')
@@ -242,7 +260,7 @@ const loadWorks = async () => {
 }
 
 // 切换作品展开/收起状态
-const toggleWork = (work: any) => {
+const toggleWork = (work: WorkWithExpanded) => {
   work.isExpanded = !work.isExpanded
 }
 
@@ -295,6 +313,7 @@ const handleClickOutside = (event: MouseEvent) => {
 // 删除账号相关函数
 const showDeleteConfirm = () => {
   isDeleteModalOpen.value = true
+  confirmPassword.value = ''
   confirmUsername.value = ''
   deleteError.value = ''
 }
@@ -302,23 +321,18 @@ const showDeleteConfirm = () => {
 const closeDeleteModal = () => {
   if (isDeleting.value) return // 删除中不允许关闭
   isDeleteModalOpen.value = false
+  confirmPassword.value = ''
   confirmUsername.value = ''
   deleteError.value = ''
 }
 
 const confirmDelete = async () => {
-  // 验证用户名
-  if (confirmUsername.value !== username.value) {
-    deleteError.value = '用户名不匹配，请重新输入'
-    return
-  }
-
   deleteError.value = ''
   isDeleting.value = true
 
   try {
-    const response = await deleteAccount(confirmUsername.value)
-    
+    const response = await deleteAccount(confirmPassword.value, confirmUsername.value)
+
     if (response.success) {
       // 删除成功：清除token并跳转到登录页
       clearToken()

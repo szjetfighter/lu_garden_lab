@@ -292,6 +292,7 @@ export async function saveGongBiWork(data: SaveGongBiWorkRequest): Promise<SaveW
 // ================================
 
 export interface DeleteAccountRequest {
+  password: string
   username: string
 }
 
@@ -303,9 +304,10 @@ export interface DeleteAccountResponse {
 
 /**
  * 删除账号
+ * @param password - 用户密码（用于身份验证）
  * @param username - 用户输入的用户名（用于二次确认）
  */
-export async function deleteAccount(username: string): Promise<DeleteAccountResponse> {
+export async function deleteAccount(password: string, username: string): Promise<DeleteAccountResponse> {
   try {
     const token = localStorage.getItem('token')
     if (!token) {
@@ -321,7 +323,7 @@ export async function deleteAccount(username: string): Promise<DeleteAccountResp
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ username })
+      body: JSON.stringify({ password, username })
     })
 
     // 检测401：认证失败

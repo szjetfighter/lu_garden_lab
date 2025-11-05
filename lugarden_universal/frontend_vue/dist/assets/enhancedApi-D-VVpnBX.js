@@ -1,146 +1,5 @@
-//#region src/shared/services/api.ts
-const DEFAULT_CONFIG = {
-	timeout: 1e4,
-	retries: 3,
-	retryDelay: 1e3,
-	signal: new AbortController().signal
-};
-/**
-* API客户端类
-* 提供统一的HTTP请求封装和错误处理
-*/
-var ApiClient = class {
-	constructor(baseURL = "/api", config = {}) {
-		this.baseURL = baseURL.replace(/\/$/, "");
-		this.defaultConfig = {
-			...DEFAULT_CONFIG,
-			...config
-		};
-	}
-	/**
-	* 执行HTTP请求
-	*/
-	async request(endpoint, options = {}, config = {}) {
-		const requestConfig = {
-			...this.defaultConfig,
-			...config
-		};
-		const url = `${this.baseURL}${endpoint}`;
-		const headers = new Headers({
-			"Content-Type": "application/json",
-			...options.headers
-		});
-		const abortController = new AbortController();
-		const timeoutId = setTimeout(() => abortController.abort(), requestConfig.timeout);
-		const requestOptions = {
-			...options,
-			headers,
-			signal: config.signal || abortController.signal
-		};
-		let lastError;
-		for (let attempt = 0; attempt <= requestConfig.retries; attempt++) try {
-			const response = await fetch(url, requestOptions);
-			clearTimeout(timeoutId);
-			if (!response.ok) {
-				const errorBody = await this.parseErrorResponse(response);
-				throw new ApiError(errorBody.code || `HTTP_${response.status}`, errorBody.message || response.statusText, response.status, errorBody);
-			}
-			return await response.json();
-		} catch (error) {
-			lastError = error instanceof Error ? error : new Error(String(error));
-			if (attempt === requestConfig.retries || !this.shouldRetry(error)) throw this.createApiError(lastError, url);
-			await this.delay(requestConfig.retryDelay * Math.pow(2, attempt));
-		}
-		throw this.createApiError(lastError, url);
-	}
-	/**
-	* 解析错误响应
-	*/
-	async parseErrorResponse(response) {
-		try {
-			return await response.json();
-		} catch {
-			return { message: response.statusText };
-		}
-	}
-	/**
-	* 判断是否应该重试
-	*/
-	shouldRetry(error) {
-		if (error.name === "AbortError") return false;
-		if (error instanceof ApiError) return error.statusCode >= 500 || error.statusCode === 0;
-		return true;
-	}
-	/**
-	* 创建标准化的API错误
-	*/
-	createApiError(error, url) {
-		if (error instanceof ApiError) return error;
-		if (error.name === "AbortError") return new ApiError("REQUEST_TIMEOUT", "请求超时", 408, { url });
-		return new ApiError("NETWORK_ERROR", "网络连接失败，请检查网络连接", 0, {
-			originalError: error.message,
-			url
-		});
-	}
-	/**
-	* 延迟函数
-	*/
-	delay(ms) {
-		return new Promise((resolve) => setTimeout(resolve, ms));
-	}
-	async get(endpoint, config) {
-		return this.request(endpoint, { method: "GET" }, config);
-	}
-	async post(endpoint, data, config) {
-		return this.request(endpoint, {
-			method: "POST",
-			body: data ? JSON.stringify(data) : void 0
-		}, config);
-	}
-	async put(endpoint, data, config) {
-		return this.request(endpoint, {
-			method: "PUT",
-			body: data ? JSON.stringify(data) : void 0
-		}, config);
-	}
-	async delete(endpoint, config) {
-		return this.request(endpoint, { method: "DELETE" }, config);
-	}
-};
-/**
-* 自定义API错误类
-*/
-var ApiError = class extends Error {
-	constructor(code, message, statusCode, details) {
-		super(message);
-		this.code = code;
-		this.statusCode = statusCode;
-		this.details = details;
-		this.name = "ApiError";
-	}
-};
-const apiClient = new ApiClient();
-/**
-* 判断是否为API错误
-*/
-function isApiError(error) {
-	return error instanceof ApiError;
-}
-/**
-* 获取用户友好的错误消息
-*/
-function getUserFriendlyErrorMessage(error) {
-	if (isApiError(error)) switch (error.code) {
-		case "REQUEST_TIMEOUT": return "请求超时，请检查网络连接后重试";
-		case "NETWORK_ERROR": return "网络连接失败，请检查网络后重试";
-		case "HTTP_404": return "请求的资源不存在";
-		case "HTTP_500": return "服务器内部错误，请稍后重试";
-		default: return error.message || "未知错误";
-	}
-	return error?.message || "操作失败，请重试";
-}
+import { b as ApiClient, c as ApiError } from "./index-0cj-Hd_i.js";
 
-//#endregion
 //#region src/shared/services/interceptors.ts
 var InterceptorManager = class {
 	constructor() {
@@ -191,6 +50,13 @@ var InterceptorManager = class {
 */
 const authInterceptor = (config) => {
 	if (config.url.includes("/admin/")) config.headers["X-Requested-With"] = "XMLHttpRequest";
+	const token = localStorage.getItem("token");
+	if (token) {
+		if (config.url.includes("/my-works") || config.url.includes("/auth/delete-account")) {
+			if (!config.headers) config.headers = {};
+			config.headers["Authorization"] = `Bearer ${token}`;
+		}
+	}
 	return config;
 };
 /**
@@ -303,8 +169,8 @@ function createCacheInterceptor(cacheDuration = 300 * 1e3) {
 * 处理宇宙门户的所有API操作
 */
 var PortalApiService = class {
-	constructor(apiClient$1) {
-		this.apiClient = apiClient$1;
+	constructor(apiClient) {
+		this.apiClient = apiClient;
 	}
 	/**
 	* 获取宇宙列表
@@ -538,8 +404,8 @@ var EnhancedApiClient = class extends ApiClient {
 * 宇宙内容服务
 */
 var UniverseService = class {
-	constructor(apiClient$1) {
-		this.apiClient = apiClient$1;
+	constructor(apiClient) {
+		this.apiClient = apiClient;
 	}
 	/**
 	* 获取所有宇宙列表
@@ -559,8 +425,8 @@ var UniverseService = class {
 * AI功能服务
 */
 var AIService = class {
-	constructor(apiClient$1) {
-		this.apiClient = apiClient$1;
+	constructor(apiClient) {
+		this.apiClient = apiClient;
 	}
 	/**
 	* 请求诗歌解读
@@ -627,4 +493,4 @@ function getApiServices(options) {
 }
 
 //#endregion
-export { getApiServices as b, getUserFriendlyErrorMessage as c, isApiError as d };
+export { getApiServices as b };

@@ -5,7 +5,7 @@
 
 import express from 'express';
 import { deleteUserAccount, verifyUsernameMatch } from '../services/deleteAccountService.js';
-import { authenticateToken } from '../middleware/auth.js';
+import { requireAuth } from '../middlewares/auth.js';
 
 const router = express.Router();
 
@@ -13,20 +13,30 @@ const router = express.Router();
  * 删除用户账号
  * 需要JWT认证 + 用户名二次确认
  */
-router.delete('/user/delete', authenticateToken, async (req, res) => {
+router.delete('/user/delete', requireAuth, async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const { username } = req.body;
+    const userId = req.userId;
+    const { password, username } = req.body;
 
-    // 验证是否提供了用户名
-    if (!username) {
+    // 验证是否提供了密码和用户名
+    if (!password || !username) {
       return res.status(400).json({
         success: false,
-        message: '请输入用户名以确认删除'
+        message: '请提供密码和用户名以确认删除'
       });
     }
 
-    // 验证用户名是否匹配
+    // 先验证密码
+    const { verifyPassword } = await import('../services/deleteAccountService.js');
+    const isPasswordValid = await verifyPassword(userId, password);
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: '密码错误'
+      });
+    }
+
+    // 再验证用户名是否匹配
     const isMatch = await verifyUsernameMatch(userId, username);
     if (!isMatch) {
       return res.status(400).json({

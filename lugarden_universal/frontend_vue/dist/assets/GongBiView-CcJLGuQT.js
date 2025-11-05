@@ -1,14 +1,12 @@
-import { B as withDirectives, D as ref, F as normalizeClass, H as toDisplayString, b as useRoute, c as useRouter, d as __plugin_vue_export_helper_default, g as vModelText, m as createBaseVNode, o as createCommentVNode, p as createElementBlock, r as createVNode, s as defineComponent, t as onMounted, v as openBlock } from "./index-B1xTxyf1.js";
-import "./ArrowDownTrayIcon-WdJwsKtb.js";
-import { b as PoemViewer_default } from "./PoemViewer-BLcdSmCy.js";
-import { b as ErrorState_default } from "./ErrorState-DE6rNWWA.js";
-import "./enhancedApi-9fV76Vys.js";
-import { b as useZhouStore } from "./zhou-BIBg485p.js";
+import { A as defineComponent, B as onMounted, D as openBlock, G as resolveComponent, J as withCtx, K as withDirectives, M as ref, O as normalizeClass, Q as toDisplayString, g as useRoute, h as useRouter, i as __plugin_vue_export_helper_default, m as vModelText, s as computed, t as createBaseVNode, v as createCommentVNode, w as createElementBlock, y as createTextVNode, z as createVNode } from "./index-0cj-Hd_i.js";
+import { g as isAuthenticated, j as saveGongBiWork } from "./authApi-DMUWcRXB.js";
+import { b as lujiaming_icon_default } from "./lujiaming_icon-D6-oGle1.js";
+import "./ArrowDownTrayIcon-CKLH6yP-.js";
+import { b as PoemViewer_default } from "./PoemViewer-CQ5QcNjH.js";
+import { b as ErrorState_default } from "./ErrorState-CQCVaoCj.js";
+import "./enhancedApi-D-VVpnBX.js";
+import { b as useZhouStore } from "./zhou-DNmAmoD0.js";
 
-//#region /lujiaming_icon.png
-var lujiaming_icon_default = "/lujiaming_icon.png";
-
-//#endregion
 //#region src/modules/zhou/services/gongBiApi.ts
 var GongBiApiError = class extends Error {
 	constructor(code, message, details) {
@@ -19,7 +17,9 @@ var GongBiApiError = class extends Error {
 	}
 };
 /**
+
 * 调用共笔API，生成陆家明的回应诗歌
+
 */
 async function createGongBi(request) {
 	try {
@@ -50,7 +50,11 @@ async function createGongBi(request) {
 			title: data.poem.title,
 			tokens: data.metadata?.tokens || 0
 		});
-		return data.poem;
+		const poemWithMetadata = {
+			...data.poem,
+			metadata: data.metadata
+		};
+		return poemWithMetadata;
 	} catch (error) {
 		console.error("[gongBiApi] 共笔请求失败:", error);
 		if (error instanceof GongBiApiError) throw error;
@@ -120,6 +124,27 @@ const _hoisted_16 = {
 	key: 3,
 	class: "space-y-6"
 };
+const _hoisted_17 = {
+	class: "save-status-tip animate-fadeInUp",
+	style: { "animation-delay": "0.3s" }
+};
+const _hoisted_18 = {
+	key: 0,
+	class: "tip-card tip-saving"
+};
+const _hoisted_19 = {
+	key: 1,
+	class: "tip-card tip-success"
+};
+const _hoisted_20 = {
+	key: 2,
+	class: "tip-card tip-error"
+};
+const _hoisted_21 = { class: "tip-text" };
+const _hoisted_22 = {
+	key: 3,
+	class: "tip-card tip-info"
+};
 var GongBiView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
 	__name: "GongBiView",
 	setup(__props) {
@@ -132,6 +157,10 @@ var GongBiView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
 		const showSourcePoem = ref(true);
 		const sourcePoem = ref(null);
 		const generatedPoem = ref(null);
+		const saving = ref(false);
+		const saved = ref(false);
+		const saveError = ref(null);
+		const isLoggedIn = computed(() => isAuthenticated());
 		const urlParams = ref(null);
 		onMounted(async () => {
 			const chapterParam = route.query.chapter;
@@ -182,6 +211,8 @@ var GongBiView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
 				});
 				generatedPoem.value = poem;
 				console.log("[GongBiView] 诗歌生成成功:", poem.title);
+				if (isLoggedIn.value) await handleAutoSave();
+				else storePendingWork();
 			} catch (err) {
 				console.error("[GongBiView] 生成诗歌失败:", err);
 				error.value = getGongBiErrorMessage(err);
@@ -189,11 +220,66 @@ var GongBiView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
 				loading.value = false;
 			}
 		};
+		const storePendingWork = () => {
+			if (!generatedPoem.value || !urlParams.value) return;
+			try {
+				const pendingWork = {
+					poem: generatedPoem.value,
+					urlParams: urlParams.value,
+					timestamp: Date.now()
+				};
+				localStorage.setItem("pending_gongbi_work", JSON.stringify(pendingWork));
+				console.log("[GongBiView] 临时数据已存储，等待登录后保存");
+			} catch (err) {
+				console.error("[GongBiView] 存储临时数据失败:", err);
+			}
+		};
+		const handleAutoSave = async () => {
+			if (!generatedPoem.value || !urlParams.value) return;
+			saving.value = true;
+			saved.value = false;
+			saveError.value = null;
+			try {
+				const sourcePoemId = `zhou_${urlParams.value.chapter}_${urlParams.value.poem}`;
+				const mappingId = `${urlParams.value.chapter}_${urlParams.value.pattern}`;
+				console.log("[GongBiView] 自动保存作品:", {
+					sourcePoemId,
+					mappingId,
+					hasMetadata: !!generatedPoem.value.metadata
+				});
+				const result = await saveGongBiWork({
+					sourcePoemId,
+					mappingId,
+					userInput: generatedPoem.value.userFeeling,
+					poemTitle: generatedPoem.value.title,
+					poemContent: generatedPoem.value.content,
+					poemQuote: generatedPoem.value.quote || null,
+					poemQuoteSource: generatedPoem.value.quoteSource || null,
+					conversationId: generatedPoem.value.metadata?.conversationId || "",
+					messageId: generatedPoem.value.metadata?.messageId || "",
+					usageMetadata: generatedPoem.value.metadata || {}
+				});
+				if (result.success) {
+					saved.value = true;
+					console.log("[GongBiView] 作品保存成功");
+				} else {
+					saveError.value = result.error || "保存失败";
+					console.error("[GongBiView] 作品保存失败:", result.error);
+				}
+			} catch (err) {
+				saveError.value = err.message || "保存失败";
+				console.error("[GongBiView] 作品保存异常:", err);
+			} finally {
+				saving.value = false;
+			}
+		};
 		const resetAndRetry = () => {
 			userFeeling.value = "";
 			generatedPoem.value = null;
 			error.value = null;
 			showSourcePoem.value = true;
+			saved.value = false;
+			saveError.value = null;
 		};
 		const goBack = () => {
 			if (urlParams.value) {
@@ -206,6 +292,7 @@ var GongBiView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
 			} else router.back();
 		};
 		return (_ctx, _cache) => {
+			const _component_router_link = resolveComponent("router-link");
 			return openBlock(), createElementBlock("div", _hoisted_1, [createBaseVNode("div", _hoisted_2, [createBaseVNode("div", _hoisted_3, [
 				error.value && !loading.value ? (openBlock(), createElementBlock("div", _hoisted_4, [createVNode(ErrorState_default, {
 					"error-type": "unknown",
@@ -276,34 +363,67 @@ var GongBiView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
 					alt: "陆家明",
 					class: "loading-icon"
 				})], -1), createBaseVNode("p", { class: "loading-text" }, "诗渐浓，君稍待", -1)]))) : createCommentVNode("", true),
-				generatedPoem.value && !loading.value ? (openBlock(), createElementBlock("div", _hoisted_16, [createVNode(PoemViewer_default, {
-					"poem-title": generatedPoem.value.title,
-					"quote-text": generatedPoem.value.quote,
-					"quote-citation": generatedPoem.value.quoteSource,
-					"main-text": generatedPoem.value.content,
-					"animation-delay": "0.2s",
-					"show-actions": true,
-					"show-download": true,
-					"show-ai-label": true
-				}, null, 8, [
-					"poem-title",
-					"quote-text",
-					"quote-citation",
-					"main-text"
-				]), createBaseVNode("div", {
-					class: "grid grid-cols-1 md:grid-cols-2 gap-4 animate-fadeInUp",
-					style: { "animation-delay": "0.2s" }
-				}, [createBaseVNode("button", {
-					onClick: resetAndRetry,
-					class: "btn-control-base btn-control-hover px-6 py-3 rounded-lg font-medium text-body",
-					style: {
-						"background-color": "var(--bg-secondary)",
-						"color": "var(--text-secondary)"
-					}
-				}, " 再写一首 "), createBaseVNode("button", {
-					onClick: goBack,
-					class: "btn-restart px-6 py-3 rounded-lg font-medium text-body"
-				}, " 返回诗歌页 ")])])) : createCommentVNode("", true)
+				generatedPoem.value && !loading.value ? (openBlock(), createElementBlock("div", _hoisted_16, [
+					createVNode(PoemViewer_default, {
+						"poem-title": generatedPoem.value.title,
+						"quote-text": generatedPoem.value.quote,
+						"quote-citation": generatedPoem.value.quoteSource,
+						"main-text": generatedPoem.value.content,
+						"animation-delay": "0.2s",
+						"show-actions": true,
+						"show-download": true,
+						"show-ai-label": true
+					}, null, 8, [
+						"poem-title",
+						"quote-text",
+						"quote-citation",
+						"main-text"
+					]),
+					createBaseVNode("div", _hoisted_17, [isLoggedIn.value && saving.value ? (openBlock(), createElementBlock("div", _hoisted_18, _cache[6] || (_cache[6] = [createBaseVNode("span", { class: "tip-icon" }, "⏳", -1), createBaseVNode("span", { class: "tip-text" }, "正在保存到作品集...", -1)]))) : isLoggedIn.value && saved.value ? (openBlock(), createElementBlock("div", _hoisted_19, [
+						_cache[8] || (_cache[8] = createBaseVNode("span", { class: "tip-icon" }, "✅", -1)),
+						_cache[9] || (_cache[9] = createBaseVNode("span", { class: "tip-text" }, "已保存到我的作品集", -1)),
+						createVNode(_component_router_link, {
+							to: "/my-works",
+							class: "tip-link"
+						}, {
+							default: withCtx(() => _cache[7] || (_cache[7] = [createTextVNode("查看作品", -1)])),
+							_: 1,
+							__: [7]
+						})
+					])) : isLoggedIn.value && saveError.value ? (openBlock(), createElementBlock("div", _hoisted_20, [
+						_cache[10] || (_cache[10] = createBaseVNode("span", { class: "tip-icon" }, "❌", -1)),
+						createBaseVNode("span", _hoisted_21, "保存失败：" + toDisplayString(saveError.value), 1),
+						createBaseVNode("button", {
+							onClick: handleAutoSave,
+							class: "tip-retry"
+						}, "重试")
+					])) : !isLoggedIn.value ? (openBlock(), createElementBlock("div", _hoisted_22, [
+						_cache[12] || (_cache[12] = createBaseVNode("span", { class: "tip-icon" }, "💡", -1)),
+						_cache[13] || (_cache[13] = createBaseVNode("span", { class: "tip-text" }, "登录后可以保存作品到作品集", -1)),
+						createVNode(_component_router_link, {
+							to: "/login",
+							class: "tip-login"
+						}, {
+							default: withCtx(() => _cache[11] || (_cache[11] = [createTextVNode("去登录", -1)])),
+							_: 1,
+							__: [11]
+						})
+					])) : createCommentVNode("", true)]),
+					createBaseVNode("div", {
+						class: "grid grid-cols-1 md:grid-cols-2 gap-4 animate-fadeInUp",
+						style: { "animation-delay": "0.2s" }
+					}, [createBaseVNode("button", {
+						onClick: resetAndRetry,
+						class: "btn-control-base btn-control-hover px-6 py-3 rounded-lg font-medium text-body",
+						style: {
+							"background-color": "var(--bg-secondary)",
+							"color": "var(--text-secondary)"
+						}
+					}, " 再写一首 "), createBaseVNode("button", {
+						onClick: goBack,
+						class: "btn-restart px-6 py-3 rounded-lg font-medium text-body"
+					}, " 返回诗歌页 ")])
+				])) : createCommentVNode("", true)
 			])])]);
 		};
 	}
@@ -311,7 +431,7 @@ var GongBiView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
 
 //#endregion
 //#region src/modules/zhou/views/GongBiView.vue
-var GongBiView_default = /* @__PURE__ */ __plugin_vue_export_helper_default(GongBiView_vue_vue_type_script_setup_true_lang_default, [["__scopeId", "data-v-a9110db5"]]);
+var GongBiView_default = /* @__PURE__ */ __plugin_vue_export_helper_default(GongBiView_vue_vue_type_script_setup_true_lang_default, [["__scopeId", "data-v-64f18e2e"]]);
 
 //#endregion
 export { GongBiView_default as default };

@@ -1,17 +1,19 @@
-import { A as defineComponent, B as onMounted, C as onUnmounted, D as openBlock, E as renderList, J as withCtx, K as withDirectives, M as ref, N as unref, O as normalizeClass, Q as toDisplayString, h as useRouter, i as __plugin_vue_export_helper_default, k as Transition, m as vModelText, o as withKeys, p as withModifiers, q as Fragment, s as computed, t as createBaseVNode, u as createBlock, v as createCommentVNode, w as createElementBlock, y as createTextVNode, z as createVNode } from "./index-0cj-Hd_i.js";
-import { b as clearToken, c as deleteAccount, d as getMyWorks, e as getToken } from "./authApi-DMUWcRXB.js";
-import "./BackButton-CfwVcQyt.js";
-import { b as lujiaming_icon_default } from "./lujiaming_icon-D6-oGle1.js";
-import "./ControlButtons-1EwphGFZ.js";
-import "./ArrowDownTrayIcon-CKLH6yP-.js";
-import { b as PoemViewer_default } from "./PoemViewer-CQ5QcNjH.js";
-import { b as ErrorState_default, c as render } from "./ErrorState-CQCVaoCj.js";
-import { b as EmptyState_default } from "./EmptyState-BeqYa-By.js";
-import { b as LoadingSpinner_default } from "./LoadingSpinner-DLftEDJi.js";
-import "./components-BfT3xTN5.js";
-import "./ProgressBar-BzUeofeR.js";
-import "./QuestionCard-Bmr4xy-T.js";
-import "./ClassicalEchoDisplay-MS9ARgA4.js";
+import { A as defineComponent, B as onMounted, C as onUnmounted, D as openBlock, E as renderList, G as resolveComponent, J as withCtx, K as withDirectives, M as ref, N as unref, O as normalizeClass, Q as toDisplayString, h as useRouter, i as __plugin_vue_export_helper_default, k as Transition, m as vModelText, o as withKeys, p as withModifiers, q as Fragment, s as computed, t as createBaseVNode, u as createBlock, v as createCommentVNode, w as createElementBlock, y as createTextVNode, z as createVNode } from "./index-BSnbBRtO.js";
+import { c as clearToken, d as deleteAccount, e as getMyWorks, f as getToken } from "./authApi-Ckm-lhus.js";
+import "./BackButton-BK4mq5-w.js";
+import "./ControlButtons-IGr3RZjK.js";
+import "./ArrowDownTrayIcon-uaWbQ4cD.js";
+import { b as PoemViewer_default } from "./PoemViewer-CdqyKUFT.js";
+import { b as render } from "./ExclamationTriangleIcon-jreoU3Tl.js";
+import "./InformationCircleIcon-BOeUYuVf.js";
+import { b as ErrorState_default } from "./ErrorState-CaYw3c3T.js";
+import { b as EmptyState_default } from "./EmptyState-DBblY3SW.js";
+import { b as lujiaming_icon_default } from "./lujiaming_icon-C_tgyrwu.js";
+import { b as LoadingSpinner_default } from "./LoadingSpinner-Be6CkrEz.js";
+import "./components-D2kd7hr5.js";
+import "./ProgressBar-KJQJnfOp.js";
+import "./QuestionCard-DJIIvErs.js";
+import "./ClassicalEchoDisplay-CuhoMfb3.js";
 
 //#region node_modules/@heroicons/vue/24/outline/esm/HandRaisedIcon.js
 function render$1(_ctx, _cache) {
@@ -60,18 +62,21 @@ const _hoisted_19 = {
 const _hoisted_20 = { class: "user-input-section" };
 const _hoisted_21 = { class: "user-feeling-content" };
 const _hoisted_22 = { class: "works-footer" };
-const _hoisted_23 = { class: "modal-header" };
-const _hoisted_24 = { class: "modal-body" };
-const _hoisted_25 = { class: "confirm-input" };
-const _hoisted_26 = { class: "confirm-input" };
-const _hoisted_27 = { for: "confirm-username" };
-const _hoisted_28 = {
+const _hoisted_23 = { class: "works-count" };
+const _hoisted_24 = { class: "copyright" };
+const _hoisted_25 = { class: "footer-links" };
+const _hoisted_26 = { class: "modal-header" };
+const _hoisted_27 = { class: "modal-body" };
+const _hoisted_28 = { class: "confirm-input" };
+const _hoisted_29 = { class: "confirm-input" };
+const _hoisted_30 = { for: "confirm-username" };
+const _hoisted_31 = {
 	key: 0,
 	class: "error-message"
 };
-const _hoisted_29 = { class: "modal-footer" };
-const _hoisted_30 = ["disabled"];
-const _hoisted_31 = ["disabled"];
+const _hoisted_32 = { class: "modal-footer" };
+const _hoisted_33 = ["disabled"];
+const _hoisted_34 = ["disabled"];
 var MyWorksView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
 	__name: "MyWorksView",
 	setup(__props) {
@@ -96,6 +101,7 @@ var MyWorksView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
 				return "用户";
 			}
 		});
+		const currentYear = (/* @__PURE__ */ new Date()).getFullYear();
 		const loadWorks = async () => {
 			loading.value = true;
 			error.value = false;
@@ -187,6 +193,7 @@ var MyWorksView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
 			document.removeEventListener("click", handleClickOutside);
 		});
 		return (_ctx, _cache) => {
+			const _component_router_link = resolveComponent("router-link");
 			return openBlock(), createElementBlock("div", _hoisted_1, [
 				createBaseVNode("header", _hoisted_2, [createBaseVNode("div", _hoisted_3, [_cache[11] || (_cache[11] = createBaseVNode("h1", { class: "page-title" }, "我的作品集", -1)), createBaseVNode("div", _hoisted_4, [createBaseVNode("div", _hoisted_5, [
 					createBaseVNode("span", _hoisted_6, toDisplayString(username.value), 1),
@@ -279,7 +286,29 @@ var MyWorksView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
 						_: 2
 					}, 1024)]);
 				}), 128))]))]),
-				createBaseVNode("footer", _hoisted_22, [createBaseVNode("p", null, "共创作 " + toDisplayString(works.value.length) + " 首诗歌", 1)]),
+				createBaseVNode("footer", _hoisted_22, [
+					createBaseVNode("p", _hoisted_23, "共创作 " + toDisplayString(works.value.length) + " 首诗歌", 1),
+					createBaseVNode("p", _hoisted_24, "© " + toDisplayString(unref(currentYear)) + " 陆家花园", 1),
+					createBaseVNode("div", _hoisted_25, [
+						createVNode(_component_router_link, {
+							to: "/terms?from=my-works",
+							class: "footer-link"
+						}, {
+							default: withCtx(() => _cache[15] || (_cache[15] = [createTextVNode(" 用户协议 ", -1)])),
+							_: 1,
+							__: [15]
+						}),
+						_cache[17] || (_cache[17] = createBaseVNode("span", { class: "footer-separator" }, "|", -1)),
+						createVNode(_component_router_link, {
+							to: "/privacy?from=my-works",
+							class: "footer-link"
+						}, {
+							default: withCtx(() => _cache[16] || (_cache[16] = [createTextVNode(" 隐私政策 ", -1)])),
+							_: 1,
+							__: [16]
+						})
+					])
+				]),
 				createVNode(Transition, { name: "modal" }, {
 					default: withCtx(() => [isDeleteModalOpen.value ? (openBlock(), createElementBlock("div", {
 						key: 0,
@@ -289,25 +318,26 @@ var MyWorksView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
 						class: "modal-content",
 						onClick: _cache[6] || (_cache[6] = withModifiers(() => {}, ["stop"]))
 					}, [
-						createBaseVNode("div", _hoisted_23, [createBaseVNode("h2", null, [createVNode(unref(render), { class: "warning-icon" }), _cache[15] || (_cache[15] = createTextVNode(" 删除账号 ", -1))])]),
-						createBaseVNode("div", _hoisted_24, [
-							_cache[19] || (_cache[19] = createBaseVNode("p", { class: "warning-text" }, "此操作不可恢复！删除账号后：", -1)),
-							_cache[20] || (_cache[20] = createBaseVNode("ul", { class: "warning-list" }, [
-								createBaseVNode("li", null, "您的个人信息将被永久删除"),
-								createBaseVNode("li", null, "您将无法再次登录此账号"),
-								createBaseVNode("li", null, "您的作品将匿名化保留在平台上")
+						createBaseVNode("div", _hoisted_26, [createBaseVNode("h2", null, [createVNode(unref(render), { class: "warning-icon" }), _cache[18] || (_cache[18] = createTextVNode(" 删除账号 ", -1))])]),
+						createBaseVNode("div", _hoisted_27, [
+							_cache[22] || (_cache[22] = createBaseVNode("p", { class: "delete-description" }, "删除账号后：", -1)),
+							_cache[23] || (_cache[23] = createBaseVNode("ul", { class: "delete-info-list" }, [
+								createBaseVNode("li", null, "您将无法再登录陆家花园"),
+								createBaseVNode("li", null, "您的用户名将不可复用"),
+								createBaseVNode("li", null, [createBaseVNode("strong", null, "您的历史共笔作品将保留，但不会与您的身份关联")])
 							], -1)),
-							createBaseVNode("div", _hoisted_25, [_cache[16] || (_cache[16] = createBaseVNode("label", { for: "confirm-password" }, "请先输入密码验证身份：", -1)), withDirectives(createBaseVNode("input", {
+							_cache[24] || (_cache[24] = createBaseVNode("p", { class: "delete-contact-hint" }, " 如有疑虑，请查看用户协议，或与我们联系：lujiaming@lugarden.space ", -1)),
+							createBaseVNode("div", _hoisted_28, [_cache[19] || (_cache[19] = createBaseVNode("label", { for: "confirm-password" }, "请先输入密码验证身份：", -1)), withDirectives(createBaseVNode("input", {
 								id: "confirm-password",
 								"onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => confirmPassword.value = $event),
 								type: "password",
 								placeholder: "输入密码",
 								onKeyup: withKeys(confirmDelete, ["enter"])
 							}, null, 544), [[vModelText, confirmPassword.value]])]),
-							createBaseVNode("div", _hoisted_26, [createBaseVNode("label", _hoisted_27, [
-								_cache[17] || (_cache[17] = createTextVNode("再输入用户名 ", -1)),
+							createBaseVNode("div", _hoisted_29, [createBaseVNode("label", _hoisted_30, [
+								_cache[20] || (_cache[20] = createTextVNode("再输入用户名 ", -1)),
 								createBaseVNode("strong", null, toDisplayString(username.value), 1),
-								_cache[18] || (_cache[18] = createTextVNode(" 确认删除：", -1))
+								_cache[21] || (_cache[21] = createTextVNode(" 确认删除：", -1))
 							]), withDirectives(createBaseVNode("input", {
 								id: "confirm-username",
 								"onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => confirmUsername.value = $event),
@@ -315,17 +345,17 @@ var MyWorksView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
 								placeholder: "输入用户名",
 								onKeyup: withKeys(confirmDelete, ["enter"])
 							}, null, 544), [[vModelText, confirmUsername.value]])]),
-							deleteError.value ? (openBlock(), createElementBlock("p", _hoisted_28, toDisplayString(deleteError.value), 1)) : createCommentVNode("", true)
+							deleteError.value ? (openBlock(), createElementBlock("p", _hoisted_31, toDisplayString(deleteError.value), 1)) : createCommentVNode("", true)
 						]),
-						createBaseVNode("div", _hoisted_29, [createBaseVNode("button", {
+						createBaseVNode("div", _hoisted_32, [createBaseVNode("button", {
 							onClick: closeDeleteModal,
 							class: "cancel-btn",
 							disabled: isDeleting.value
-						}, " 取消 ", 8, _hoisted_30), createBaseVNode("button", {
+						}, " 取消 ", 8, _hoisted_33), createBaseVNode("button", {
 							onClick: confirmDelete,
 							class: "confirm-delete-btn",
 							disabled: isDeleting.value || !confirmPassword.value || !confirmUsername.value
-						}, toDisplayString(isDeleting.value ? "删除中..." : "确认删除"), 9, _hoisted_31)])
+						}, toDisplayString(isDeleting.value ? "删除中..." : "确认删除"), 9, _hoisted_34)])
 					])])) : createCommentVNode("", true)]),
 					_: 1
 				})
@@ -336,7 +366,7 @@ var MyWorksView_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
 
 //#endregion
 //#region src/core/auth/views/MyWorksView.vue
-var MyWorksView_default = /* @__PURE__ */ __plugin_vue_export_helper_default(MyWorksView_vue_vue_type_script_setup_true_lang_default, [["__scopeId", "data-v-77afedae"]]);
+var MyWorksView_default = /* @__PURE__ */ __plugin_vue_export_helper_default(MyWorksView_vue_vue_type_script_setup_true_lang_default, [["__scopeId", "data-v-376be7fd"]]);
 
 //#endregion
 export { MyWorksView_default as default };

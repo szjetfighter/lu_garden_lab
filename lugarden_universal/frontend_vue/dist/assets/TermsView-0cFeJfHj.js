@@ -1,5 +1,5 @@
-import { A as defineComponent, D as openBlock, g as useRoute, h as useRouter, i as __plugin_vue_export_helper_default, w as createElementBlock, x as createStaticVNode, z as createVNode } from "./index-0cj-Hd_i.js";
-import { b as BackButton_default } from "./BackButton-CfwVcQyt.js";
+import { A as defineComponent, D as openBlock, g as useRoute, h as useRouter, i as __plugin_vue_export_helper_default, w as createElementBlock, x as createStaticVNode, z as createVNode } from "./index-BSnbBRtO.js";
+import { b as BackButton_default } from "./BackButton-BK4mq5-w.js";
 
 //#region src/core/auth/views/TermsView.vue?vue&type=script&setup=true&lang.ts
 const _hoisted_1 = { class: "terms-container" };

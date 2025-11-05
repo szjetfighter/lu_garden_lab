@@ -1,6 +1,31 @@
-import { d as apiClient } from "./index-0cj-Hd_i.js";
+import { d as apiClient } from "./index-BSnbBRtO.js";
 
 //#region src/core/auth/services/authApi.ts
+/**
+
+* 检查用户名是否可用
+
+*/
+async function checkUsername(username) {
+	try {
+		const response = await fetch(`/api/auth/check-username?username=${encodeURIComponent(username)}`);
+		if (!response.ok) {
+			if (response.status === 429) return {
+				available: false,
+				reason: null,
+				message: "请求过于频繁，请稍后再试"
+			};
+			throw new Error("检查用户名失败");
+		}
+		return await response.json();
+	} catch (error) {
+		return {
+			available: false,
+			reason: null,
+			message: error.message || "检查用户名失败"
+		};
+	}
+}
 /**
 
 * 用户注册
@@ -235,4 +260,4 @@ async function deleteAccount(password, username) {
 }
 
 //#endregion
-export { clearToken as b, deleteAccount as c, getMyWorks as d, getToken as e, getUsername as f, isAuthenticated as g, login as h, register as i, saveGongBiWork as j, saveToken as k };
+export { checkUsername as b, clearToken as c, deleteAccount as d, getMyWorks as e, getToken as f, getUsername as g, isAuthenticated as h, login as i, register as j, saveGongBiWork as k, saveToken as l };

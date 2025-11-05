@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/UniversePortal-Bw73c-SS.js","assets/ErrorState-CQCVaoCj.js","assets/ErrorState.C2YI13gB.css","assets/EmptyState-BeqYa-By.js","assets/EmptyState.DEZyfoQL.css","assets/authApi-DMUWcRXB.js","assets/enhancedApi-D-VVpnBX.js","assets/components-BfT3xTN5.js","assets/components.BIQYwEV9.css","assets/BackButton-CfwVcQyt.js","assets/BackButton.uMNisWYP.css","assets/LoadingSpinner-DLftEDJi.js","assets/LoadingSpinner.Dddw_4jr.css","assets/ProgressBar-BzUeofeR.js","assets/ProgressBar.D2F_dA9z.css","assets/UniversePortal.MvnGaeWi.css","assets/MainProjectSelection-N5nu5-Sm.js","assets/zhou-DNmAmoD0.js","assets/MainProjectSelection.AEyygfS2.css","assets/SubProjectSelection-BrIjMiby.js","assets/QuizScreen-BCrjNgBY.js","assets/ArrowDownTrayIcon-CKLH6yP-.js","assets/QuestionCard-Bmr4xy-T.js","assets/QuestionCard.Dusenml7.css","assets/QuizScreen.tn0RQdqM.css","assets/ClassicalEchoScreen-BZ7p0uPv.js","assets/ClassicalEchoDisplay-MS9ARgA4.js","assets/ClassicalEchoScreen.B7m1uuZD.css","assets/ResultScreen-BZgmSq0U.js","assets/ControlButtons-1EwphGFZ.js","assets/PoemViewer-CQ5QcNjH.js","assets/PoemViewer.BM4afsGC.css","assets/ControlButtons.4Qoo0JXG.css","assets/ResultScreen.CGU0SRya.css","assets/GongBiView-CcJLGuQT.js","assets/lujiaming_icon-D6-oGle1.js","assets/GongBiView.CuJ9Vnp2.css","assets/LoginView-BSrO_FZr.js","assets/LoginView.DV8ewfk0.css","assets/MyWorksView-Ctx0-L0x.js","assets/MyWorksView.CuV6S_6W.css","assets/TermsView-CV1Zg8vX.js","assets/TermsView.DsZsrho_.css","assets/PrivacyView-BB1fF3Gz.js","assets/PrivacyView.BXD13Ukc.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/UniversePortal-BRWLAP4C.js","assets/ExclamationTriangleIcon-jreoU3Tl.js","assets/ErrorState-CaYw3c3T.js","assets/ErrorState.C2YI13gB.css","assets/EmptyState-DBblY3SW.js","assets/EmptyState.DEZyfoQL.css","assets/authApi-Ckm-lhus.js","assets/enhancedApi-O6B6zESu.js","assets/components-D2kd7hr5.js","assets/components.BIQYwEV9.css","assets/BackButton-BK4mq5-w.js","assets/BackButton.uMNisWYP.css","assets/LoadingSpinner-Be6CkrEz.js","assets/LoadingSpinner.Dddw_4jr.css","assets/ProgressBar-KJQJnfOp.js","assets/ProgressBar.D2F_dA9z.css","assets/UniversePortal.MvnGaeWi.css","assets/MainProjectSelection-BnLaX-0K.js","assets/zhou-C3_uiHsz.js","assets/MainProjectSelection.AEyygfS2.css","assets/SubProjectSelection-9VS2WL3L.js","assets/QuizScreen-Cjh6JV92.js","assets/ArrowDownTrayIcon-uaWbQ4cD.js","assets/QuestionCard-DJIIvErs.js","assets/QuestionCard.Dusenml7.css","assets/QuizScreen.tn0RQdqM.css","assets/ClassicalEchoScreen-BFtAMJ8I.js","assets/ClassicalEchoDisplay-CuhoMfb3.js","assets/ClassicalEchoScreen.B7m1uuZD.css","assets/ResultScreen-DPAhAZKZ.js","assets/ControlButtons-IGr3RZjK.js","assets/InformationCircleIcon-BOeUYuVf.js","assets/ControlButtons.4Qoo0JXG.css","assets/PoemViewer-CdqyKUFT.js","assets/PoemViewer.BM4afsGC.css","assets/ResultScreen.CGU0SRya.css","assets/GongBiView-64vmISnk.js","assets/lujiaming_icon-C_tgyrwu.js","assets/GongBiView.CuJ9Vnp2.css","assets/LoginView-B-tf-Fr5.js","assets/LoginView.C1b14Exc.css","assets/MyWorksView-D5ecL3Vp.js","assets/MyWorksView.DtDnwhMh.css","assets/TermsView-0cFeJfHj.js","assets/TermsView.DsZsrho_.css","assets/PrivacyView-xfr-85Zl.js","assets/PrivacyView.BXD13Ukc.css"])))=>i.map(i=>d[i]);
 //#region \0vite/modulepreload-polyfill.js
 (function polyfill() {
 	const relList = document.createElement("link").relList;
@@ -7461,7 +7461,7 @@ const routes = [
 	{
 		path: "/",
 		name: "UniversePortal",
-		component: () => __vitePreload(() => import("./UniversePortal-Bw73c-SS.js"), true               ? __vite__mapDeps([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]) : void 0),
+		component: () => __vitePreload(() => import("./UniversePortal-BRWLAP4C.js"), true               ? __vite__mapDeps([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]) : void 0),
 		meta: {
 			title: "陆家花园 - 宇宙门户",
 			requiresAuth: false,
@@ -7471,7 +7471,7 @@ const routes = [
 	{
 		path: "/zhou",
 		name: "MainProjectSelection",
-		component: () => __vitePreload(() => import("./MainProjectSelection-N5nu5-Sm.js"), true               ? __vite__mapDeps([16,1,2,3,4,6,17,9,10,11,12,18]) : void 0),
+		component: () => __vitePreload(() => import("./MainProjectSelection-BnLaX-0K.js"), true               ? __vite__mapDeps([17,1,2,3,4,5,7,18,10,11,12,13,19]) : void 0),
 		meta: {
 			title: "周与春秋 - 主项目选择",
 			requiresAuth: false,
@@ -7481,7 +7481,7 @@ const routes = [
 	{
 		path: "/project/:projectId?",
 		name: "SubProjectSelection",
-		component: () => __vitePreload(() => import("./SubProjectSelection-BrIjMiby.js"), true               ? __vite__mapDeps([19,3,4,6,17,9,10,11,12]) : void 0),
+		component: () => __vitePreload(() => import("./SubProjectSelection-9VS2WL3L.js"), true               ? __vite__mapDeps([20,4,5,7,18,10,11,12,13]) : void 0),
 		meta: {
 			title: "子项目选择",
 			requiresAuth: false,
@@ -7492,7 +7492,7 @@ const routes = [
 	{
 		path: "/quiz/:chapter?",
 		name: "QuizScreen",
-		component: () => __vitePreload(() => import("./QuizScreen-BCrjNgBY.js"), true               ? __vite__mapDeps([20,21,1,2,3,4,6,22,23,17,9,10,11,12,13,14,24]) : void 0),
+		component: () => __vitePreload(() => import("./QuizScreen-Cjh6JV92.js"), true               ? __vite__mapDeps([21,22,1,2,3,4,5,7,23,24,18,10,11,12,13,14,15,25]) : void 0),
 		meta: {
 			title: "问答测试",
 			requiresAuth: false,
@@ -7503,7 +7503,7 @@ const routes = [
 	{
 		path: "/classical-echo",
 		name: "ClassicalEchoScreen",
-		component: () => __vitePreload(() => import("./ClassicalEchoScreen-BZ7p0uPv.js"), true               ? __vite__mapDeps([25,6,26,24,17,27]) : void 0),
+		component: () => __vitePreload(() => import("./ClassicalEchoScreen-BFtAMJ8I.js"), true               ? __vite__mapDeps([26,7,27,25,18,28]) : void 0),
 		meta: {
 			title: "古典回响",
 			requiresAuth: false,
@@ -7514,7 +7514,7 @@ const routes = [
 	{
 		path: "/result",
 		name: "ResultScreen",
-		component: () => __vitePreload(() => import("./ResultScreen-BZgmSq0U.js"), true               ? __vite__mapDeps([28,29,30,21,31,1,2,32,6,17,11,12,33]) : void 0),
+		component: () => __vitePreload(() => import("./ResultScreen-DPAhAZKZ.js"), true               ? __vite__mapDeps([29,30,1,31,32,22,33,34,2,3,7,18,12,13,35]) : void 0),
 		meta: {
 			title: "您的诗歌",
 			requiresAuth: false,
@@ -7525,7 +7525,7 @@ const routes = [
 	{
 		path: "/gongbi",
 		name: "GongBiView",
-		component: () => __vitePreload(() => import("./GongBiView-CcJLGuQT.js"), true               ? __vite__mapDeps([34,35,21,30,31,1,2,5,6,17,36]) : void 0),
+		component: () => __vitePreload(() => import("./GongBiView-64vmISnk.js"), true               ? __vite__mapDeps([36,37,22,33,31,34,1,2,3,6,7,18,38]) : void 0),
 		meta: {
 			title: "共笔 - 与陆家明一起创作",
 			requiresAuth: false,
@@ -7535,7 +7535,7 @@ const routes = [
 	{
 		path: "/login",
 		name: "Login",
-		component: () => __vitePreload(() => import("./LoginView-BSrO_FZr.js"), true               ? __vite__mapDeps([37,5,9,10,38]) : void 0),
+		component: () => __vitePreload(() => import("./LoginView-B-tf-Fr5.js"), true               ? __vite__mapDeps([39,1,31,6,10,11,40]) : void 0),
 		meta: {
 			title: "登录/注册 - 陆家花园",
 			requiresAuth: false
@@ -7544,7 +7544,7 @@ const routes = [
 	{
 		path: "/my-works",
 		name: "MyWorks",
-		component: () => __vitePreload(() => import("./MyWorksView-Ctx0-L0x.js"), true               ? __vite__mapDeps([39,35,29,30,21,31,1,2,32,3,4,5,26,24,22,23,7,8,9,10,11,12,13,14,40]) : void 0),
+		component: () => __vitePreload(() => import("./MyWorksView-D5ecL3Vp.js"), true               ? __vite__mapDeps([41,37,30,1,31,32,22,33,34,2,3,4,5,6,27,25,23,24,8,9,10,11,12,13,14,15,42]) : void 0),
 		meta: {
 			title: "我的作品 - 陆家花园",
 			requiresAuth: true
@@ -7553,7 +7553,7 @@ const routes = [
 	{
 		path: "/terms",
 		name: "Terms",
-		component: () => __vitePreload(() => import("./TermsView-CV1Zg8vX.js"), true               ? __vite__mapDeps([41,9,10,42]) : void 0),
+		component: () => __vitePreload(() => import("./TermsView-0cFeJfHj.js"), true               ? __vite__mapDeps([43,10,11,44]) : void 0),
 		meta: {
 			title: "用户协议 - 陆家花园",
 			requiresAuth: false
@@ -7562,7 +7562,7 @@ const routes = [
 	{
 		path: "/privacy",
 		name: "Privacy",
-		component: () => __vitePreload(() => import("./PrivacyView-BB1fF3Gz.js"), true               ? __vite__mapDeps([43,9,10,44]) : void 0),
+		component: () => __vitePreload(() => import("./PrivacyView-xfr-85Zl.js"), true               ? __vite__mapDeps([45,10,11,46]) : void 0),
 		meta: {
 			title: "隐私政策 - 陆家花园",
 			requiresAuth: false

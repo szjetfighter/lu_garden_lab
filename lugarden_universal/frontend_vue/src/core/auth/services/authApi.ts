@@ -62,6 +62,41 @@ export interface MyWorksResponse {
 // 认证相关API
 // ================================
 
+export interface CheckUsernameResponse {
+  available: boolean
+  reason: 'username_taken' | 'invalid_format' | null
+  message: string
+}
+
+/**
+ * 检查用户名是否可用
+ */
+export async function checkUsername(username: string): Promise<CheckUsernameResponse> {
+  try {
+    const response = await fetch(`/api/auth/check-username?username=${encodeURIComponent(username)}`)
+    
+    if (!response.ok) {
+      // 429限流或其他错误
+      if (response.status === 429) {
+        return {
+          available: false,
+          reason: null,
+          message: '请求过于频繁，请稍后再试'
+        }
+      }
+      throw new Error('检查用户名失败')
+    }
+    
+    return await response.json()
+  } catch (error: any) {
+    return {
+      available: false,
+      reason: null,
+      message: error.message || '检查用户名失败'
+    }
+  }
+}
+
 /**
  * 用户注册
  */

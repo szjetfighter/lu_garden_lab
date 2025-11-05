@@ -87,7 +87,26 @@
             minlength="3"
             maxlength="20"
             :disabled="loading"
+            @blur="handleUsernameBlur"
           />
+          <!-- 用户名校验状态反馈 -->
+          <div v-if="usernameCheckStatus !== 'idle'" class="username-check-feedback">
+            <span v-if="usernameCheckStatus === 'checking'" class="check-checking">
+              {{ usernameCheckMessage }}
+            </span>
+            <span v-else-if="usernameCheckStatus === 'available'" class="check-available">
+              <CheckCircleIcon class="check-icon" />
+              {{ usernameCheckMessage }}
+            </span>
+            <span v-else-if="usernameCheckStatus === 'unavailable'" class="check-unavailable">
+              <XCircleIcon class="check-icon" />
+              {{ usernameCheckMessage }}
+            </span>
+            <span v-else-if="usernameCheckStatus === 'invalid'" class="check-invalid">
+              <ExclamationTriangleIcon class="check-icon" />
+              {{ usernameCheckMessage }}
+            </span>
+          </div>
         </div>
 
         <div class="form-group">
@@ -134,7 +153,7 @@
           </label>
         </div>
 
-        <button type="submit" class="btn-primary" :disabled="loading || !agreeToTerms">
+        <button type="submit" class="btn-primary" :disabled="loading || !agreeToTerms || usernameCheckStatus !== 'available'">
           {{ loading ? '注册中...' : '注册' }}
         </button>
 
@@ -178,9 +197,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { login, register, saveToken, saveGongBiWork } from '../services/authApi'
+import { login, register, saveToken, saveGongBiWork, checkUsername } from '../services/authApi'
 import BackButton from '@/shared/components/BackButton.vue'
-import { InformationCircleIcon } from '@heroicons/vue/24/outline'
+import { InformationCircleIcon, CheckCircleIcon, XCircleIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 
 // 路由
 const router = useRouter()
@@ -213,6 +232,12 @@ const agreeToTerms = ref(false)
 // 用户名提示弹框状态
 const showUsernameInfo = ref(false)
 
+// 用户名校验状态
+type UsernameCheckStatus = 'idle' | 'checking' | 'available' | 'unavailable' | 'invalid'
+const usernameCheckStatus = ref<UsernameCheckStatus>('idle')
+const usernameCheckMessage = ref('')
+let usernameCheckTimeout: number | null = null
+
 // 监听注册表单变化，临时保存到localStorage
 watch(registerForm, (newValue) => {
   if (newValue.username || newValue.password || newValue.confirmPassword) {
@@ -220,16 +245,60 @@ watch(registerForm, (newValue) => {
   }
 }, { deep: true })
 
-// 切换tab时清空消息和协议同意状态
+// 切换tab时清空消息、协议同意状态和用户名校验状态
 watch(activeTab, () => {
   errorMessage.value = ''
   successMessage.value = ''
   agreeToTerms.value = false
+  usernameCheckStatus.value = 'idle'
+  usernameCheckMessage.value = ''
 })
 
 // 返回首页
 const goHome = () => {
   router.push('/')
+}
+
+// 用户名输入框blur事件处理（debounce 500ms）
+const handleUsernameBlur = () => {
+  const username = registerForm.value.username.trim()
+  
+  // 清除之前的定时器
+  if (usernameCheckTimeout !== null) {
+    clearTimeout(usernameCheckTimeout)
+  }
+  
+  // 如果用户名为空，重置状态
+  if (!username) {
+    usernameCheckStatus.value = 'idle'
+    usernameCheckMessage.value = ''
+    return
+  }
+  
+  // Debounce 500ms
+  usernameCheckTimeout = window.setTimeout(async () => {
+    usernameCheckStatus.value = 'checking'
+    usernameCheckMessage.value = '检查中...'
+    
+    try {
+      const result = await checkUsername(username)
+      
+      if (result.available) {
+        usernameCheckStatus.value = 'available'
+        usernameCheckMessage.value = '用户名可用'
+      } else {
+        if (result.reason === 'invalid_format') {
+          usernameCheckStatus.value = 'invalid'
+        } else {
+          usernameCheckStatus.value = 'unavailable'
+        }
+        usernameCheckMessage.value = result.message
+      }
+    } catch (error) {
+      usernameCheckStatus.value = 'idle'
+      usernameCheckMessage.value = ''
+    }
+  }, 500)
 }
 
 // 检测并保存未登录时生成的共笔作品
@@ -498,6 +567,42 @@ const handleRegister = async () => {
 
 .username-info-modal {
   cursor: default;
+}
+
+/* 用户名校验反馈样式 */
+.username-check-feedback {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+}
+
+.username-check-feedback span {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.check-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.check-checking {
+  color: rgb(107 114 128); /* text-gray-500 */
+}
+
+.check-available {
+  color: #16a34a; /* text-green-600 */
+}
+
+.check-unavailable {
+  color: #dc2626; /* text-red-600 */
+}
+
+.check-invalid {
+  color: #ea580c; /* text-orange-600 */
 }
 
 .form-group input {

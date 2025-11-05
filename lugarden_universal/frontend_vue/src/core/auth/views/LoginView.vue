@@ -67,7 +67,17 @@
       <!-- 注册表单 -->
       <form v-if="activeTab === 'register'" @submit.prevent="handleRegister" class="auth-form">
         <div class="form-group">
-          <label for="register-username">用户名</label>
+          <div class="label-with-info">
+            <label for="register-username">用户名</label>
+            <button 
+              @click="showUsernameInfo = true"
+              class="username-info-icon"
+              aria-label="用户名用途说明"
+              type="button"
+            >
+              <InformationCircleIcon class="w-4 h-4" />
+            </button>
+          </div>
           <input
             id="register-username"
             v-model="registerForm.username"
@@ -131,6 +141,36 @@
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
       </form>
+
+      <!-- 用户名用途说明弹框 -->
+      <div 
+        v-if="showUsernameInfo && activeTab === 'register'"
+        class="fixed inset-0 z-50 backdrop-blur-sm bg-black bg-opacity-10 flex items-center justify-center px-4"
+        @click="showUsernameInfo = false"
+      >
+        <div class="username-info-modal animate-fadeInUp" @click.stop>
+          <div class="bg-white rounded-lg shadow-2xl border border-gray-100 py-3 px-4 max-w-xs w-full">
+            <h4 class="text-sm font-bold mb-2 text-center">注</h4>
+            <p class="text-sm text-gray-700 leading-relaxed">
+              您的用户名会用在共笔功能的署名处。
+            </p>
+            <p class="text-sm text-gray-700 leading-relaxed mt-2">
+              建议使用有意义的笔名，而非随意的字符组合。
+            </p>
+            <p class="text-sm text-gray-700 leading-relaxed mt-2">
+              注册后用户名无法修改。
+            </p>
+            <div class="mt-3 pt-2 border-t border-gray-100">
+              <button 
+                @click="showUsernameInfo = false"
+                class="w-full py-2 text-xs text-gray-500 hover:text-gray-700 transition-colors duration-200"
+              >
+                知道了
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -140,6 +180,7 @@ import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { login, register, saveToken, saveGongBiWork } from '../services/authApi'
 import BackButton from '@/shared/components/BackButton.vue'
+import { InformationCircleIcon } from '@heroicons/vue/24/outline'
 
 // 路由
 const router = useRouter()
@@ -168,6 +209,9 @@ const registerForm = ref(savedRegisterData ? JSON.parse(savedRegisterData) : {
 })
 
 const agreeToTerms = ref(false)
+
+// 用户名提示弹框状态
+const showUsernameInfo = ref(false)
 
 // 监听注册表单变化，临时保存到localStorage
 watch(registerForm, (newValue) => {
@@ -426,6 +470,34 @@ const handleRegister = async () => {
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
   font-weight: 500;
+}
+
+.label-with-info {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.username-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(156 163 175); /* text-gray-400 */
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.username-info-icon:hover {
+  opacity: 1;
+  color: rgb(107 114 128); /* text-gray-500 */
+}
+
+.username-info-modal {
+  cursor: default;
 }
 
 .form-group input {

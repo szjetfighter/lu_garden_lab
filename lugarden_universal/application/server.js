@@ -12,6 +12,7 @@ import universesRouter from './src/routes/universes.js';
 import authRouter from './src/routes/auth.js';
 import myWorksRouter from './src/routes/myWorks.js';
 import deleteAccountRouter from './src/routes/deleteAccount.js';
+import checkUsernameRouter from './src/routes/checkUsername.js';
 import { errorHandler } from './src/middlewares/errorHandler.js';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -70,6 +71,7 @@ const STATIC_DIR = USE_VUE_FRONTEND && vueReady ? VUE_DIST_DIR : PUBLIC_DIR;
 // 中间件
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(STATIC_DIR));
 
 // 会话
@@ -657,6 +659,7 @@ app.use('/api/universes', universesRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/portal', portalRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/auth', checkUsernameRouter);
 app.use('/api/my-works', myWorksRouter);
 app.use('/api', deleteAccountRouter);
 

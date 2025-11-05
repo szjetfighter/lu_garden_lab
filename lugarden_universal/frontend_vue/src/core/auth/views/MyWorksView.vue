@@ -137,18 +137,12 @@
           </div>
           
           <div class="modal-body">
-            <!-- 删除说明区域 -->
-            <div class="delete-notice">
-              <InformationCircleIcon class="notice-icon" />
-              <div class="notice-content">
-                <p class="notice-title">删除账号后：</p>
-                <ul class="notice-list">
-                  <li>您将无法再登录陆家花园</li>
-                  <li>您的用户名将不可复用</li>
-                  <li>您的历史共笔作品将保留（但不会与您的身份关联）</li>
-                </ul>
-              </div>
-            </div>
+            <p class="delete-description">删除账号后：</p>
+            <ul class="delete-info-list">
+              <li>您将无法再登录陆家花园</li>
+              <li>您的用户名将不可复用</li>
+              <li><strong>您的历史共笔作品将保留，但不会与您的身份关联</strong></li>
+            </ul>
 
             <div class="confirm-input">
               <label for="confirm-password">请先输入密码验证身份：</label>
@@ -848,7 +842,7 @@ onUnmounted(() => {
 .modal-header h2 {
   margin: 0;
   font-size: 1.25rem;
-  color: #ef4444;
+  color: var(--text-primary);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -858,7 +852,7 @@ onUnmounted(() => {
 .warning-icon {
   width: 1.5rem;
   height: 1.5rem;
-  color: #ef4444;
+  color: var(--text-secondary);
   flex-shrink: 0;
 }
 
@@ -866,49 +860,26 @@ onUnmounted(() => {
   padding: 1.5rem;
 }
 
-/* 删除说明区域样式 */
-.delete-notice {
-  display: flex;
-  gap: 0.75rem;
-  background: rgba(254, 243, 199, 0.5); /* 浅黄色背景 */
-  border-left: 3px solid rgb(234, 179, 8); /* 黄色边框 */
-  border-radius: 0.5rem;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
-}
-
-.notice-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: rgb(161, 98, 7); /* 深黄色图标 */
-  flex-shrink: 0;
-  margin-top: 0.125rem;
-}
-
-.notice-content {
-  flex: 1;
-}
-
-.notice-title {
+.delete-description {
   margin: 0 0 0.5rem 0;
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: rgb(120, 53, 15); /* 深棕色标题 */
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
-.notice-list {
-  margin: 0;
-  padding-left: 1.25rem;
-  color: rgb(146, 64, 14); /* 棕色列表 */
+.delete-info-list {
+  margin: 0 0 1.5rem 0;
+  padding-left: 1.5rem;
+  color: var(--text-secondary);
   font-size: 0.875rem;
   line-height: 1.6;
 }
 
-.notice-list li {
-  margin-bottom: 0.375rem;
+.delete-info-list li {
+  margin-bottom: 0.5rem;
 }
 
-.notice-list li:last-child {
+.delete-info-list li:last-child {
   margin-bottom: 0;
 }
 

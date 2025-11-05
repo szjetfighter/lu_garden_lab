@@ -128,6 +128,59 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
 }
 
 /**
+ * 获取当前用户信息（从服务器API）
+ */
+export async function getUserInfo(): Promise<AuthResponse> {
+  try {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      return {
+        success: false,
+        error: '未登录'
+      }
+    }
+
+    const response = await fetch('/api/auth/me', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+    // 检测401：认证失败
+    if (response.status === 401) {
+      console.warn('[authApi] 检测到401，清除token并跳转登录页')
+      localStorage.removeItem('token')
+      
+      // 跳转到登录页
+      const currentPath = window.location.pathname + window.location.search
+      window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+      
+      return {
+        success: false,
+        error: '认证失败，请重新登录'
+      }
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: '获取用户信息失败' }))
+      return {
+        success: false,
+        error: errorData.error || '获取用户信息失败'
+      }
+    }
+
+    return await response.json()
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || '获取用户信息失败'
+    }
+  }
+}
+
+/**
  * 获取当前用户的所有作品
  */
 export async function getMyWorks(): Promise<MyWorksResponse> {

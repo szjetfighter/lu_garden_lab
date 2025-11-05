@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, loginUser, deleteAccount } from '../services/authService.js';
+import { registerUser, loginUser, deleteAccount, getUserById } from '../services/authService.js';
 import { requireAuth } from '../middlewares/auth.js';
 
 const router = express.Router();
@@ -19,11 +19,11 @@ router.post('/register', async (req, res) => {
     });
   }
   
-  // 验证用户名长度（3-20字符）
-  if (username.length < 3 || username.length > 20) {
+  // 验证用户名长度（2-20字符）
+  if (username.length < 2 || username.length > 20) {
     return res.status(400).json({
       success: false,
-      error: '用户名必须为3-20个字符'
+      error: '用户名必须为2-20个字符'
     });
   }
   
@@ -75,6 +75,23 @@ router.post('/login', async (req, res) => {
     return res.status(200).json(result);
   } else {
     return res.status(401).json(result);
+  }
+});
+
+/**
+ * GET /api/auth/me - 获取当前用户信息
+ * Headers: Authorization: Bearer <token>
+ */
+router.get('/me', requireAuth, async (req, res) => {
+  const userId = req.userId; // 从requireAuth中间件获取
+  
+  // 调用服务层获取用户信息
+  const result = await getUserById(userId);
+  
+  if (result.success) {
+    return res.status(200).json(result);
+  } else {
+    return res.status(404).json(result);
   }
 });
 

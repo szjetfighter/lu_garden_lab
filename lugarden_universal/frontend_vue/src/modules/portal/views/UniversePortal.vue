@@ -134,7 +134,7 @@ import { DocumentTextIcon } from '@heroicons/vue/24/outline'
 import { LoadingSpinner, ErrorState, EmptyState, NotificationToast } from '@/shared/components'
 import { UniverseCard } from '@/modules/portal/components'
 import { usePortalStore } from '@/modules/portal/stores'
-import { isAuthenticated, getUsername } from '@/core/auth/services/authApi'
+import { isAuthenticated, getUserInfo } from '@/core/auth/services/authApi'
 import type { Universe } from '@/modules/portal/types'
 
 // 路由
@@ -145,7 +145,22 @@ const portalStore = usePortalStore()
 
 // 用户登录状态
 const isLoggedIn = computed(() => isAuthenticated())
-const username = computed(() => getUsername() || '用户')
+const username = ref('加载中...')
+
+// 加载用户信息
+const loadUserInfo = async () => {
+  try {
+    const response = await getUserInfo()
+    if (response.success && response.user) {
+      username.value = response.user.username
+    } else {
+      username.value = '用户'
+    }
+  } catch (error) {
+    console.error('加载用户信息失败:', error)
+    username.value = '用户'
+  }
+}
 
 // 移动端菜单状态
 const isMenuOpen = ref(false)
@@ -227,6 +242,11 @@ const handleLogout = () => {
 
 // 生命周期
 onMounted(async () => {
+  // 如果已登录，加载用户信息
+  if (isLoggedIn.value) {
+    await loadUserInfo()
+  }
+  
   // 预加载数据，如果已有缓存则不重新加载
   await portalStore.preloadUniverseData()
   document.addEventListener('click', handleClickOutside)

@@ -116,6 +116,43 @@ export async function loginUser({ username, password }) {
 }
 
 /**
+ * 获取用户信息
+ * @param {number} userId - 用户ID
+ * @returns {Promise<Object>} - {success, user?, error?}
+ */
+export async function getUserById(userId) {
+  try {
+    const user = await authDb.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        createdAt: true
+        // 不返回密码
+      }
+    });
+    
+    if (!user) {
+      return {
+        success: false,
+        error: '用户不存在'
+      };
+    }
+    
+    return {
+      success: true,
+      user
+    };
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+    return {
+      success: false,
+      error: '获取用户信息失败'
+    };
+  }
+}
+
+/**
  * 删除账户
  * @param {Object} data - {userId, password}
  * @returns {Promise<Object>} - {success, message?, error?}

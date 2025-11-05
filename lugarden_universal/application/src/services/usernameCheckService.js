@@ -13,11 +13,11 @@ const authDb = new AuthPrisma()
  * @returns {{ valid: boolean, message: string }}
  */
 export function validateUsernameFormat(username) {
-  // 检查长度：3-20个字符
-  if (!username || username.length < 3 || username.length > 20) {
+  // 检查长度：2-20个字符
+  if (!username || username.length < 2 || username.length > 20) {
     return {
       valid: false,
-      message: '用户名必须是3-20个字符'
+      message: '用户名必须是2-20个字符'
     }
   }
 

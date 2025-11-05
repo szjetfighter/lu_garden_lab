@@ -60,3 +60,5 @@ VPS_review/
 # 数据库文件（包含用户数据，不应提交）
 lugarden_universal/application/data/auth.db
 lugarden_universal/application/data/auth.db-journal
+lugarden_universal/application/data/auth.db.bak
+lugarden_universal/application/data/*.db.bak

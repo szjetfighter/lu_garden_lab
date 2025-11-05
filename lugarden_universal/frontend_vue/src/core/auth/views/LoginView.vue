@@ -82,9 +82,9 @@
             id="register-username"
             v-model="registerForm.username"
             type="text"
-            placeholder="3-20个字符"
+            placeholder="2-20个字符"
             required
-            minlength="3"
+            minlength="2"
             maxlength="20"
             :disabled="loading"
             @blur="handleUsernameBlur"
@@ -389,8 +389,8 @@ const handleRegister = async () => {
   successMessage.value = ''
   
   // 前端验证
-  if (registerForm.value.username.length < 3 || registerForm.value.username.length > 20) {
-    errorMessage.value = '用户名必须是3-20个字符'
+  if (registerForm.value.username.length < 2 || registerForm.value.username.length > 20) {
+    errorMessage.value = '用户名必须是2-20个字符'
     return
   }
 

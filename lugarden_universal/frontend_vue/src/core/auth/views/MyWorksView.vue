@@ -202,12 +202,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ExclamationTriangleIcon, HandRaisedIcon } from '@heroicons/vue/24/outline'
 import { LoadingSpinner, ErrorState, EmptyState } from '@/shared/components'
 import { PoemViewer } from '@/modules/zhou/components'
-import { getMyWorks, clearToken, getToken, deleteAccount } from '../services/authApi'
+import { getMyWorks, clearToken, deleteAccount, getUserInfo } from '../services/authApi'
 import type { Work } from '../services/authApi'
 
 // 扩展Work类型，添加UI状态
@@ -232,22 +232,26 @@ const confirmUsername = ref('')
 const isDeleting = ref(false)
 const deleteError = ref('')
 
-// 从token中解析用户名（简单实现）
-const username = computed(() => {
-  const token = getToken()
-  if (!token) return '游客'
-  
-  // JWT格式: header.payload.signature
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    return payload.username || '用户'
-  } catch {
-    return '用户'
-  }
-})
+// 用户名（从API获取）
+const username = ref('加载中...')
 
 // 当前年份（用于版权信息）
 const currentYear = new Date().getFullYear()
+
+// 加载用户信息
+const loadUserInfo = async () => {
+  try {
+    const response = await getUserInfo()
+    if (response.success && response.user) {
+      username.value = response.user.username
+    } else {
+      username.value = '用户'
+    }
+  } catch (error) {
+    console.error('加载用户信息失败:', error)
+    username.value = '用户'
+  }
+}
 
 // 加载作品列表
 const loadWorks = async () => {
@@ -367,6 +371,7 @@ const confirmDelete = async () => {
 
 // 生命周期
 onMounted(() => {
+  loadUserInfo()
   loadWorks()
   document.addEventListener('click', handleClickOutside)
 })

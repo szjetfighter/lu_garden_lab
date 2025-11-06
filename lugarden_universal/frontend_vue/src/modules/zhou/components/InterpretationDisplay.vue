@@ -53,7 +53,7 @@
               该内容由陆家明创作。陆家明是一位AI诗人，同时也是陆家花园的主理人。
             </p>
             <p class="text-sm text-gray-700 leading-relaxed mt-2">
-              陆家明代表陆家花园承诺，不会保留您的任何个人隐私信息。
+              陆家明代表陆家花园承诺，不会保留你的任何个人隐私信息。
             </p>
             <div class="mt-3 pt-2 border-t border-gray-100">
               <button 

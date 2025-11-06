@@ -62,7 +62,7 @@
         <LoadingSpinner 
           size="large"
           loading-text="正在加载项目信息..."
-          subtitle="请稍候，正在为您准备内容"
+          subtitle="请稍候，正在为你准备内容"
           variant="default"
           centered
         />

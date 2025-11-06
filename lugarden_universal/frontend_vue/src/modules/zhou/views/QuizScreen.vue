@@ -24,7 +24,7 @@
                 发现未完成的问答进度
               </h3>
               <p class="text-sm text-blue-600 dark:text-blue-300 mb-3">
-                您在此章节中已回答 {{ savedAnswersCount }} / {{ zhouStore.quiz.totalQuestions }} 道题目，是否继续之前的进度？
+                你在此章节中已回答 {{ savedAnswersCount }} / {{ zhouStore.quiz.totalQuestions }} 道题目，是否继续之前的进度？
               </p>
               <div class="flex gap-2">
                 <button 
@@ -77,7 +77,7 @@
         <LoadingSpinner 
           size="large"
           loading-text="正在加载问题..."
-          subtitle="请稍候，正在为您准备题目"
+          subtitle="请稍候，正在为你准备题目"
           :show-progress="false"
           centered
         />

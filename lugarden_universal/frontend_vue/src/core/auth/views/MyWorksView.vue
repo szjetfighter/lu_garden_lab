@@ -100,7 +100,7 @@
             <div v-if="work.isExpanded" class="work-content">
               <!-- 用户输入 -->
               <div class="user-input-section">
-                <div class="user-feeling-label">您的思绪</div>
+                <div class="user-feeling-label">你的思绪</div>
                 <div class="user-feeling-content">{{ work.userInput }}</div>
               </div>
 

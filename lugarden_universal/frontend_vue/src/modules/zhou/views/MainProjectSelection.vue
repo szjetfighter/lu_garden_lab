@@ -16,7 +16,7 @@
         周与春秋
       </h1>
       <div class="text-center mb-8">
-        <p class="text-gray-600">请选择一个项目开始您的诗歌之旅</p>
+        <p class="text-gray-600">请选择一个项目开始你的诗歌之旅</p>
       </div>
       
       <!-- 加载状态 -->
@@ -24,7 +24,7 @@
         <LoadingSpinner 
           size="large"
           :loading-text="zhouStore.ui.loadingMessage || '正在加载项目...'"
-          subtitle="为您准备诗歌之旅"
+          subtitle="为你准备诗歌之旅"
           variant="default"
           :show-progress="false"
           centered

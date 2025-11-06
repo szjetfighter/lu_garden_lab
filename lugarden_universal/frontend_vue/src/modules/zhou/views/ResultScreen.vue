@@ -166,7 +166,7 @@
         <div v-if="!zhouStore.result.selectedPoem && !zhouStore.universeData.error">
           <LoadingSpinner 
             size="large"
-            loading-text="正在准备您的诗歌..."
+            loading-text="正在准备你的诗歌..."
             subtitle="诗意正在汇聚，请稍候..."
             variant="pulse"
             :show-progress="false"

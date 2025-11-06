@@ -4,7 +4,7 @@
 import type { ID } from '@/shared/types/common'
 
 // 宇宙状态类型
-export type UniverseStatus = 'active' | 'developing' | 'maintenance' | 'archived'
+export type UniverseStatus = 'draft' | 'published' | 'maintenance'
 
 // 宇宙基础信息接口
 export interface Universe {

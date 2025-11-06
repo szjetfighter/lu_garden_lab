@@ -21,18 +21,13 @@ const router = Router();
 
 /**
  * 映射数据库状态到前端期望的状态
+ * 前后端统一使用数据库状态值，不再做映射
  * @param {string} dbStatus - 数据库状态
- * @returns {string} 前端期望的状态
+ * @returns {string} 原样返回状态值
  */
 function mapStatusToFrontend(dbStatus) {
-  const statusMapping = {
-    'published': 'active',        // 已发布 → 活跃
-    'draft': 'developing',        // 草稿 → 开发中
-    'maintenance': 'maintenance', // 维护 → 维护中
-    'archived': 'archived'        // 归档 → 已归档
-  };
-  
-  return statusMapping[dbStatus] || 'developing';
+  // 前后端统一使用: published, draft, maintenance
+  return dbStatus || 'draft';
 }
 
 /**
@@ -135,8 +130,8 @@ function mapUniverseToDetailFormat(universe) {
   return {
     ...base,
     accessibility: {
-      isAccessible: universe.status === 'published' || universe.status === 'active',
-      accessMessage: universe.status !== 'published' && universe.status !== 'active' 
+      isAccessible: universe.status === 'published',
+      accessMessage: universe.status !== 'published' 
         ? '此宇宙正在开发中，暂时无法访问' 
         : undefined,
       requiresAuth: false
@@ -214,12 +209,9 @@ router.get('/universes', async (req, res, next) => {
     const sortedUniverses = universes.sort((a, b) => {
       // 定义状态优先级权重：数值越小优先级越高
       const statusPriority = {
-        'published': 1,   // 已发布(对应前端active) - 最高优先级
-        'active': 1,      // 活跃状态 - 最高优先级
-        'developing': 2,  // 开发中 - 第二优先级
-        'draft': 2,       // 草稿(对应前端developing) - 第二优先级  
-        'maintenance': 3, // 维护中 - 第三优先级
-        'archived': 4     // 已归档 - 最低优先级
+        'published': 1,   // 已发布 - 最高优先级
+        'draft': 2,       // 草稿 - 第二优先级
+        'maintenance': 3  // 维护中 - 第三优先级
       };
 
       const aPriority = statusPriority[a.status] || 999;

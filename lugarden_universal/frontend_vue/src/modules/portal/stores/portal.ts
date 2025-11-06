@@ -69,33 +69,34 @@ export const usePortalStore = defineStore('portal', () => {
   // 计算属性 (Getters)
   // ================================
 
-  // 活跃的宇宙列表
+  // 已发布的宇宙列表
   const activeUniverses = computed(() => {
-    return state.universes.filter(universe => universe.status === 'active')
+    return state.universes.filter(universe => universe.status === 'published')
   })
 
-  // 开发中的宇宙列表
+  // 草稿状态的宇宙列表
   const developingUniverses = computed(() => {
-    return state.universes.filter(universe => universe.status === 'developing')
+    return state.universes.filter(universe => universe.status === 'draft')
   })
 
-  // 所有可显示的宇宙（排除归档的）
+  // 所有可显示的宇宙（只显示已发布的）
   const visibleUniverses = computed(() => {
-    return state.universes.filter(universe => universe.status !== 'archived')
+    return state.universes.filter(universe => universe.status === 'published')
   })
 
   // 宇宙总数统计
   const universeStats = computed(() => {
     const stats = {
       total: state.universes.length,
-      active: 0,
-      developing: 0,
-      maintenance: 0,
-      archived: 0
+      published: 0,
+      draft: 0,
+      maintenance: 0
     }
 
     state.universes.forEach(universe => {
-      stats[universe.status]++
+      if (universe.status in stats) {
+        stats[universe.status as keyof typeof stats]++
+      }
     })
 
     return stats
@@ -162,7 +163,7 @@ export const usePortalStore = defineStore('portal', () => {
             id: 'zhou',
             name: '周与春秋练习',
             description: '基于吴任几《周与春秋练习》系列诗歌的互动体验，通过问答与解诗探索古典诗歌的现代意义。',
-            status: 'active',
+            status: 'published',
             meta: '诗歌问答 · 古典解读',
             version: '2.0.0',
             lastUpdated: '2025-08-28'
@@ -171,19 +172,10 @@ export const usePortalStore = defineStore('portal', () => {
             id: 'maoxiaodou',
             name: '毛小豆故事演绎',
             description: '毛小豆宇宙的奇幻冒险，包含前篇、正篇、番外的完整故事体系。',
-            status: 'developing',
+            status: 'draft',
             meta: '故事世界 · 角色扮演',
             version: '0.8.0',
             lastUpdated: '2025-08-15'
-          },
-          {
-            id: 'poet_universe',
-            name: '诗人宇宙',
-            description: '探索多位诗人的世界观和创作理念，通过AI对话体验不同的诗歌美学。',
-            status: 'developing',
-            meta: '诗人对话 · AI体验',
-            version: '0.3.0',
-            lastUpdated: '2025-08-01'
           }
         ]
       }
@@ -250,7 +242,7 @@ export const usePortalStore = defineStore('portal', () => {
 
   // 检查宇宙是否可访问
   function isUniverseAccessible(universe: Universe): boolean {
-    return universe.status === 'active'
+    return universe.status === 'published'
   }
 
   // 检查宇宙访问权限（异步版本，更准确）
@@ -269,7 +261,7 @@ export const usePortalStore = defineStore('portal', () => {
       const universe = findUniverseById(universeId)
       return {
         accessible: universe ? isUniverseAccessible(universe) : false,
-        reason: universe?.status !== 'active' ? `宇宙状态：${getUniverseStatusText(universe?.status || 'archived')}` : undefined
+        reason: universe?.status !== 'published' ? `宇宙状态：${getUniverseStatusText(universe?.status || 'draft')}` : undefined
       }
     }
   }
@@ -277,10 +269,9 @@ export const usePortalStore = defineStore('portal', () => {
   // 获取宇宙状态文本
   function getUniverseStatusText(status: UniverseStatus): string {
     const statusMap: Record<UniverseStatus, string> = {
-      active: '已上线',
-      developing: '开发中',
-      maintenance: '维护中',
-      archived: '已归档'
+      published: '已发布',
+      draft: '草稿',
+      maintenance: '维护中'
     }
     return statusMap[status] || '未知'
   }

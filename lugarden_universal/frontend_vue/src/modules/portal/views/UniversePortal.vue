@@ -195,9 +195,8 @@ const navigateToUniverse = async (universe: Universe) => {
   if (!portalStore.isUniverseAccessible(universe)) {
     // 显示友好的开发中提示
     const statusMessages = {
-      developing: `${universe.name} 正在紧张开发中，敬请期待！🚧`,
-      maintenance: `${universe.name} 正在维护升级，请稍后再来～🔧`,
-      archived: `${universe.name} 已暂时下线，感谢您的关注！📦`
+      draft: `${universe.name} 正在紧张开发中，敬请期待！🚧`,
+      maintenance: `${universe.name} 正在维护升级，请稍后再来～🔧`
     }
     const message = statusMessages[universe.status as keyof typeof statusMessages] || `${universe.name} 暂时无法访问`
     showToastMessage(message, 'info')
@@ -504,8 +503,13 @@ onUnmounted(() => {
 
 .universes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 2rem;
+  justify-content: center;
+  /* 单个宇宙：居中显示，限制宽度 */
+  grid-template-columns: repeat(auto-fit, minmax(400px, 500px));
+  /* 最大2列 */
+  max-width: min(100%, 1040px);
+  margin: 0 auto;
 }
 
 /* 版权与备案信息 */

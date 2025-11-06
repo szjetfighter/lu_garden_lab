@@ -57,7 +57,7 @@ const emit = defineEmits<UniverseCardEvents>()
 
 // 计算属性
 const isActive = computed(() => {
-  return props.universe.status === 'active' && !props.disabled
+  return props.universe.status === 'published' && !props.disabled
 })
 
 const animationDelay = computed(() => {
@@ -67,17 +67,16 @@ const animationDelay = computed(() => {
 
 const statusText = computed(() => {
   const statusMap: Record<string, string> = {
-    active: '已上线',
-    developing: '开发中',
-    maintenance: '维护中',
-    archived: '已归档'
+    published: '已发布',
+    draft: '草稿',
+    maintenance: '维护中'
   }
   return statusMap[props.universe.status] || '未知'
 })
 
 const buttonText = computed(() => {
   if (!isActive.value) {
-    return props.universe.status === 'developing' ? '敬请期待' : '暂不可用'
+    return props.universe.status === 'draft' ? '敬请期待' : '暂不可用'
   }
   return '进入宇宙'
 })
@@ -241,6 +240,7 @@ const handleEnterClick = () => {
 @media (max-width: 768px) {
   .universe-card {
     padding: 1.5rem;
+    /* 继承PC端的min-height: 280px */
   }
   
   .universe-name {

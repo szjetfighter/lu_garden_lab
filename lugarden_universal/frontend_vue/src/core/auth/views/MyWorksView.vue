@@ -112,6 +112,8 @@
                 :main-text="work.poemContent"
                 :author="`陆家明 × ${username}`"
                 :show-actions="true"
+                :show-download="true"
+                :created-at="work.createdAt"
                 :animation-delay="`${index * 0.1}s`"
               />
             </div>

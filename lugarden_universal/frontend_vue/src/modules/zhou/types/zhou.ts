@@ -124,6 +124,7 @@ export interface PoemViewerProps {
   showDownload?: boolean
   showShare?: boolean            // 显示分享按钮（默认隐藏）
   showAiLabel?: boolean          // 显示AI标识（用于合规要求）
+  createdAt?: string | null      // 创建时间，用于图片水印
 }
 
 // 状态域接口定义

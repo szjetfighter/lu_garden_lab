@@ -143,6 +143,7 @@
 import { computed, ref } from 'vue'
 import type { PoemViewerProps } from '@/modules/zhou/types/zhou'
 import ShareTools from '@/shared/components/ShareTools.vue'
+import { PoemImageGenerator } from '@/modules/zhou/services/PoemImageGenerator'
 import { 
   DocumentDuplicateIcon, 
   ShareIcon, 
@@ -180,7 +181,8 @@ const props = withDefaults(defineProps<Props>(), {
   showActions: false,
   showDownload: false,
   showShare: false,
-  showAiLabel: false
+  showAiLabel: false,
+  createdAt: null
 })
 
 const emit = defineEmits<Emits>()
@@ -322,7 +324,7 @@ const actionButtons = computed(() => [
     iconComponent: ArrowDownTrayIcon,
     handler: downloadPoem,
     disabled: isActionLoading.value,
-    title: '下载TXT文件',
+    title: '下载诗歌图片',
     visible: props.showDownload
   }
 ])
@@ -466,19 +468,49 @@ const copyShareContent = async () => {
   emit('shared', shareData)
 }
 
-// 下载诗歌为文本文件
-const downloadPoem = () => {
+// 下载诗歌为图片
+const downloadPoem = async () => {
   if (isActionLoading.value) return
   
   isActionLoading.value = true
   
   try {
-    const content = plainTextContent.value
     const title = cleanTitle(props.poemTitle)
-    const fileName = `${title.replace(/[^\w\s-]/g, '')}.txt`
+    const fileName = `${title.replace(/[^\w\s\u4e00-\u9fa5-]/g, '')}.png`
     
-    // 创建 Blob 对象
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+    // 获取诗歌内容
+    let poemContent = ''
+    if (props.mainText) {
+      poemContent = formattedMainText.value
+    } else if (props.poemBody && typeof props.poemBody === 'string') {
+      poemContent = formattedLegacyBody.value
+    }
+    
+    // 格式化创建时间（如果有）
+    let formattedCreatedAt: string | null = null
+    if (props.createdAt) {
+      const date = new Date(props.createdAt)
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      formattedCreatedAt = `${year}-${month}-${day} ${hours}:${minutes}`
+    }
+    
+    // 使用Canvas生成图片
+    const blob = await PoemImageGenerator.createCard({
+      title: title,
+      quote: props.quoteText ? formattedQuoteText.value : null,
+      quoteCitation: props.quoteCitation ? formattedQuoteCitation.value : null,
+      content: poemContent,
+      author: props.author || null,
+      createdAt: formattedCreatedAt
+    })
+    
+    if (!blob) {
+      throw new Error('图片生成失败')
+    }
     
     // 创建下载链接
     const url = URL.createObjectURL(blob)
@@ -500,8 +532,7 @@ const downloadPoem = () => {
     emit('downloaded', fileName)
     
   } catch (error) {
-    console.error('下载诗歌失败:', error)
-    // 可以在这里显示错误提示
+    console.error('下载诗歌图片失败:', error)
   } finally {
     isActionLoading.value = false
   }

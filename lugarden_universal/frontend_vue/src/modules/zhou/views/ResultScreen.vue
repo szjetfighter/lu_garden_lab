@@ -1,6 +1,9 @@
 <template>
   <div class="min-h-screen" style="background-color: var(--bg-primary);">
-    <div class="container mx-auto px-4 py-8">
+    <!-- 用户导航 -->
+    <UserNavigation mode="minimal" position="absolute" :show-toast="false" />
+    
+    <div class="container mx-auto px-4 py-8 pt-16 md:pt-8">
       <div class="max-w-4xl mx-auto">
         <!-- ================================ -->
         <!-- D.6移动端解读卡片布局优化 (2025-08-26) -->
@@ -199,8 +202,7 @@ import { useZhouStore } from '@/modules/zhou/stores/zhou'
 import PoemViewer from '@/modules/zhou/components/PoemViewer.vue'
 import ControlButtons from '@/modules/zhou/components/ControlButtons.vue'
 import InterpretationDisplay from '@/modules/zhou/components/InterpretationDisplay.vue'
-import LoadingSpinner from '@/shared/components/LoadingSpinner.vue'
-import ErrorState from '@/shared/components/ErrorState.vue'
+import { LoadingSpinner, ErrorState, UserNavigation } from '@/shared/components'
 
 const router = useRouter()
 const route = useRoute()

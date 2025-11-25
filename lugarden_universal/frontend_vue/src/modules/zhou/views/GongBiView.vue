@@ -1,6 +1,9 @@
 <template>
   <div class="min-h-screen" style="background-color: var(--bg-primary);">
-    <div class="container mx-auto px-4 py-8">
+    <!-- 用户导航 -->
+    <UserNavigation mode="minimal" position="absolute" :show-toast="false" />
+    
+    <div class="container mx-auto px-4 py-8 pt-16 md:pt-8">
       <div class="max-w-3xl mx-auto">
         
         <!-- 错误状态 -->
@@ -181,7 +184,7 @@ import { useZhouStore } from '@/modules/zhou/stores/zhou'
 import { createGongBi, getGongBiErrorMessage } from '@/modules/zhou/services/gongBiApi'
 import { saveGongBiWork, isAuthenticated } from '@/core/auth/services/authApi'
 import PoemViewer from '@/modules/zhou/components/PoemViewer.vue'
-import ErrorState from '@/shared/components/ErrorState.vue'
+import { ErrorState, UserNavigation } from '@/shared/components'
 
 const router = useRouter()
 const route = useRoute()

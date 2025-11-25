@@ -36,6 +36,18 @@ const routes: Array<RouteRecordRaw> = [
     path: '/quiz/:chapter?',
     name: 'QuizScreen',
     component: () => import('@/modules/zhou/views/QuizScreen.vue'),
+    beforeEnter: (to, from, next) => {
+      // 检测从echo页面返回，重置问答状态避免状态不一致
+      if (from.path === '/classical-echo') {
+        // 动态导入store并重置状态
+        import('@/modules/zhou/stores/zhou').then(({ useZhouStore }) => {
+          const zhouStore = useZhouStore()
+          zhouStore.resetQuiz()
+          console.log('Route guard: 检测到从echo页面返回，已重置问答状态')
+        })
+      }
+      next()
+    },
     meta: {
       title: '问答测试',
       requiresAuth: false,

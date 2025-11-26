@@ -1,6 +1,9 @@
 <template>
   <div class="min-h-screen" style="background-color: var(--bg-primary);">
-    <div class="container mx-auto px-4 py-8">
+    <!-- 用户导航 -->
+    <UserNavigation mode="minimal" position="absolute" :show-toast="false" />
+    
+    <div class="container mx-auto px-4 py-8 pt-16 md:pt-8">
       <div class="max-w-3xl mx-auto">
         
         <!-- 错误状态 -->
@@ -75,8 +78,8 @@
               </div>
             </div>
             
-            <!-- 操作按钮 - 移到input-section内部 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <!-- 操作按钮 - 三列布局：取消、主要操作、重新开始 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <button 
               @click="goBack"
               class="btn-control-base btn-control-hover btn-control-disabled px-6 py-3 rounded-lg font-medium text-body"
@@ -87,9 +90,15 @@
             <button 
               @click="handleSubmit"
               :disabled="!userFeeling.trim()"
-              class="btn-control-base btn-control-hover btn-control-active btn-control-disabled btn-gongbi px-6 py-3 rounded-lg font-medium text-body"
+              class="btn-gongbi text-body font-medium px-6 py-3 rounded-lg"
             >
               陆家明的闻言落笔
+            </button>
+            <button 
+              @click="startOver"
+              class="btn-restart text-body font-medium px-6 py-3 rounded-lg"
+            >
+              重新开始
             </button>
             </div>
           </div>
@@ -181,7 +190,7 @@ import { useZhouStore } from '@/modules/zhou/stores/zhou'
 import { createGongBi, getGongBiErrorMessage } from '@/modules/zhou/services/gongBiApi'
 import { saveGongBiWork, isAuthenticated } from '@/core/auth/services/authApi'
 import PoemViewer from '@/modules/zhou/components/PoemViewer.vue'
-import ErrorState from '@/shared/components/ErrorState.vue'
+import { ErrorState, UserNavigation } from '@/shared/components'
 
 const router = useRouter()
 const route = useRoute()
@@ -421,6 +430,22 @@ const goBack = () => {
     router.push(`/result?${params.toString()}`)
   } else {
     router.back()
+  }
+}
+
+// 重新开始 - 智能导航回到当前项目的子项目选择页
+const startOver = () => {
+  // 保存当前项目信息用于导航
+  const currentProject = zhouStore.navigation.currentMainProject
+  
+  // 重置应用状态
+  zhouStore.resetApp()
+  
+  // 智能导航：如果有当前主项目，返回其子项目选择页；否则返回主项目选择页
+  if (currentProject) {
+    router.push(`/project/${currentProject.id}`)
+  } else {
+    router.push('/zhou')
   }
 }
 </script>

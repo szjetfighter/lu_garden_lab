@@ -112,6 +112,8 @@
                 :main-text="work.poemContent"
                 :author="`陆家明 × ${username}`"
                 :show-actions="true"
+                :show-download="true"
+                :created-at="work.createdAt"
                 :animation-delay="`${index * 0.1}s`"
               />
             </div>
@@ -296,9 +298,14 @@ const goToCreate = () => {
   router.push('/zhou')
 }
 
-// 返回陆家花园
+// 智能返回逻辑：优先返回上一页，兜底返回首页
 const goBack = () => {
-  router.push('/')
+  // 检查浏览器历史记录长度，确保有可返回的页面
+  if (window.history.length > 1) {
+    router.back()  // 使用浏览器历史返回，回到进入"我的作品"前的页面
+  } else {
+    router.push('/')  // 兜底：如果没有历史记录（如直接访问），返回首页
+  }
 }
 
 // 移动端菜单控制

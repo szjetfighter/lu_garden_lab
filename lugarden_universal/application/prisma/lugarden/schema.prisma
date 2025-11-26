@@ -1,4 +1,4 @@
-// 陆家花园主宇宙数据库 Schema - v3 (主宇宙中立实体架构)
+// 陆家花园主宇宙数据库 Schema - v3.2 (主宇宙中立实体架构 + Stanza扩展)
 // 本设计采用"主宇宙中立实体 + 子宇宙桥接"的架构模型，实现跨宇宙数据融合与解耦
 
 generator client {
@@ -59,6 +59,8 @@ model Universe {
   maoxiaodouReadingLayers MaoxiaodouReadingLayer[]
   maoxiaodouMappings MaoxiaodouMapping[]
   maoxiaodouMetadatas MaoxiaodouMetadata[]
+  maoxiaodouStanzas MaoxiaodouStanza[]
+  maoxiaodouStanzaSceneLinks MaoxiaodouStanzaSceneLink[]
   
   // 跨宇宙关联关系
   crossUniverseSourceLinks CrossUniverseContentLink[] @relation("CrossUniverseSource")
@@ -191,6 +193,7 @@ model MaoxiaodouPoem {
   universeId String
   universe Universe @relation(fields: [universeId], references: [id])
   scenes MaoxiaodouScene[]
+  stanzas MaoxiaodouStanza[]
   @@unique([universeId, title])
 }
 
@@ -233,6 +236,34 @@ model MaoxiaodouScene {
   universeId String
   poem MaoxiaodouPoem @relation(fields: [poemId], references: [id])
   universe Universe @relation(fields: [universeId], references: [id])
+  stanzaLinks MaoxiaodouStanzaSceneLink[]
+}
+
+// 诗节扩展（Stanza）- 诗歌的最小叙事单元
+model MaoxiaodouStanza {
+  id String @id
+  poemId String
+  index Int
+  content String
+  universeId String
+  poem MaoxiaodouPoem @relation(fields: [poemId], references: [id])
+  universe Universe @relation(fields: [universeId], references: [id])
+  sceneLinks MaoxiaodouStanzaSceneLink[]
+  @@unique([poemId, index])
+}
+
+// 诗节-场景桥表（多对多关系）
+model MaoxiaodouStanzaSceneLink {
+  id String @id
+  stanzaId String
+  sceneId String
+  confidence String?  // high | medium
+  reason String?
+  universeId String
+  stanza MaoxiaodouStanza @relation(fields: [stanzaId], references: [id])
+  scene MaoxiaodouScene @relation(fields: [sceneId], references: [id])
+  universe Universe @relation(fields: [universeId], references: [id])
+  @@unique([stanzaId, sceneId])
 }
 
 model MaoxiaodouTerminology {

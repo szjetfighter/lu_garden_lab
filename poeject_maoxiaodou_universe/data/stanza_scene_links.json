@@ -1,0 +1,898 @@
+{
+  "metadata": {
+    "universe_name": "毛小豆宇宙",
+    "version": "1.0",
+    "description": "诗节-场景关联数据",
+    "created_at": "2025-11-26",
+    "last_updated": "2025-11-26",
+    "status": "定稿",
+    "total_links": 110,
+    "total_scenes": 30,
+    "confidence_distribution": {
+      "high": 105,
+      "medium": 5
+    }
+  },
+  "links": [
+    {
+      "id": "link_maoxiaodou_story_2_stanza_1_restroom_prep",
+      "stanzaId": "maoxiaodou_story_2_stanza_1",
+      "sceneId": "maoxiaodou_story_2_restroom_prep",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述卫生间场景：坑位、洗手台、镜子"
+    },
+    {
+      "id": "link_maoxiaodou_story_2_stanza_2_business_dinner",
+      "stanzaId": "maoxiaodou_story_2_stanza_2",
+      "sceneId": "maoxiaodou_story_2_business_dinner",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述客户姚总、同事菲菲的办公室/商务场景"
+    },
+    {
+      "id": "link_maoxiaodou_story_2_stanza_3_business_dinner",
+      "stanzaId": "maoxiaodou_story_2_stanza_3",
+      "sceneId": "maoxiaodou_story_2_business_dinner",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述酒局场景：喝酒、姚总、老蒋、三号湾"
+    },
+    {
+      "id": "link_maoxiaodou_story_2_stanza_4_business_dinner",
+      "stanzaId": "maoxiaodou_story_2_stanza_4",
+      "sceneId": "maoxiaodou_story_2_business_dinner",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节延续酒局场景：姚总量可以、老蒋趴下"
+    },
+    {
+      "id": "link_maoxiaodou_story_2_stanza_5_business_dinner",
+      "stanzaId": "maoxiaodou_story_2_stanza_5",
+      "sceneId": "maoxiaodou_story_2_business_dinner",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述酒局结束等车场景，仍属商务宴请"
+    },
+    {
+      "id": "link_maoxiaodou_story_2_stanza_6_private_car",
+      "stanzaId": "maoxiaodou_story_2_stanza_6",
+      "sceneId": "maoxiaodou_story_2_private_car",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述代驾、电车内饰、分针计时"
+    },
+    {
+      "id": "link_maoxiaodou_story_2_stanza_7_private_car",
+      "stanzaId": "maoxiaodou_story_2_stanza_7",
+      "sceneId": "maoxiaodou_story_2_private_car",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节延续专车场景，与老蒋的私密对话"
+    },
+    {
+      "id": "link_shark_and_rock_stanza_1_poker_room",
+      "stanzaId": "shark_and_rock_stanza_1",
+      "sceneId": "shark_and_rock_poker_room",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述德州扑克牌局：Dealer、UTG、Limp、Open"
+    },
+    {
+      "id": "link_shark_and_rock_stanza_2_stairwell",
+      "stanzaId": "shark_and_rock_stanza_2",
+      "sceneId": "shark_and_rock_stairwell",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述楼梯间透气场景：窗外空调外机"
+    },
+    {
+      "id": "link_shark_and_rock_stanza_3_poker_room",
+      "stanzaId": "shark_and_rock_stanza_3",
+      "sceneId": "shark_and_rock_poker_room",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述牌局：Check-Raise、转牌、河牌、Allin"
+    },
+    {
+      "id": "link_shark_and_rock_stanza_4_poker_room",
+      "stanzaId": "shark_and_rock_stanza_4",
+      "sceneId": "shark_and_rock_poker_room",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述牌局：新玩家加入、小盲交好"
+    },
+    {
+      "id": "link_shark_and_rock_stanza_5_poker_room",
+      "stanzaId": "shark_and_rock_stanza_5",
+      "sceneId": "shark_and_rock_poker_room",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述牌局：HJ位Open、3-Bet、河牌"
+    },
+    {
+      "id": "link_shark_and_rock_stanza_6_poker_room",
+      "stanzaId": "shark_and_rock_stanza_6",
+      "sceneId": "shark_and_rock_poker_room",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述牌局：筹码交换、翻牌、葫芦"
+    },
+    {
+      "id": "link_shark_and_rock_stanza_7_stairwell",
+      "stanzaId": "shark_and_rock_stanza_7",
+      "sceneId": "shark_and_rock_stairwell",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述与华少的私密对话：不会河牌偷你"
+    },
+    {
+      "id": "link_shark_and_rock_stanza_8_poker_room",
+      "stanzaId": "shark_and_rock_stanza_8",
+      "sceneId": "shark_and_rock_poker_room",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述牌局：花牌、大学路回忆穿插"
+    },
+    {
+      "id": "link_shark_and_rock_stanza_9_poker_room",
+      "stanzaId": "shark_and_rock_stanza_9",
+      "sceneId": "shark_and_rock_poker_room",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述牌局结束：放水、傻逼东西"
+    },
+    {
+      "id": "link_gold_medal_winner_stanza_1_office",
+      "stanzaId": "gold_medal_winner_stanza_1",
+      "sceneId": "gold_medal_winner_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：RFP、Deliverables、简宁"
+    },
+    {
+      "id": "link_gold_medal_winner_stanza_2_office",
+      "stanzaId": "gold_medal_winner_stanza_2",
+      "sceneId": "gold_medal_winner_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：Teams、Outlook、review"
+    },
+    {
+      "id": "link_gold_medal_winner_stanza_3_gym",
+      "stanzaId": "gold_medal_winner_stanza_3",
+      "sceneId": "gold_medal_winner_gym",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述健身房：比基尼动作、明姐、铁馆"
+    },
+    {
+      "id": "link_gold_medal_winner_stanza_4_office",
+      "stanzaId": "gold_medal_winner_stanza_4",
+      "sceneId": "gold_medal_winner_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：BYOL、Team Building、RSVP"
+    },
+    {
+      "id": "link_gold_medal_winner_stanza_5_office",
+      "stanzaId": "gold_medal_winner_stanza_5",
+      "sceneId": "gold_medal_winner_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：Critical Year、PTO、work from home"
+    },
+    {
+      "id": "link_gold_medal_winner_stanza_6_office",
+      "stanzaId": "gold_medal_winner_stanza_6",
+      "sceneId": "gold_medal_winner_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：Round Table Meeting、Contact Person"
+    },
+    {
+      "id": "link_gold_medal_winner_stanza_7_skating_training",
+      "stanzaId": "gold_medal_winner_stanza_7",
+      "sceneId": "gold_medal_winner_skating_training",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述魏教练一对一滑冰课、充值一万、与雪梨相识的铺垫"
+    },
+    {
+      "id": "link_gold_medal_winner_stanza_8_skating_rink",
+      "stanzaId": "gold_medal_winner_stanza_8",
+      "sceneId": "gold_medal_winner_skating_rink",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述滑冰场：魏教练、后外点冰跳、清冰车"
+    },
+    {
+      "id": "link_gold_medal_winner_stanza_9_skating_rink",
+      "stanzaId": "gold_medal_winner_stanza_9",
+      "sceneId": "gold_medal_winner_skating_rink",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述滑冰场：冰场中心、步法旋转跳跃"
+    },
+    {
+      "id": "link_remake_stanza_1_bathroom",
+      "stanzaId": "remake_stanza_1",
+      "sceneId": "remake_bathroom",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述浴缸泡澡场景"
+    },
+    {
+      "id": "link_remake_stanza_2_ktv_memory",
+      "stanzaId": "remake_stanza_2",
+      "sceneId": "remake_ktv_memory",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述KTV残局回忆：续费、华少、老楚、栋先生"
+    },
+    {
+      "id": "link_remake_stanza_3_ktv_memory",
+      "stanzaId": "remake_stanza_3",
+      "sceneId": "remake_ktv_memory",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "medium",
+      "reason": "诗节描述等车借火，延续KTV残局"
+    },
+    {
+      "id": "link_remake_stanza_4_bathroom",
+      "stanzaId": "remake_stanza_4",
+      "sceneId": "remake_bathroom",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述醒来后的日常，回到浴缸叙事框架"
+    },
+    {
+      "id": "link_remake_stanza_5_barbershop",
+      "stanzaId": "remake_stanza_5",
+      "sceneId": "remake_barbershop",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述理发店：维尼、索尼离开"
+    },
+    {
+      "id": "link_remake_stanza_6_barbershop",
+      "stanzaId": "remake_stanza_6",
+      "sceneId": "remake_barbershop",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节延续理发店场景：维尼的特点"
+    },
+    {
+      "id": "link_remake_stanza_7_bathroom",
+      "stanzaId": "remake_stanza_7",
+      "sceneId": "remake_bathroom",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节回到浴缸场景：浴球、内裤、云南回忆"
+    },
+    {
+      "id": "link_new_year_stanza_1_home",
+      "stanzaId": "new_year_stanza_1",
+      "sceneId": "new_year_home",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述家中：买新鞋、Hooters送远志"
+    },
+    {
+      "id": "link_new_year_stanza_2_home",
+      "stanzaId": "new_year_stanza_2",
+      "sceneId": "new_year_home",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述家中游戏：PS5白金奖杯、Dota"
+    },
+    {
+      "id": "link_new_year_stanza_3_party",
+      "stanzaId": "new_year_stanza_3",
+      "sceneId": "new_year_party",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述跨年派对：小罗、打德扑、吃饭"
+    },
+    {
+      "id": "link_new_year_stanza_4_party",
+      "stanzaId": "new_year_stanza_4",
+      "sceneId": "new_year_party",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述跨年派对：姐妹们、木木、小月珊、倩姐"
+    },
+    {
+      "id": "link_new_year_stanza_5_party",
+      "stanzaId": "new_year_stanza_5",
+      "sceneId": "new_year_party",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述跨年派对：厨房帮忙、倩姐、小满"
+    },
+    {
+      "id": "link_new_year_stanza_6_home",
+      "stanzaId": "new_year_stanza_6",
+      "sceneId": "new_year_home",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节回归内心独白：生活越来越好、开挂"
+    },
+    {
+      "id": "link_temple_stanza_1_wedding",
+      "stanzaId": "temple_stanza_1",
+      "sceneId": "temple_wedding",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述婚礼：小吴小廖结婚、临安"
+    },
+    {
+      "id": "link_temple_stanza_2_wedding",
+      "stanzaId": "temple_stanza_2",
+      "sceneId": "temple_wedding",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述婚礼表演：求佛、Plus One"
+    },
+    {
+      "id": "link_temple_stanza_3_home_party",
+      "stanzaId": "temple_stanza_3",
+      "sceneId": "temple_home_party",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述家庭派对：华少复合、老楚圆圆"
+    },
+    {
+      "id": "link_temple_stanza_4_home_party",
+      "stanzaId": "temple_stanza_4",
+      "sceneId": "temple_home_party",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述家庭派对：打牌、喝酒、宵禁"
+    },
+    {
+      "id": "link_temple_stanza_5_yunnan_memory",
+      "stanzaId": "temple_stanza_5",
+      "sceneId": "temple_yunnan_memory",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述云南回忆：大理、丽江火车站"
+    },
+    {
+      "id": "link_temple_stanza_6_yunnan_memory",
+      "stanzaId": "temple_stanza_6",
+      "sceneId": "temple_yunnan_memory",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述云南翻车：古城、电驴、栋先生受伤"
+    },
+    {
+      "id": "link_temple_stanza_7_yunnan_memory",
+      "stanzaId": "temple_stanza_7",
+      "sceneId": "temple_yunnan_memory",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节延续云南回忆：小李、伴郎、民宿"
+    },
+    {
+      "id": "link_temple_stanza_8_home_party",
+      "stanzaId": "temple_stanza_8",
+      "sceneId": "temple_home_party",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述栋先生女朋友、梧桐区租房"
+    },
+    {
+      "id": "link_temple_stanza_9_home_party",
+      "stanzaId": "temple_stanza_9",
+      "sceneId": "temple_home_party",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述仙剑奇侠传、杀破狼"
+    },
+    {
+      "id": "link_fortune_stanza_1_office",
+      "stanzaId": "fortune_stanza_1",
+      "sceneId": "fortune_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：出差补贴邮件、菲菲"
+    },
+    {
+      "id": "link_fortune_stanza_2_office",
+      "stanzaId": "fortune_stanza_2",
+      "sceneId": "fortune_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：抽烟点、悦刻、童年幻想"
+    },
+    {
+      "id": "link_fortune_stanza_3_office",
+      "stanzaId": "fortune_stanza_3",
+      "sceneId": "fortune_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：菲菲入职、导师制、美妆"
+    },
+    {
+      "id": "link_fortune_stanza_4_office",
+      "stanzaId": "fortune_stanza_4",
+      "sceneId": "fortune_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "medium",
+      "reason": "诗节描述理论力学回忆，但框架仍是办公室日常"
+    },
+    {
+      "id": "link_fortune_stanza_5_bbq_restroom",
+      "stanzaId": "fortune_stanza_5",
+      "sceneId": "fortune_bbq_restroom",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述阿康烧烤、厕所崩溃、母亲患病"
+    },
+    {
+      "id": "link_fortune_stanza_6_bbq_restroom",
+      "stanzaId": "fortune_stanza_6",
+      "sceneId": "fortune_bbq_restroom",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节延续烧烤回忆：华少、网吧、七号楼"
+    },
+    {
+      "id": "link_sodium_stanza_1_school_corridor",
+      "stanzaId": "sodium_stanza_1",
+      "sceneId": "sodium_school_corridor",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述校园走廊：华少喜欢女孩、远志调解"
+    },
+    {
+      "id": "link_sodium_stanza_2_school_corridor",
+      "stanzaId": "sodium_stanza_2",
+      "sceneId": "sodium_school_corridor",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述教室：化学课代表、栋先生"
+    },
+    {
+      "id": "link_sodium_stanza_3_outdoor_cafe",
+      "stanzaId": "sodium_stanza_3",
+      "sceneId": "sodium_outdoor_cafe",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述露天咖吧：华少告白成功、卤蛋泡面"
+    },
+    {
+      "id": "link_sodium_stanza_4_school_corridor",
+      "stanzaId": "sodium_stanza_4",
+      "sceneId": "sodium_school_corridor",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述吃饭比赛：钠派vs盖帮"
+    },
+    {
+      "id": "link_sodium_stanza_5_outdoor_cafe",
+      "stanzaId": "sodium_stanza_5",
+      "sceneId": "sodium_outdoor_cafe",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述校友会露天咖吧：放假、卤蛋、老楚"
+    },
+    {
+      "id": "link_sodium_stanza_6_outdoor_cafe",
+      "stanzaId": "sodium_stanza_6",
+      "sceneId": "sodium_outdoor_cafe",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述露天咖吧：牛板筋分配、天台"
+    },
+    {
+      "id": "link_wheat_stanza_1_campus",
+      "stanzaId": "wheat_stanza_1",
+      "sceneId": "wheat_campus",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述校园社团：可人、社团部、牛板筋贿赂"
+    },
+    {
+      "id": "link_wheat_stanza_2_campus",
+      "stanzaId": "wheat_stanza_2",
+      "sceneId": "wheat_campus",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述社团活动：布拉格之恋、孙老师叫停"
+    },
+    {
+      "id": "link_wheat_stanza_3_campus",
+      "stanzaId": "wheat_stanza_3",
+      "sceneId": "wheat_campus",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述社团运营：可人、社团评价表"
+    },
+    {
+      "id": "link_wheat_stanza_4_campus",
+      "stanzaId": "wheat_stanza_4",
+      "sceneId": "wheat_campus",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述校园：麦趣鸡盒、李种、外卖"
+    },
+    {
+      "id": "link_wheat_stanza_5_campus",
+      "stanzaId": "wheat_stanza_5",
+      "sceneId": "wheat_campus",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述社团招新：鲍哥、亚克力板、以梦为马"
+    },
+    {
+      "id": "link_wheat_stanza_6_campus",
+      "stanzaId": "wheat_stanza_6",
+      "sceneId": "wheat_campus",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述被抓现行：班主任评价不是人"
+    },
+    {
+      "id": "link_museum_stanza_1_school",
+      "stanzaId": "museum_stanza_1",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述学校周边：南何铁路、足浴馆、江湾镇"
+    },
+    {
+      "id": "link_museum_stanza_2_school",
+      "stanzaId": "museum_stanza_2",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述班委选举：团支书、劳动委员"
+    },
+    {
+      "id": "link_museum_stanza_3_school",
+      "stanzaId": "museum_stanza_3",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述教室：黑板前、远志、栋先生"
+    },
+    {
+      "id": "link_museum_stanza_4_school",
+      "stanzaId": "museum_stanza_4",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述教室劳动：拎水桶、拖地"
+    },
+    {
+      "id": "link_museum_stanza_5_school",
+      "stanzaId": "museum_stanza_5",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述分班：化学班、物理班、栋先生分手"
+    },
+    {
+      "id": "link_museum_stanza_6_school",
+      "stanzaId": "museum_stanza_6",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述同桌：苹果香蕉、晚自习、八卦"
+    },
+    {
+      "id": "link_museum_stanza_7_school",
+      "stanzaId": "museum_stanza_7",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述寝室：斗地主、远志、刷卡"
+    },
+    {
+      "id": "link_museum_stanza_8_school",
+      "stanzaId": "museum_stanza_8",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述吉浦河边：德克士、馄饨、栋先生"
+    },
+    {
+      "id": "link_museum_stanza_9_school",
+      "stanzaId": "museum_stanza_9",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述KTV：三门路、秋阳路、凑钱唱歌"
+    },
+    {
+      "id": "link_museum_stanza_10_school",
+      "stanzaId": "museum_stanza_10",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述月考：化学班第一、苏州面馆、继承者们"
+    },
+    {
+      "id": "link_museum_stanza_11_school",
+      "stanzaId": "museum_stanza_11",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述月考后：面馆装修、一模、未来确定"
+    },
+    {
+      "id": "link_museum_stanza_12_school",
+      "stanzaId": "museum_stanza_12",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述高三回忆：军训、老友记、千分考"
+    },
+    {
+      "id": "link_museum_stanza_13_school",
+      "stanzaId": "museum_stanza_13",
+      "sceneId": "museum_school",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述二模后：操场草坪、老楚撕膏药"
+    },
+    {
+      "id": "link_museum_stanza_14_playground",
+      "stanzaId": "museum_stanza_14",
+      "sceneId": "museum_playground",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述操场过敏：草籽、喷嚏、眼泪"
+    },
+    {
+      "id": "link_canned_tuna_stanza_1_historical_montage",
+      "stanzaId": "canned_tuna_stanza_1",
+      "sceneId": "canned_tuna_historical_montage",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述历史蒙太奇：VCD、步步高、盗版市场"
+    },
+    {
+      "id": "link_canned_tuna_stanza_2_historical_montage",
+      "stanzaId": "canned_tuna_stanza_2",
+      "sceneId": "canned_tuna_historical_montage",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节延续历史蒙太奇：避孕药、诺伊维尔特法案"
+    },
+    {
+      "id": "link_canned_tuna_stanza_3_historical_montage",
+      "stanzaId": "canned_tuna_stanza_3",
+      "sceneId": "canned_tuna_historical_montage",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节延续历史蒙太奇：比特币、以太坊、泰达币"
+    },
+    {
+      "id": "link_canned_tuna_stanza_4_historical_montage",
+      "stanzaId": "canned_tuna_stanza_4",
+      "sceneId": "canned_tuna_historical_montage",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节结尾：两个男孩的秘密、布拉格之恋"
+    },
+    {
+      "id": "link_watch_out_stanza_1_office",
+      "stanzaId": "watch_out_stanza_1",
+      "sceneId": "watch_out_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节开头：这个男人叫阿伟（引入办公室场景）"
+    },
+    {
+      "id": "link_watch_out_stanza_2_office",
+      "stanzaId": "watch_out_stanza_2",
+      "sceneId": "watch_out_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：脚本触发、通讯软件、键盘"
+    },
+    {
+      "id": "link_watch_out_stanza_3_office",
+      "stanzaId": "watch_out_stanza_3",
+      "sceneId": "watch_out_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：大壮声音、无线接入点"
+    },
+    {
+      "id": "link_watch_out_stanza_4_office",
+      "stanzaId": "watch_out_stanza_4",
+      "sceneId": "watch_out_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：快捷键、皮卡丘鼠标"
+    },
+    {
+      "id": "link_watch_out_stanza_5_office",
+      "stanzaId": "watch_out_stanza_5",
+      "sceneId": "watch_out_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述办公室：告警、拉伸动作、老大"
+    },
+    {
+      "id": "link_watch_out_stanza_6_restroom",
+      "stanzaId": "watch_out_stanza_6",
+      "sceneId": "watch_out_restroom",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述厕所：智能马桶圈、烟雾报警器"
+    },
+    {
+      "id": "link_watch_out_stanza_7_office",
+      "stanzaId": "watch_out_stanza_7",
+      "sceneId": "watch_out_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述同事关系：小帅、小美、黄毛、阿杰"
+    },
+    {
+      "id": "link_watch_out_stanza_8_office",
+      "stanzaId": "watch_out_stanza_8",
+      "sceneId": "watch_out_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述夜间办公：告警、烟、薄荷糖"
+    },
+    {
+      "id": "link_watch_out_stanza_9_office",
+      "stanzaId": "watch_out_stanza_9",
+      "sceneId": "watch_out_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述身体反应：转动脖子"
+    },
+    {
+      "id": "link_watch_out_stanza_10_office",
+      "stanzaId": "watch_out_stanza_10",
+      "sceneId": "watch_out_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述下班后的强行抵抗：关显示器、躺床上、关机，延续全景敞视主题"
+    },
+    {
+      "id": "link_watch_out_stanza_11_office",
+      "stanzaId": "watch_out_stanza_11",
+      "sceneId": "watch_out_office",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节结尾：只要睁眼就是注意看"
+    },
+    {
+      "id": "link_interest_stanza_1_home",
+      "stanzaId": "interest_stanza_1",
+      "sceneId": "interest_home",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述历史引入：朱新建、叶浅予"
+    },
+    {
+      "id": "link_interest_stanza_2_friend_house",
+      "stanzaId": "interest_stanza_2",
+      "sceneId": "interest_friend_house",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述去朋友家：画画、写诗、步高里"
+    },
+    {
+      "id": "link_interest_stanza_3_home",
+      "stanzaId": "interest_stanza_3",
+      "sceneId": "interest_home",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述朱新建评价：臭豆腐比喻"
+    },
+    {
+      "id": "link_interest_stanza_4_friend_house",
+      "stanzaId": "interest_stanza_4",
+      "sceneId": "interest_friend_house",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述华少家：靖宇南路、看画读诗"
+    },
+    {
+      "id": "link_interest_stanza_5_home",
+      "stanzaId": "interest_stanza_5",
+      "sceneId": "interest_home",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "medium",
+      "reason": "诗节描述边平山、李宗陶访谈"
+    },
+    {
+      "id": "link_interest_stanza_6_friend_house",
+      "stanzaId": "interest_stanza_6",
+      "sceneId": "interest_friend_house",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述离开华少家：打车、电话、南京"
+    },
+    {
+      "id": "link_interest_stanza_7_friend_house",
+      "stanzaId": "interest_stanza_7",
+      "sceneId": "interest_friend_house",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述A片之王宣言：红牛、电视软件"
+    },
+    {
+      "id": "link_subtitles_stanza_1_late_night_stall",
+      "stanzaId": "subtitles_stanza_1",
+      "sceneId": "subtitles_late_night_stall",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述华少视角：刘总、上海人"
+    },
+    {
+      "id": "link_subtitles_stanza_2_late_night_stall",
+      "stanzaId": "subtitles_stanza_2",
+      "sceneId": "subtitles_late_night_stall",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述华少视角：老叶、吵闹"
+    },
+    {
+      "id": "link_subtitles_stanza_3_late_night_stall",
+      "stanzaId": "subtitles_stanza_3",
+      "sceneId": "subtitles_late_night_stall",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述女仆店：老叶刘总合伙"
+    },
+    {
+      "id": "link_subtitles_stanza_4_late_night_stall",
+      "stanzaId": "subtitles_stanza_4",
+      "sceneId": "subtitles_late_night_stall",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述入股条件：香肠聚会"
+    },
+    {
+      "id": "link_subtitles_stanza_5_late_night_stall",
+      "stanzaId": "subtitles_stanza_5",
+      "sceneId": "subtitles_late_night_stall",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述华少择偶观：张秋负分"
+    },
+    {
+      "id": "link_subtitles_stanza_6_late_night_stall",
+      "stanzaId": "subtitles_stanza_6",
+      "sceneId": "subtitles_late_night_stall",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述华少女友：栋先生、张秋"
+    },
+    {
+      "id": "link_subtitles_stanza_7_late_night_stall",
+      "stanzaId": "subtitles_stanza_7",
+      "sceneId": "subtitles_late_night_stall",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述女友与张秋关系"
+    },
+    {
+      "id": "link_subtitles_stanza_8_late_night_stall",
+      "stanzaId": "subtitles_stanza_8",
+      "sceneId": "subtitles_late_night_stall",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述分手：三号湾、科罗娜"
+    },
+    {
+      "id": "link_subtitles_stanza_9_late_night_stall",
+      "stanzaId": "subtitles_stanza_9",
+      "sceneId": "subtitles_late_night_stall",
+      "universeId": "universe_maoxiaodou",
+      "confidence": "high",
+      "reason": "诗节描述宵夜：电驴、生蚝、典急孝"
+    }
+  ]
+}

@@ -4,7 +4,8 @@
     "version": "2.0",
     "description": "毛小豆宇宙场景数据库",
     "created_at": "2025-08-01",
-    "last_updated": "2025-08-01"
+    "last_updated": "2025-11-26",
+    "total_scenes": 30
   },
   "scenes": [
     {
@@ -65,10 +66,19 @@
       "id": "gold_medal_winner_gym",
       "scenario": "健身房训练",
       "type": "运动环境",
-      "description": "张秋在健身房进行身体训练，学习比基尼动作，与师娘明姐交流",
+      "description": "张秋在姜Pro的铁馆进行身体训练，学习比基尼动作，与师娘明姐交流",
       "poem_id": "gold_medal_winner",
       "characters": ["zhangqiu", "mingjie"],
-      "terminology": ["bikini_workout", "certified_breasts", "toe_loop", "salchow", "axel"]
+      "terminology": ["bikini_workout", "certified_breasts", "dms_bikini_silver"]
+    },
+    {
+      "id": "gold_medal_winner_skating_training",
+      "scenario": "滑冰训练",
+      "type": "运动环境",
+      "description": "张秋跟随魏教练进行一对一滑冰课，学习跳跃动作，与新摸鱼搭子雪梨相识",
+      "poem_id": "gold_medal_winner",
+      "characters": ["zhangqiu", "xueli"],
+      "terminology": ["toe_loop", "salchow", "axel", "ice_rink_training"]
     },
     {
       "id": "gold_medal_winner_skating_rink",

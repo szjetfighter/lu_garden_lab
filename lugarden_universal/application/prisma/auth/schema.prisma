@@ -3,12 +3,12 @@
 
 datasource db {
   provider = "sqlite"
-  url      = "file:../data/auth.db"
+  url      = "file:../../data/auth.db"
 }
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/auth-prisma"
+  output   = "../../generated/auth-prisma"
 }
 
 // 用户表

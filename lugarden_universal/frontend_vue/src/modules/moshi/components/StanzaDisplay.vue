@@ -3,14 +3,25 @@
  * 诗节展示组件
  */
 
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useMoshiStore } from '../stores/moshiStore'
+import ShareTools from '@/shared/components/ShareTools.vue'
+import { PoemImageGenerator } from '@/shared/services/PoemImageGenerator'
+import { 
+  DocumentDuplicateIcon, 
+  ArrowDownTrayIcon,
+  CheckIcon
+} from '@heroicons/vue/24/outline'
 
 const store = useMoshiStore()
 
 const stanza = computed(() => store.currentStanza)
 // 只在中奖且不在动画中时显示
 const isVisible = computed(() => store.isWin && stanza.value && !store.isSpinning)
+
+// 状态
+const isCopied = ref(false)
+const isActionLoading = ref(false)
 
 // 格式化诗节内容，保留换行
 const formattedContent = computed(() => {
@@ -35,6 +46,95 @@ const formattedSource = computed(() => {
   const index = numberToChinese(stanza.value.index || 1)
   return `${title} · ${index}`
 })
+
+// 获取纯文本内容
+const plainTextContent = computed(() => {
+  if (!stanza.value) return ''
+  return `${formattedContent.value}\n\n——${formattedSource.value}`
+})
+
+// 复制诗节
+const copyStanza = async () => {
+  if (isActionLoading.value) return
+  isActionLoading.value = true
+  
+  try {
+    const text = plainTextContent.value
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+    } else {
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      textArea.style.position = 'fixed'
+      textArea.style.left = '-9999px'
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+    }
+    
+    isCopied.value = true
+    setTimeout(() => { isCopied.value = false }, 3000)
+  } catch (error) {
+    console.error('复制失败:', error)
+  } finally {
+    isActionLoading.value = false
+  }
+}
+
+// 下载诗节图片
+const downloadStanza = async () => {
+  if (isActionLoading.value || !stanza.value) return
+  isActionLoading.value = true
+  
+  try {
+    const title = stanza.value.poem?.title || '诗节'
+    const fileName = `${title.replace(/[^\w\s\u4e00-\u9fa5-]/g, '')}.png`
+    
+    const blob = await PoemImageGenerator.createCard({
+      title: title,
+      content: formattedContent.value,
+      source: formattedSource.value
+    })
+    
+    if (!blob) throw new Error('图片生成失败')
+    
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    setTimeout(() => URL.revokeObjectURL(url), 100)
+  } catch (error) {
+    console.error('下载失败:', error)
+  } finally {
+    isActionLoading.value = false
+  }
+}
+
+// ShareTools 配置
+const actionButtons = computed(() => [
+  {
+    key: 'copy',
+    iconComponent: isCopied.value ? CheckIcon : DocumentDuplicateIcon,
+    handler: copyStanza,
+    disabled: isActionLoading.value,
+    title: isCopied.value ? '已复制' : '复制诗节',
+    variant: isCopied.value ? ('success' as const) : undefined,
+    visible: true
+  },
+  {
+    key: 'download',
+    iconComponent: ArrowDownTrayIcon,
+    handler: downloadStanza,
+    disabled: isActionLoading.value,
+    title: '下载诗节图片',
+    visible: true
+  }
+])
 </script>
 
 <template>
@@ -52,6 +152,13 @@ const formattedSource = computed(() => {
       <div class="stanza-footer">
         <span class="poem-source">{{ formattedSource }}</span>
       </div>
+      
+      <!-- 分享工具 -->
+      <ShareTools
+        :actions="actionButtons"
+        :show-actions="true"
+        layout="auto"
+      />
     </div>
   </Transition>
 </template>

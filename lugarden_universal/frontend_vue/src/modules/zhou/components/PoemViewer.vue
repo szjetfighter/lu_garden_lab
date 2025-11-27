@@ -143,7 +143,7 @@
 import { computed, ref } from 'vue'
 import type { PoemViewerProps } from '@/modules/zhou/types/zhou'
 import ShareTools from '@/shared/components/ShareTools.vue'
-import { PoemImageGenerator } from '@/modules/zhou/services/PoemImageGenerator'
+import { PoemImageGenerator } from '@/shared/services/PoemImageGenerator'
 import { 
   DocumentDuplicateIcon, 
   ShareIcon, 

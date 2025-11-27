@@ -144,6 +144,53 @@
   - [x] 步骤A.5.4：前端奖励/stanza显示时机改为动画结束后
   - [x] 步骤A.5.5：stanza出处格式改为"诗名 · 一"（numberToChinese函数）
 
+#### - [x] 任务A.6：诗歌展示组件增强
+
+- **核心思想**: 提升 PoemImageGenerator 为共享服务，增强 StanzaDisplay 交互能力
+- 交付物：
+  - PoemImageGenerator 移到 shared/services/
+  - StanzaDisplay 集成 ShareTools（复制+下载）
+- 验收标准：
+  - zhou 和 moshi 模块都能使用 shared 的 PoemImageGenerator
+  - StanzaDisplay 显示复制和下载按钮
+- **风险评估**: 中等，涉及文件移动和多模块改动
+- 预期改动文件（预判）：
+  - `shared/services/PoemImageGenerator.ts`（新建）
+  - `modules/zhou/components/PoemViewer.vue`（更新import）
+  - `modules/moshi/components/StanzaDisplay.vue`（集成ShareTools）
+- 实际改动文件:
+  - `shared/services/PoemImageGenerator.ts`（新建，增加source字段支持）
+  - `modules/zhou/components/PoemViewer.vue`（更新import路径）
+  - `modules/moshi/components/StanzaDisplay.vue`（集成ShareTools，复制+下载功能）
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.6.1：PoemImageGenerator 移到 shared/services/
+  - [x] 步骤A.6.2：更新 zhou PoemViewer 的 import 路径
+  - [x] 步骤A.6.3：moshi StanzaDisplay 集成 ShareTools（复制+下载）
+
+#### - [ ] 任务A.7：查看全诗功能
+
+- **核心思想**: 用户从 StanzaDisplay 可以点击查看完整诗歌
+- 交付物：
+  - 后端新增 API：GET /api/moshi/poem/:poemId
+  - 前端新增 moshi/PoemViewer 组件
+  - StanzaDisplay 添加"查看全诗"按钮
+- 验收标准：
+  - 用户摸到诗节后可点击查看完整诗歌
+  - 完整诗歌包含所有节，按顺序排列
+- **风险评估**: 中等，涉及后端API和前端组件新增
+- 预期改动文件（预判）：
+  - `application/src/services/moshiService.js`（新增API）
+  - `application/src/routes/moshiRoutes.js`（新增路由）
+  - `modules/moshi/components/PoemViewer.vue`（新建）
+  - `modules/moshi/components/StanzaDisplay.vue`（添加按钮）
+- 实际改动文件: [待记录]
+- 完成状态：⏳ 待执行
+- 执行步骤：
+  - [ ] 步骤A.7.1：后端新增 getPoem API
+  - [ ] 步骤A.7.2：前端新增 moshi/PoemViewer 组件
+  - [ ] 步骤A.7.3：StanzaDisplay 添加"查看全诗"按钮
+
 ---
 
 ### **阶段11-27_B：体验增强（可选）**

@@ -83,7 +83,7 @@
 
 ---
 
-#### - [ ] 任务A.2：诗歌字号自适应
+#### - [x] 任务A.2：诗歌字号自适应
 
 - **核心思想**: 
   - 现代诗以换行分行，单行过长自动换行会与诗人分行混淆
@@ -110,14 +110,18 @@
   - `frontend_vue/src/modules/moshi/components/StanzaDisplay.vue`
   - `frontend_vue/src/modules/moshi/components/PoemViewer.vue`
   - `frontend_vue/src/shared/services/PoemImageGenerator.ts`
-- 实际改动文件: [待记录]
-- 完成状态：🔄 进行中
+- 实际改动文件:
+  - `frontend_vue/src/shared/services/FontSizeCalculator.ts` - 新建字号计算服务
+  - `frontend_vue/src/modules/moshi/components/StanzaDisplay.vue` - 集成字号自适应，white-space改为pre
+  - `frontend_vue/src/modules/moshi/components/PoemViewer.vue` - 集成字号自适应，white-space改为pre
+  - `frontend_vue/src/shared/services/PoemImageGenerator.ts` - 集成字号自适应
+- 完成状态：✅ 已完成
 - 执行步骤：
-  - [ ] 步骤A.2.1：新建FontSizeCalculator.ts服务
-  - [ ] 步骤A.2.2：StanzaDisplay.vue集成字号自适应
-  - [ ] 步骤A.2.3：moshi/PoemViewer.vue集成字号自适应
-  - [ ] 步骤A.2.4：PoemImageGenerator.ts集成字号自适应
-  - [ ] 步骤A.2.5：验证（TypeScript类型检查0错误，Vite构建成功）
+  - [x] 步骤A.2.1：新建FontSizeCalculator.ts服务
+  - [x] 步骤A.2.2：StanzaDisplay.vue集成字号自适应
+  - [x] 步骤A.2.3：moshi/PoemViewer.vue集成字号自适应
+  - [x] 步骤A.2.4：PoemImageGenerator.ts集成字号自适应
+  - [x] 步骤A.2.5：验证（TypeScript类型检查0错误，Vite构建成功）
 
 ---
 

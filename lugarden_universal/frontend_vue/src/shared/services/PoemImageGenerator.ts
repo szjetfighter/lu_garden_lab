@@ -5,6 +5,8 @@
  * 共享服务：可被所有宇宙模块使用
  */
 
+import { FontSizeCalculator } from './FontSizeCalculator'
+
 // ============================================
 // 周与春秋 配置
 // ============================================
@@ -324,7 +326,6 @@ export class PoemImageGenerator {
     const scale = STYLES.scale
     const baseWidth = STYLES.baseWidth
     const isSingleStanza = config.stanzas.length === 1
-    const moshiContentSize = 28 // 正文字号（比标题小）
     
     const tempCanvas = document.createElement('canvas')
     const tempCtx = tempCanvas.getContext('2d')
@@ -332,6 +333,22 @@ export class PoemImageGenerator {
     
     const cardWidth = baseWidth - STYLES.bgPadding * 2
     const contentWidth = cardWidth - STYLES.cardPaddingX * 2
+    
+    // 计算自适应字号：根据最长行宽度缩小字体，避免自动换行
+    const BASE_CONTENT_SIZE = 28  // 基准字号
+    const MIN_CONTENT_SIZE = 18   // 最小字号
+    const contents = config.stanzas.map(s => s.content)
+    const fontResult = FontSizeCalculator.calcAdaptiveFontSizeMultiple(
+      contents,
+      contentWidth,
+      {
+        baseFontSize: BASE_CONTENT_SIZE,
+        minFontSize: MIN_CONTENT_SIZE,
+        fontFamily: STYLES.fontFamily,
+        fontWeight: 'normal'
+      }
+    )
+    const moshiContentSize = fontResult.fontSize
     
     // 计算各部分高度
     let totalContentHeight = STYLES.cardPaddingTop

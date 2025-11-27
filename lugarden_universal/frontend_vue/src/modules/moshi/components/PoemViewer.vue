@@ -4,10 +4,11 @@
  * 显示完整诗歌的所有诗节
  */
 
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { moshiApi } from '../services/moshiApi'
 import ShareTools from '@/shared/components/ShareTools.vue'
 import { PoemImageGenerator } from '@/shared/services/PoemImageGenerator'
+import { FontSizeCalculator } from '@/shared/services/FontSizeCalculator'
 import { 
   DocumentDuplicateIcon, 
   ArrowDownTrayIcon,
@@ -37,6 +38,36 @@ const error = ref<string | null>(null)
 const isCopied = ref(false)
 const isActionLoading = ref(false)
 
+// 字号自适应
+const contentRef = ref<HTMLElement | null>(null)
+const adaptiveFontSize = ref(17.6) // 默认1.1rem = 17.6px
+
+const FONT_CONFIG = {
+  baseFontSize: 17.6,  // 1.1rem
+  minFontSize: 12,     // 最小字号
+  fontFamily: '"Noto Serif SC", "Source Han Serif CN", serif',
+  fontWeight: 'normal'
+}
+
+// 计算自适应字号
+const calcFontSize = () => {
+  if (!contentRef.value || !poem.value) return
+  
+  // 获取容器宽度
+  const containerWidth = contentRef.value.clientWidth
+  
+  // 收集所有stanza的内容
+  const contents = poem.value.stanzas.map(s => s.content)
+  
+  const result = FontSizeCalculator.calcAdaptiveFontSizeMultiple(
+    contents,
+    containerWidth,
+    FONT_CONFIG
+  )
+  
+  adaptiveFontSize.value = result.fontSize
+}
+
 // 加载诗歌
 onMounted(async () => {
   try {
@@ -50,6 +81,16 @@ onMounted(async () => {
   } finally {
     isLoading.value = false
   }
+})
+
+// 监听poem加载完成后计算字号
+watch(poem, () => {
+  nextTick(calcFontSize)
+})
+
+// 监听窗口大小变化
+onMounted(() => {
+  window.addEventListener('resize', calcFontSize)
 })
 
 // 合并所有诗节内容
@@ -172,13 +213,13 @@ const actionButtons = computed(() => [
       <div v-else-if="poem" class="poem-content">
         <h2 class="poem-title">{{ poem.title }}</h2>
         
-        <div class="stanzas-container">
+        <div ref="contentRef" class="stanzas-container">
           <div 
             v-for="stanza in poem.stanzas" 
             :key="stanza.id"
             class="stanza-item"
           >
-            <p class="stanza-text">{{ stanza.content }}</p>
+            <p class="stanza-text" :style="{ fontSize: adaptiveFontSize + 'px' }">{{ stanza.content }}</p>
           </div>
         </div>
         
@@ -272,10 +313,10 @@ const actionButtons = computed(() => [
 
 .stanza-text {
   color: #2a2a2a;
-  font-size: 1.1rem;
+  /* font-size由JS动态计算 */
   line-height: 2;
   font-family: 'Noto Serif SC', 'Source Han Serif CN', serif;
-  white-space: pre-wrap;
+  white-space: pre;
   margin: 0;
 }
 </style>

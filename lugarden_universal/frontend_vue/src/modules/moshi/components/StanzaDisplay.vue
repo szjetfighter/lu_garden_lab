@@ -3,10 +3,11 @@
  * 诗节展示组件
  */
 
-import { computed, ref } from 'vue'
+import { computed, ref, watch, onMounted, nextTick } from 'vue'
 import { useMoshiStore } from '../stores/moshiStore'
 import ShareTools from '@/shared/components/ShareTools.vue'
 import { PoemImageGenerator } from '@/shared/services/PoemImageGenerator'
+import { FontSizeCalculator } from '@/shared/services/FontSizeCalculator'
 import { 
   DocumentDuplicateIcon, 
   ArrowDownTrayIcon,
@@ -22,14 +23,53 @@ const emit = defineEmits<{
 
 const stanza = computed(() => store.currentStanza)
 
-// 状态
-const isCopied = ref(false)
-const isActionLoading = ref(false)
-
 // 格式化诗节内容，保留换行
 const formattedContent = computed(() => {
   if (!stanza.value) return ''
   return stanza.value.content
+})
+
+// 状态
+const isCopied = ref(false)
+const isActionLoading = ref(false)
+
+// 字号自适应
+const contentRef = ref<HTMLElement | null>(null)
+const adaptiveFontSize = ref(17.6) // 默认1.1rem = 17.6px
+
+const FONT_CONFIG = {
+  baseFontSize: 17.6,  // 1.1rem
+  minFontSize: 12,     // 最小字号
+  fontFamily: '"Noto Serif SC", "Source Han Serif CN", serif',
+  fontWeight: 'normal'
+}
+
+// 计算自适应字号
+const calcFontSize = () => {
+  if (!contentRef.value || !formattedContent.value) return
+  
+  // 获取容器宽度（减去padding）
+  const containerWidth = contentRef.value.clientWidth
+  
+  const result = FontSizeCalculator.calcAdaptiveFontSize(
+    formattedContent.value,
+    containerWidth,
+    FONT_CONFIG
+  )
+  
+  adaptiveFontSize.value = result.fontSize
+}
+
+// 监听内容变化重新计算
+watch(formattedContent, () => {
+  nextTick(calcFontSize)
+})
+
+// 组件挂载后计算
+onMounted(() => {
+  nextTick(calcFontSize)
+  // 监听窗口大小变化
+  window.addEventListener('resize', calcFontSize)
 })
 
 // 数字转中文
@@ -150,8 +190,8 @@ const actionButtons = computed(() => [
         <span class="stanza-label">你摸到了一节诗</span>
       </div>
       
-      <div class="stanza-content">
-        <p class="stanza-text">{{ formattedContent }}</p>
+      <div ref="contentRef" class="stanza-content">
+        <p class="stanza-text" :style="{ fontSize: adaptiveFontSize + 'px' }">{{ formattedContent }}</p>
       </div>
       
       <div class="stanza-footer">
@@ -214,10 +254,10 @@ const actionButtons = computed(() => [
 
 .stanza-text {
   color: #1f2937;
-  font-size: 1.1rem;
+  /* font-size由JS动态计算 */
   line-height: 2;
   font-family: 'Noto Serif SC', 'Source Han Serif CN', serif;
-  white-space: pre-wrap;
+  white-space: pre;
   margin: 0;
 }
 

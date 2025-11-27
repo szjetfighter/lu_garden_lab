@@ -8,6 +8,7 @@
 深度优化摸诗宇宙的视觉一致性和交互体验：
 1. 卡片宽度统一 - 与zhou宇宙PoemViewer保持一致
 2. 中奖弹窗化 - 提升奖励仪式感
+3. 诗歌字号自适应 - 避免长行自动换行与诗人分行混淆
 
 ## 范围与约束
 
@@ -79,6 +80,44 @@
 |----------|----------|----------|
 | 弹窗 | overlay的padding约束子元素width:100% | 天然有边距 |
 | 普通卡片 | 父容器无padding约束 | 需用calc自己留边距 |
+
+---
+
+#### - [ ] 任务A.2：诗歌字号自适应
+
+- **核心思想**: 
+  - 现代诗以换行分行，单行过长自动换行会与诗人分行混淆
+  - 根据最长行宽度自适应缩小字体，确保每行不自动换行
+- **问题分析**:
+  - `white-space: pre-wrap` 保留`\n`但允许自动换行
+  - 读者无法区分：诗人的分行 vs 屏幕太窄导致的自动换行
+- **解决方案**:
+  - 新建 `shared/services/FontSizeCalculator.ts` 计算自适应字号
+  - 测量最长行宽度，计算缩放比，应用到字号
+  - 设置最小字号阈值，避免字体过小
+- 交付物：
+  - `shared/services/FontSizeCalculator.ts` - 新建字号计算服务
+  - StanzaDisplay.vue - 集成字号自适应
+  - moshi/PoemViewer.vue - 集成字号自适应
+  - PoemImageGenerator.ts - 集成字号自适应
+- 验收标准：
+  - 长行诗歌不产生自动换行（在最小字号限制内）
+  - 保留诗人原意的分行
+  - 图片生成同样遵循此逻辑
+- **风险评估**: 中风险，需处理字体加载时机和性能
+- 预期改动文件（预判）：
+  - `frontend_vue/src/shared/services/FontSizeCalculator.ts`（新建）
+  - `frontend_vue/src/modules/moshi/components/StanzaDisplay.vue`
+  - `frontend_vue/src/modules/moshi/components/PoemViewer.vue`
+  - `frontend_vue/src/shared/services/PoemImageGenerator.ts`
+- 实际改动文件: [待记录]
+- 完成状态：🔄 进行中
+- 执行步骤：
+  - [ ] 步骤A.2.1：新建FontSizeCalculator.ts服务
+  - [ ] 步骤A.2.2：StanzaDisplay.vue集成字号自适应
+  - [ ] 步骤A.2.3：moshi/PoemViewer.vue集成字号自适应
+  - [ ] 步骤A.2.4：PoemImageGenerator.ts集成字号自适应
+  - [ ] 步骤A.2.5：验证（TypeScript类型检查0错误，Vite构建成功）
 
 ---
 

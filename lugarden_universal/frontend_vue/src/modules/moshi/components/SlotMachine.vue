@@ -4,8 +4,10 @@
  * 5x3符号矩阵 + 摸诗按钮 + 列滚动动画
  */
 
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useMoshiStore } from '../stores/moshiStore'
+import { moshiApi } from '../services/moshiApi'
+import type { MoshiSymbol } from '../types/moshi'
 
 const store = useMoshiStore()
 
@@ -14,8 +16,26 @@ const emit = defineEmits<{
   claimPrize: []
 }>()
 
-// 所有可用符号（用于滚动时随机显示）
-const ALL_SYMBOLS = ['🐻', '👔', '🎒', '👩', '🏢', '🎰', '🚪', '🍻', '🏃', '🌸']
+// 从API获取的符号列表
+const symbols = ref<MoshiSymbol[]>([])
+
+// 获取滚动时显示的符号对象列表
+const spinningDisplaySymbols = computed(() => {
+  if (symbols.value.length === 0) {
+    // fallback：还没加载时用默认
+    return [{ id: 'wild', emoji: '🌸', image: null }] as MoshiSymbol[]
+  }
+  return symbols.value
+})
+
+// 初始化时获取符号配置
+onMounted(async () => {
+  try {
+    symbols.value = await moshiApi.getSymbols()
+  } catch (e) {
+    console.error('[SlotMachine] 获取符号配置失败:', e)
+  }
+})
 
 // 每列状态: 'idle' | 'spinning' | 'stopped'
 const columnStates = ref<string[]>(['idle', 'idle', 'idle', 'idle', 'idle'])
@@ -23,33 +43,42 @@ const columnStates = ref<string[]>(['idle', 'idle', 'idle', 'idle', 'idle'])
 // 动画进行中标志（独立于API状态）
 const isAnimating = ref(false)
 
-// 滚动中显示的随机符号（每列12个符号用于滚动效果）
-const spinningSymbols = ref<string[][]>([[], [], [], [], []])
+// 滚动中显示的随机符号对象（每列12个符号用于滚动效果）
+const spinningSymbols = ref<MoshiSymbol[][]>([[], [], [], [], []])
 
-// 生成随机滚动符号
-function generateSpinningSymbols() {
+// 生成随机滚动符号对象
+function generateSpinningSymbols(): MoshiSymbol[][] {
+  const displayList = spinningDisplaySymbols.value
   return Array(5).fill(null).map(() => 
     Array(12).fill(null).map(() => 
-      ALL_SYMBOLS[Math.floor(Math.random() * ALL_SYMBOLS.length)]
+      displayList[Math.floor(Math.random() * displayList.length)]
     )
   )
 }
 
-// 默认符号（未开始时显示）
+// 默认符号对象（未开始时显示陆家明图标）
+const defaultSymbol: { id: string; name: string; poeticName: string; emoji: null; image: string; type: 'wild' } = {
+  id: 'wild',
+  name: '陆',
+  poeticName: '陆',
+  emoji: null,
+  image: '/lujiaming_icon.png',
+  type: 'wild'
+}
 const defaultSymbols = [
-  ['🌸', '🌸', '🌸'],
-  ['🌸', '🌸', '🌸'],
-  ['🌸', '🌸', '🌸'],
-  ['🌸', '🌸', '🌸'],
-  ['🌸', '🌸', '🌸']
+  [defaultSymbol, defaultSymbol, defaultSymbol],
+  [defaultSymbol, defaultSymbol, defaultSymbol],
+  [defaultSymbol, defaultSymbol, defaultSymbol],
+  [defaultSymbol, defaultSymbol, defaultSymbol],
+  [defaultSymbol, defaultSymbol, defaultSymbol]
 ]
 
-// 最终显示的矩阵
+// 最终显示的矩阵（返回完整symbol对象）
 const displayMatrix = computed(() => {
   if (!store.matrix) {
     return defaultSymbols
   }
-  return store.matrix.map(col => col.map(s => s.emoji))
+  return store.matrix
 })
 
 const primaryWinDetail = computed(() => store.lastResult?.primaryWinDetail || null)
@@ -137,7 +166,8 @@ async function handleSpin() {
             :key="idx" 
             class="slot-cell"
           >
-            <span class="symbol">{{ symbol }}</span>
+            <img v-if="symbol.image" :src="symbol.image" class="symbol-image" :alt="symbol.name || ''" />
+            <span v-else class="symbol">{{ symbol.emoji }}</span>
           </div>
         </div>
         <!-- 停止后：显示最终结果 -->
@@ -148,7 +178,8 @@ async function handleSpin() {
             class="slot-cell"
             :class="{ winning: isWinningCell(colIdx, rowIdx) && columnStates[colIdx] === 'idle' }"
           >
-            <span class="symbol">{{ symbol }}</span>
+            <img v-if="symbol.image" :src="symbol.image" class="symbol-image" alt="陆" />
+            <span v-else class="symbol">{{ symbol.emoji }}</span>
           </div>
         </template>
       </div>
@@ -158,8 +189,9 @@ async function handleSpin() {
     <div v-if="primaryWinDetail && !isAnimating" class="win-info">
       <div class="win-congratulation">
         🎉 恭喜中奖：
-        <span class="win-symbol">{{ primaryWinDetail.symbol.emoji }}</span>
-        <span class="win-text">{{ primaryWinDetail.symbol.name }}</span>
+        <img v-if="primaryWinDetail.symbol.image" :src="primaryWinDetail.symbol.image" class="win-symbol-image" alt="陆" />
+        <span v-else class="win-symbol">{{ primaryWinDetail.symbol.emoji }}</span>
+        <span class="win-text">{{ primaryWinDetail.symbol.poeticName || primaryWinDetail.symbol.name }}</span>
         ！
       </div>
       <button class="claim-button" @click="emit('claimPrize')">
@@ -309,6 +341,18 @@ async function handleSpin() {
 
 .symbol {
   font-size: 2rem;
+}
+
+.symbol-image {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+}
+
+.win-symbol-image {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
 }
 
 .win-info {

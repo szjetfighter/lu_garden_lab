@@ -288,6 +288,37 @@
   - [x] 步骤A.10.5：zhou ResultScreen水印"吴任几 © 陆家花园"
   - [x] 步骤A.10.6：共笔页面禁用ShareTools
 
+#### - [x] 任务A.11：符号图标化与诗意命名
+
+- **核心思想**: 用自定义图标替代emoji，增强视觉一致性和品牌感；为符号添加诗意名称
+- 交付物：
+  - 10个自定义PNG图标（4人物 + 5场景 + 1 Wild）
+  - 符号诗意命名（poeticName）
+  - 前端动态获取符号配置，滚动时支持图片渲染
+- 验收标准：
+  - 所有符号显示为自定义图标而非emoji
+  - 中奖信息显示诗意名称
+  - 滚动动画中也正确显示图标
+- **风险评估**: 低
+- 预期改动文件（预判）：
+  - `application/src/services/moshiService.js`
+  - `frontend_vue/src/modules/moshi/components/SlotMachine.vue`
+  - `frontend_vue/src/modules/moshi/types/moshi.ts`
+  - `frontend_vue/public/*.png`
+- 实际改动文件:
+  - `application/src/services/moshiService.js` - SYMBOLS配置添加poeticName、image字段，emoji改为null
+  - `frontend_vue/src/modules/moshi/types/moshi.ts` - MoshiSymbol接口添加poeticName、image
+  - `frontend_vue/src/modules/moshi/components/SlotMachine.vue` - 动态获取符号、滚动/停止时支持图片渲染
+  - `frontend_vue/public/` - 新增10个PNG图标（毛小豆、华少、栋先生、张秋、办公室、兄弟会、封闭、商务社交、运动、lujiaming_icon）
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.11.1：后端SYMBOLS添加poeticName字段
+  - [x] 步骤A.11.2：前端MoshiSymbol接口扩展
+  - [x] 步骤A.11.3：SlotMachine支持图片渲染（停止态）
+  - [x] 步骤A.11.4：SlotMachine动态获取符号配置
+  - [x] 步骤A.11.5：SlotMachine滚动态支持图片渲染
+  - [x] 步骤A.11.6：替换所有emoji为自定义PNG图标
+
 ---
 
 ### **阶段11-27_B：体验增强（可选）**

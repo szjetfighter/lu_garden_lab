@@ -15,21 +15,21 @@ import { getPrismaClient } from '../persistence/prismaClient.js';
 // ================================
 
 const SYMBOLS = {
-  // 人物符号（稀有）
-  maoxiaodou: { id: 'maoxiaodou', name: '毛小豆', type: 'character', emoji: '🐻', weight: 8 },
-  huashao: { id: 'huashao', name: '华少', type: 'character', emoji: '👔', weight: 8 },
-  dongxiansheng: { id: 'dongxiansheng', name: '栋先生', type: 'character', emoji: '🎒', weight: 8 },
-  zhangqiu: { id: 'zhangqiu', name: '张秋', type: 'character', emoji: '👩', weight: 8 },
+  // 人物符号（稀有）- 使用自定义图标
+  maoxiaodou: { id: 'maoxiaodou', name: '毛小豆', poeticName: '长胖的人', type: 'character', emoji: null, image: '/毛小豆.png', weight: 8 },
+  huashao: { id: 'huashao', name: '华少', poeticName: '怎么都长不胖的人', type: 'character', emoji: null, image: '/华少.png', weight: 8 },
+  dongxiansheng: { id: 'dongxiansheng', name: '栋先生', poeticName: '在翻车路上的人', type: 'character', emoji: null, image: '/栋先生.png', weight: 8 },
+  zhangqiu: { id: 'zhangqiu', name: '张秋', poeticName: '是她，不是他的她', type: 'character', emoji: null, image: '/张秋.png', weight: 8 },
   
-  // 场景类型符号（常见）
-  office: { id: 'office', name: '办公室', type: 'scene', emoji: '🏢', weight: 15, sceneType: '办公室社交' },
-  brotherhood: { id: 'brotherhood', name: '兄弟会', type: 'scene', emoji: '🎰', weight: 15, sceneType: '兄弟会社交' },
-  enclosed: { id: 'enclosed', name: '封闭空间', type: 'scene', emoji: '🚪', weight: 15, sceneType: '封闭空间' },
-  social: { id: 'social', name: '社交', type: 'scene', emoji: '🍻', weight: 15, sceneType: '商务社交' },
-  sport: { id: 'sport', name: '运动', type: 'scene', emoji: '🏃', weight: 12, sceneType: '运动环境' },
+  // 场景类型符号（常见）- 使用自定义图标
+  office: { id: 'office', name: '办公室', poeticName: '摸鱼摸鱼摸鱼', type: 'scene', emoji: null, image: '/办公室.png', weight: 15, sceneType: '办公室社交' },
+  brotherhood: { id: 'brotherhood', name: '兄弟会', poeticName: '你喷我，我喷你', type: 'scene', emoji: null, image: '/兄弟会.png', weight: 15, sceneType: '兄弟会社交' },
+  enclosed: { id: 'enclosed', name: '封闭空间', poeticName: '放空，不是防控', type: 'scene', emoji: null, image: '/封闭.png', weight: 15, sceneType: '封闭空间' },
+  social: { id: 'social', name: '社交', poeticName: '喝，就会吐', type: 'scene', emoji: null, image: '/商务社交.png', weight: 15, sceneType: '商务社交' },
+  sport: { id: 'sport', name: '运动', poeticName: '好身材是消费出来的', type: 'scene', emoji: null, image: '/运动.png', weight: 12, sceneType: '运动环境' },
   
-  // Wild符号（最稀有）
-  wild: { id: 'wild', name: '陆', type: 'wild', emoji: '🌸', weight: 5 }
+  // Wild符号（最稀有）- 使用图片而非emoji
+  wild: { id: 'wild', name: '陆', poeticName: '陆', type: 'wild', emoji: null, image: '/lujiaming_icon.png', weight: 5 }
 };
 
 const SYMBOL_LIST = Object.values(SYMBOLS);
@@ -286,7 +286,9 @@ export const moshiService = {
       matrix: matrix.map(col => col.map(s => ({
         id: s.id,
         name: s.name,
+        poeticName: s.poeticName,
         emoji: s.emoji,
+        image: s.image || null,
         type: s.type
       }))),
       win: winningSymbols.length > 0,
@@ -311,7 +313,9 @@ export const moshiService = {
     return SYMBOL_LIST.map(s => ({
       id: s.id,
       name: s.name,
+      poeticName: s.poeticName,
       emoji: s.emoji,
+      image: s.image || null,
       type: s.type,
       weight: s.weight
     }));

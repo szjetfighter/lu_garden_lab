@@ -5,7 +5,9 @@
 export interface MoshiSymbol {
   id: string
   name: string
-  emoji: string
+  poeticName?: string       // 诗意名称（用于中奖显示）
+  emoji: string | null      // emoji（wild符号为null）
+  image?: string | null     // 图片路径（wild符号使用图片）
   type: 'character' | 'scene' | 'wild'
 }
 

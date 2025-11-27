@@ -9,12 +9,31 @@ import { useMoshiStore } from '../stores/moshiStore'
 const store = useMoshiStore()
 
 const stanza = computed(() => store.currentStanza)
-const isVisible = computed(() => store.isWin && stanza.value)
+// 只在中奖且不在动画中时显示
+const isVisible = computed(() => store.isWin && stanza.value && !store.isSpinning)
 
 // 格式化诗节内容，保留换行
 const formattedContent = computed(() => {
   if (!stanza.value) return ''
   return stanza.value.content
+})
+
+// 数字转中文
+const numberToChinese = (num: number): string => {
+  const chars = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
+  if (num <= 10) return chars[num]
+  if (num < 20) return '十' + (num % 10 === 0 ? '' : chars[num % 10])
+  const tens = Math.floor(num / 10)
+  const ones = num % 10
+  return chars[tens] + '十' + (ones === 0 ? '' : chars[ones])
+}
+
+// 格式化出处：诗名 · 一
+const formattedSource = computed(() => {
+  if (!stanza.value) return ''
+  const title = stanza.value.poem?.title || stanza.value.poemId
+  const index = numberToChinese(stanza.value.index || 1)
+  return `${title} · ${index}`
 })
 </script>
 
@@ -31,7 +50,7 @@ const formattedContent = computed(() => {
       </div>
       
       <div class="stanza-footer">
-        <span class="poem-id">{{ stanza?.poemId }}</span>
+        <span class="poem-source">{{ formattedSource }}</span>
       </div>
     </div>
   </Transition>
@@ -88,10 +107,10 @@ const formattedContent = computed(() => {
   text-align: right;
 }
 
-.poem-id {
-  color: #a09080;
-  font-size: 0.8rem;
-  font-style: italic;
+.poem-source {
+  color: #8b7355;
+  font-size: 0.85rem;
+  font-family: 'Noto Serif SC', 'Source Han Serif CN', serif;
 }
 
 /* 过渡动画 */

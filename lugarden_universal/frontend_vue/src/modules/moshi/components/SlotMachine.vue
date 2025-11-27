@@ -1,13 +1,34 @@
 <script setup lang="ts">
 /**
  * 老虎机组件
- * 5x3符号矩阵 + 摸诗按钮
+ * 5x3符号矩阵 + 摸诗按钮 + 列滚动动画
  */
 
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useMoshiStore } from '../stores/moshiStore'
 
 const store = useMoshiStore()
+
+// 所有可用符号（用于滚动时随机显示）
+const ALL_SYMBOLS = ['🐻', '👔', '🎒', '👩', '🏢', '🎰', '🚪', '🍻', '🏃', '🌸']
+
+// 每列状态: 'idle' | 'spinning' | 'stopped'
+const columnStates = ref<string[]>(['idle', 'idle', 'idle', 'idle', 'idle'])
+
+// 动画进行中标志（独立于API状态）
+const isAnimating = ref(false)
+
+// 滚动中显示的随机符号（每列12个符号用于滚动效果）
+const spinningSymbols = ref<string[][]>([[], [], [], [], []])
+
+// 生成随机滚动符号
+function generateSpinningSymbols() {
+  return Array(5).fill(null).map(() => 
+    Array(12).fill(null).map(() => 
+      ALL_SYMBOLS[Math.floor(Math.random() * ALL_SYMBOLS.length)]
+    )
+  )
+}
 
 // 默认符号（未开始时显示）
 const defaultSymbols = [
@@ -18,6 +39,7 @@ const defaultSymbols = [
   ['🌸', '🌸', '🌸']
 ]
 
+// 最终显示的矩阵
 const displayMatrix = computed(() => {
   if (!store.matrix) {
     return defaultSymbols
@@ -26,9 +48,62 @@ const displayMatrix = computed(() => {
 })
 
 const winDetails = computed(() => store.lastResult?.winDetails || [])
+const primaryWinDetail = computed(() => store.lastResult?.primaryWinDetail || null)
+const primaryWinningCells = computed(() => store.lastResult?.primaryWinningCells || [])
 
-function handleSpin() {
-  store.spin()
+// 判断某个格子是否中奖（只高亮primarySymbol的格子）
+function isWinningCell(colIdx: number, rowIdx: number) {
+  return primaryWinningCells.value.some(([col, row]: [number, number]) => col === colIdx && row === rowIdx)
+}
+
+// 判断某列是否应该显示最终结果
+function shouldShowResult(colIdx: number) {
+  return columnStates.value[colIdx] === 'stopped' || columnStates.value[colIdx] === 'idle'
+}
+
+// 获取某列的滚动符号
+function getSpinningColumn(colIdx: number) {
+  return spinningSymbols.value[colIdx] || []
+}
+
+async function handleSpin() {
+  // 使用本地动画状态，而非API状态
+  if (isAnimating.value) return
+  
+  isAnimating.value = true
+  
+  // 1. 生成滚动符号
+  spinningSymbols.value = generateSpinningSymbols()
+  
+  // 2. 所有列开始滚动
+  columnStates.value = ['spinning', 'spinning', 'spinning', 'spinning', 'spinning']
+  
+  // 3. 记录开始时间，确保最小滚动时间
+  const spinStartTime = Date.now()
+  const MIN_SPIN_DURATION = 1000 // 最小滚动1秒
+  
+  // 4. 调用API获取结果
+  await store.spin()
+  
+  // 5. 计算还需要等待多久才能开始停止
+  const elapsed = Date.now() - spinStartTime
+  const remainingWait = Math.max(0, MIN_SPIN_DURATION - elapsed)
+  
+  // 6. 等待后依次停止每列（间隔250ms）
+  setTimeout(() => {
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        columnStates.value[i] = 'stopped'
+        columnStates.value = [...columnStates.value]
+      }, i * 250)
+    }
+    
+    // 7. 全部停止后重置为idle，并解除动画锁
+    setTimeout(() => {
+      columnStates.value = ['idle', 'idle', 'idle', 'idle', 'idle']
+      isAnimating.value = false
+    }, 5 * 250 + 500)
+  }, remainingWait)
 }
 </script>
 
@@ -41,38 +116,55 @@ function handleSpin() {
     </div>
     
     <!-- 矩阵区域 -->
-    <div class="slot-matrix" :class="{ spinning: store.isSpinning, win: store.isWin }">
+    <div class="slot-matrix" :class="{ win: store.isWin }">
       <div 
-        v-for="(col, colIdx) in displayMatrix" 
+        v-for="(col, colIdx) in 5" 
         :key="colIdx" 
         class="slot-column"
-        :style="{ animationDelay: `${colIdx * 0.1}s` }"
+        :class="{ 
+          spinning: columnStates[colIdx] === 'spinning',
+          stopped: columnStates[colIdx] === 'stopped'
+        }"
       >
-        <div 
-          v-for="(symbol, rowIdx) in col" 
-          :key="rowIdx" 
-          class="slot-cell"
-        >
-          <span class="symbol">{{ symbol }}</span>
+        <!-- 滚动中：显示滚动条带 -->
+        <div v-if="columnStates[colIdx] === 'spinning'" class="spin-strip">
+          <div 
+            v-for="(symbol, idx) in getSpinningColumn(colIdx)" 
+            :key="idx" 
+            class="slot-cell"
+          >
+            <span class="symbol">{{ symbol }}</span>
+          </div>
         </div>
+        <!-- 停止后：显示最终结果 -->
+        <template v-else>
+          <div 
+            v-for="(symbol, rowIdx) in displayMatrix[colIdx]" 
+            :key="rowIdx" 
+            class="slot-cell"
+            :class="{ winning: isWinningCell(colIdx, rowIdx) && columnStates[colIdx] === 'idle' }"
+          >
+            <span class="symbol">{{ symbol }}</span>
+          </div>
+        </template>
       </div>
     </div>
     
-    <!-- 中奖信息 -->
-    <div v-if="winDetails.length > 0" class="win-info">
-      <div v-for="detail in winDetails" :key="detail.symbolId" class="win-detail">
-        <span class="win-symbol">{{ detail.symbol.emoji }}</span>
-        <span class="win-text">{{ detail.symbol.name }} × {{ detail.columns }}</span>
+    <!-- 中奖信息：动画结束后才显示 -->
+    <div v-if="primaryWinDetail && !isAnimating" class="win-info">
+      <div class="win-detail">
+        <span class="win-symbol">{{ primaryWinDetail.symbol.emoji }}</span>
+        <span class="win-text">{{ primaryWinDetail.symbol.name }}</span>
       </div>
     </div>
     
     <!-- 摸诗按钮 -->
     <button 
       class="spin-button"
-      :disabled="store.isSpinning"
+      :disabled="isAnimating"
       @click="handleSpin"
     >
-      <span v-if="store.isSpinning">转动中...</span>
+      <span v-if="isAnimating">转动中...</span>
       <span v-else>摸 诗</span>
     </button>
     
@@ -138,26 +230,72 @@ function handleSpin() {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative;
+  height: calc(60px * 3 + 0.5rem * 2); /* 3个格子高度 + 间隙 */
+  overflow: hidden;
 }
 
-.slot-matrix.spinning .slot-column {
-  animation: spin 0.3s ease-in-out infinite;
+/* 滚动条带容器 */
+.spin-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  animation: scroll-down 0.08s linear infinite;
 }
 
-@keyframes spin {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+@keyframes scroll-down {
+  0% { transform: translateY(-540px); }
+  100% { transform: translateY(-260px); }
+}
+
+/* 停止时的弹跳效果 */
+.slot-column.stopped {
+  animation: bounce 0.3s ease-out;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(-10px); }
+  50% { transform: translateY(5px); }
+  100% { transform: translateY(0); }
 }
 
 .slot-cell {
   width: 60px;
   height: 60px;
+  min-height: 60px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(180deg, #2a2a4a 0%, #1a1a3a 100%);
   border-radius: 0.5rem;
   border: 1px solid #444;
+  transition: all 0.3s ease;
+}
+
+/* 中奖格子高亮 */
+.slot-cell.winning {
+  border-color: #f8d56b;
+  box-shadow: 
+    0 0 10px rgba(248, 213, 107, 0.5),
+    0 0 20px rgba(248, 213, 107, 0.3),
+    inset 0 0 10px rgba(248, 213, 107, 0.1);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 10px rgba(248, 213, 107, 0.5),
+      0 0 20px rgba(248, 213, 107, 0.3),
+      inset 0 0 10px rgba(248, 213, 107, 0.1);
+  }
+  50% { 
+    box-shadow: 
+      0 0 15px rgba(248, 213, 107, 0.7),
+      0 0 30px rgba(248, 213, 107, 0.5),
+      inset 0 0 15px rgba(248, 213, 107, 0.2);
+  }
 }
 
 .symbol {

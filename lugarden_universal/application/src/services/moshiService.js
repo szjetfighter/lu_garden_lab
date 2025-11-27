@@ -68,11 +68,12 @@ function generateMatrix() {
 
 /**
  * 243ways连线判定
- * 返回所有中奖的符号ID集合
+ * 返回所有中奖的符号ID集合 + 中奖格子坐标
  */
 function checkWins(matrix) {
   const winningSymbols = new Set();
   const winDetails = [];
+  const winningCells = []; // 中奖格子坐标 [col, row]
   
   // 获取第一列所有非Wild符号
   const firstColSymbols = new Set();
@@ -94,14 +95,21 @@ function checkWins(matrix) {
   // 对每个可能的符号检查连线
   for (const targetId of firstColSymbols) {
     let consecutiveCols = 0;
+    const cellsForThisSymbol = [];
     
     for (let col = 0; col < 5; col++) {
-      const hasMatch = matrix[col].some(s => 
-        s.id === targetId || s.type === 'wild'
-      );
+      const matchingRows = [];
+      for (let row = 0; row < 3; row++) {
+        const s = matrix[col][row];
+        if (s.id === targetId || s.type === 'wild') {
+          matchingRows.push(row);
+        }
+      }
       
-      if (hasMatch) {
+      if (matchingRows.length > 0) {
         consecutiveCols++;
+        // 记录这一列中匹配的格子
+        matchingRows.forEach(row => cellsForThisSymbol.push([col, row]));
       } else {
         break;
       }
@@ -110,15 +118,24 @@ function checkWins(matrix) {
     // 3列及以上算中奖
     if (consecutiveCols >= 3) {
       winningSymbols.add(targetId);
+      // 只保留连线范围内的格子
+      const validCells = cellsForThisSymbol.filter(([col]) => col < consecutiveCols);
       winDetails.push({
         symbolId: targetId,
         symbol: SYMBOLS[targetId],
-        columns: consecutiveCols
+        columns: consecutiveCols,
+        cells: validCells  // 该符号对应的中奖格子
+      });
+      // 合并到总winningCells（兼容旧逻辑）
+      validCells.forEach(cell => {
+        if (!winningCells.some(([c, r]) => c === cell[0] && r === cell[1])) {
+          winningCells.push(cell);
+        }
       });
     }
   }
   
-  return { winningSymbols: Array.from(winningSymbols), winDetails };
+  return { winningSymbols: Array.from(winningSymbols), winDetails, winningCells };
 }
 
 /**
@@ -148,7 +165,13 @@ async function getStanzaPool(winningSymbols) {
             }
           }
         },
-        select: { id: true, content: true, poemId: true }
+        select: { 
+          id: true, 
+          content: true, 
+          poemId: true,
+          index: true,
+          poem: { select: { title: true } }
+        }
       });
     } else if (symbol.type === 'scene') {
       // 场景类型符号：通过scene.type找stanza
@@ -162,7 +185,13 @@ async function getStanzaPool(winningSymbols) {
             }
           }
         },
-        select: { id: true, content: true, poemId: true }
+        select: { 
+          id: true, 
+          content: true, 
+          poemId: true,
+          index: true,
+          poem: { select: { title: true } }
+        }
       });
     }
     
@@ -196,10 +225,10 @@ function selectStanza(pools, winningSymbols) {
   if (intersection && intersection.size > 0) {
     const intersectionArray = Array.from(intersection);
     const randomId = intersectionArray[Math.floor(Math.random() * intersectionArray.length)];
-    // 找到完整的stanza对象
+    // 找到完整的stanza对象，并返回第一个中奖符号作为主要符号
     for (const symbolId of winningSymbols) {
       const stanza = pools[symbolId]?.find(s => s.id === randomId);
-      if (stanza) return { stanza, source: 'intersection' };
+      if (stanza) return { stanza, source: 'intersection', primarySymbol: winningSymbols[0] };
     }
   }
   
@@ -216,7 +245,7 @@ function selectStanza(pools, winningSymbols) {
   
   if (maxPool.length > 0) {
     const stanza = maxPool[Math.floor(Math.random() * maxPool.length)];
-    return { stanza, source: 'fallback', fallbackSymbol: maxSymbol };
+    return { stanza, source: 'fallback', primarySymbol: maxSymbol };
   }
   
   return null;
@@ -235,7 +264,7 @@ export const moshiService = {
     const matrix = generateMatrix();
     
     // 2. 判定连线
-    const { winningSymbols, winDetails } = checkWins(matrix);
+    const { winningSymbols, winDetails, winningCells } = checkWins(matrix);
     
     // 3. 查询stanza池
     const pools = await getStanzaPool(winningSymbols);
@@ -243,7 +272,16 @@ export const moshiService = {
     // 4. 选择stanza
     const result = selectStanza(pools, winningSymbols);
     
-    // 5. 构建响应
+    // 5. 构建主要中奖符号详情
+    let primaryWinDetail = null;
+    if (result?.primarySymbol) {
+      const detail = winDetails.find(d => d.symbolId === result.primarySymbol);
+      if (detail) {
+        primaryWinDetail = detail;
+      }
+    }
+    
+    // 6. 构建响应
     return {
       matrix: matrix.map(col => col.map(s => ({
         id: s.id,
@@ -253,6 +291,9 @@ export const moshiService = {
       }))),
       win: winningSymbols.length > 0,
       winDetails,
+      winningCells, // 所有中奖格子坐标（兼容）
+      primaryWinDetail, // 实际产生stanza的符号详情
+      primaryWinningCells: primaryWinDetail?.cells || [], // 只包含primarySymbol的格子
       stanza: result?.stanza || null,
       stanzaSource: result?.source || null,
       debug: {

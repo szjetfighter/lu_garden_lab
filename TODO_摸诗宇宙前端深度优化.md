@@ -377,6 +377,52 @@
   - [x] 步骤A.8.5：StanzaDisplay添加底部边距2rem（解决滚动到底内容截断问题）
   - [x] 步骤A.8.6：验证构建成功
 
+#### - [x] 任务A.9：SlotMachine响应式布局优化
+
+- **问题描述**:
+  - A.8完成后，PC调试模式下SlotMachine卡片有留白
+  - 但真机上卡片仍然撑满屏幕，没有留白
+  - slot-matrix与slot-machine的边距视觉上不一致
+
+- **根因分析**:
+  | 问题 | 原因 |
+  |------|------|
+  | 真机无留白 | slot-cell使用固定60px宽度，5列撑满了容器 |
+  | moshi无响应式 | 整个moshi模块没有@media响应式设计 |
+  | 边距不一致 | slot-matrix固定宽度居中，与slot-machine的padding叠加 |
+
+- **⚠️ AI反思与教训**:
+  1. **没有检查内部固定宽度**：只改了容器的max-width，忽略了内部slot-cell是固定60px
+  2. **没有对比zhou的响应式机制**：zhou使用clamp()和@media实现响应式，moshi完全没有
+  3. **层层调试耗时**：从vw→rem→flex-shrink多次尝试，应该先完整分析问题
+  4. **忽视了flex布局特性**：slot-matrix用gap固定间距会导致宽度不自适应
+  
+  **正确做法**：
+  - 先分析完整的宽度计算链（容器→matrix→cell）
+  - 对比zhou模块的响应式实现方式
+  - 使用flex的justify-content: space-between让间距自适应
+
+- **解决方案**:
+  - slot-cell从60px改为3rem（48px），适应窄屏
+  - slot-machine添加width: 100% + box-sizing: border-box
+  - slot-matrix改用width: 100% + justify-content: space-between
+  - 移除固定gap，让cell间距自适应
+
+- 实际改动文件:
+  - `frontend_vue/src/modules/moshi/components/SlotMachine.vue`
+    - `.slot-machine`: 添加`width: 100%`, `box-sizing: border-box`, `padding: 1rem`
+    - `.slot-matrix`: `width: 100%`, `justify-content: space-between`, 移除gap
+    - `.slot-cell`: `3rem`替代`60px`
+    - `.slot-column height`: 同步更新计算
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.9.1：分析问题根因（slot-cell固定宽度）
+  - [x] 步骤A.9.2：slot-cell改为3rem响应式宽度
+  - [x] 步骤A.9.3：slot-machine添加width: 100%确保不溢出
+  - [x] 步骤A.9.4：slot-matrix改用space-between自适应间距
+  - [x] 步骤A.9.5：验证真机显示正确
+  - [x] 步骤A.9.6：验证构建成功
+
 ---
 
 ## 更新日志关联

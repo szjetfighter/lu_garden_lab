@@ -353,12 +353,14 @@ async function handleSpin() {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
   max-width: 28rem;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1rem;
   background: white;
   border-radius: var(--radius-base, 1rem);
   box-shadow: var(--shadow-card, 0 4px 20px rgba(0, 0, 0, 0.08));
+  box-sizing: border-box;
 }
 
 .slot-header {
@@ -381,7 +383,8 @@ async function handleSpin() {
 
 .slot-matrix {
   display: flex;
-  gap: 0.5rem;
+  justify-content: space-between;
+  width: 100%;
   padding: 1rem;
   background: #f5f5f5;
   border-radius: 0.75rem;
@@ -389,6 +392,7 @@ async function handleSpin() {
   box-shadow: 
     inset 0 2px 8px rgba(0, 0, 0, 0.05),
     0 4px 12px rgba(184, 134, 11, 0.2);
+  box-sizing: border-box;
 }
 
 .slot-matrix.win {
@@ -404,7 +408,7 @@ async function handleSpin() {
   flex-direction: column;
   gap: 0.5rem;
   position: relative;
-  height: calc(60px * 3 + 0.5rem * 2); /* 3个格子高度 + 间隙 */
+  height: calc(3rem * 3 + 0.5rem * 2); /* 3个格子高度 + 间隙 */
   overflow: hidden;
   border-radius: 0.5rem;
   transition: box-shadow 0.3s ease;
@@ -696,9 +700,9 @@ async function handleSpin() {
 }
 
 .slot-cell {
-  width: 60px;
-  height: 60px;
-  min-height: 60px;
+  width: 3rem;
+  height: 3rem;
+  min-height: 3rem;
   flex-shrink: 0;
   display: flex;
   align-items: center;

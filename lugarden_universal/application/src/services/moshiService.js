@@ -315,5 +315,38 @@ export const moshiService = {
       type: s.type,
       weight: s.weight
     }));
+  },
+  
+  /**
+   * 获取完整诗歌（包含所有诗节）
+   */
+  async getPoem(poemId) {
+    const prisma = getPrismaClient();
+    
+    // 获取诗歌信息
+    const poem = await prisma.maoxiaodouPoem.findUnique({
+      where: { id: poemId },
+      include: {
+        stanzas: {
+          orderBy: { index: 'asc' },
+          select: {
+            id: true,
+            index: true,
+            content: true
+          }
+        }
+      }
+    });
+    
+    if (!poem) {
+      return null;
+    }
+    
+    return {
+      id: poem.id,
+      title: poem.title,
+      section: poem.section,
+      stanzas: poem.stanzas
+    };
   }
 };

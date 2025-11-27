@@ -15,17 +15,18 @@ export interface PoemImageConfig {
   source?: string | null    // 出处（如"诗名 · 一"）
 }
 
-interface LayoutMetrics {
-  canvasWidth: number
-  canvasHeight: number
-  cardX: number
-  cardY: number
-  cardWidth: number
-  cardHeight: number
-  contentX: number
-  contentWidth: number
-  scale: number
-}
+// LayoutMetrics 预留接口，未来可用于更复杂的布局计算
+// interface LayoutMetrics {
+//   canvasWidth: number
+//   canvasHeight: number
+//   cardX: number
+//   cardY: number
+//   cardWidth: number
+//   cardHeight: number
+//   contentX: number
+//   contentWidth: number
+//   scale: number
+// }
 
 // 样式常量（基于需求规格）
 const STYLES = {
@@ -200,7 +201,6 @@ export class PoemImageGenerator {
     // 绘制内容
     let currentY = STYLES.bgPadding + STYLES.cardPaddingTop
     const centerX = canvasWidth / 2
-    const contentStartX = STYLES.bgPadding + STYLES.cardPaddingX
     
     // 绘制标题
     ctx.fillStyle = STYLES.titleColor

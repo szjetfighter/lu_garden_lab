@@ -4,10 +4,15 @@
  * 5x3符号矩阵 + 摸诗按钮 + 列滚动动画
  */
 
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useMoshiStore } from '../stores/moshiStore'
 
 const store = useMoshiStore()
+
+// 事件
+const emit = defineEmits<{
+  claimPrize: []
+}>()
 
 // 所有可用符号（用于滚动时随机显示）
 const ALL_SYMBOLS = ['🐻', '👔', '🎒', '👩', '🏢', '🎰', '🚪', '🍻', '🏃', '🌸']
@@ -47,7 +52,6 @@ const displayMatrix = computed(() => {
   return store.matrix.map(col => col.map(s => s.emoji))
 })
 
-const winDetails = computed(() => store.lastResult?.winDetails || [])
 const primaryWinDetail = computed(() => store.lastResult?.primaryWinDetail || null)
 const primaryWinningCells = computed(() => store.lastResult?.primaryWinningCells || [])
 
@@ -57,7 +61,7 @@ function isWinningCell(colIdx: number, rowIdx: number) {
 }
 
 // 判断某列是否应该显示最终结果
-function shouldShowResult(colIdx: number) {
+function _shouldShowResult(colIdx: number) {
   return columnStates.value[colIdx] === 'stopped' || columnStates.value[colIdx] === 'idle'
 }
 
@@ -152,10 +156,15 @@ async function handleSpin() {
     
     <!-- 中奖信息：动画结束后才显示 -->
     <div v-if="primaryWinDetail && !isAnimating" class="win-info">
-      <div class="win-detail">
+      <div class="win-congratulation">
+        🎉 恭喜中奖：
         <span class="win-symbol">{{ primaryWinDetail.symbol.emoji }}</span>
         <span class="win-text">{{ primaryWinDetail.symbol.name }}</span>
+        ！
       </div>
+      <button class="claim-button" @click="emit('claimPrize')">
+        查收奖品
+      </button>
     </div>
     
     <!-- 摸诗按钮 -->
@@ -304,18 +313,23 @@ async function handleSpin() {
 
 .win-info {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 1rem;
   margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 2rem;
   background: rgba(248, 213, 107, 0.1);
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   border: 1px solid rgba(248, 213, 107, 0.3);
 }
 
-.win-detail {
+.win-congratulation {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: #f8d56b;
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
 .win-symbol {
@@ -324,7 +338,29 @@ async function handleSpin() {
 
 .win-text {
   color: #f8d56b;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.claim-button {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #1a1a2e;
+  background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+}
+
+.claim-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+}
+
+.claim-button:active {
+  transform: translateY(0);
 }
 
 .spin-button {

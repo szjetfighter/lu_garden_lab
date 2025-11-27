@@ -35,5 +35,28 @@ export const moshiApi = {
     
     const data = await response.json()
     return data.symbols
+  },
+  
+  /**
+   * 获取完整诗歌
+   */
+  async getPoem(poemId: string): Promise<{
+    id: string
+    title: string
+    section: string
+    stanzas: Array<{ id: string; index: number; content: string }>
+  } | null> {
+    const response = await fetch(`${API_BASE}/poem/${encodeURIComponent(poemId)}`)
+    
+    if (response.status === 404) {
+      return null
+    }
+    
+    if (!response.ok) {
+      throw new Error(`获取诗歌失败: ${response.status}`)
+    }
+    
+    const data = await response.json()
+    return data.poem
   }
 }

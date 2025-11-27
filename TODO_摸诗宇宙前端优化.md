@@ -168,7 +168,32 @@
   - [x] 步骤A.6.2：更新 zhou PoemViewer 的 import 路径
   - [x] 步骤A.6.3：moshi StanzaDisplay 集成 ShareTools（复制+下载）
 
-#### - [ ] 任务A.7：查看全诗功能
+#### - [x] 任务A.7：奖励交互优化与风格统一
+
+- **核心思想**: 优化中奖展示流程，统一设计风格
+- 交付物：
+  - StanzaDisplay 按照周与春秋 PoemViewer 风格改造
+  - 中奖后先显示"恭喜中奖"提示，点击"查收奖品"按钮后再显示诗节
+- 验收标准：
+  - 中奖后显示："恭喜中奖：[符号名]！" + "查收奖品"按钮
+  - 点击按钮后展开 StanzaDisplay
+  - StanzaDisplay 风格与 zhou/PoemViewer 统一
+- **风险评估**: 低，纯前端UI改动
+- 预期改动文件（预判）：
+  - `modules/moshi/components/SlotMachine.vue`（修改中奖提示）
+  - `modules/moshi/components/StanzaDisplay.vue`（风格改造）
+  - `modules/moshi/views/MoshiView.vue`（可能需要调整）
+- 实际改动文件:
+  - `modules/moshi/components/SlotMachine.vue` - 中奖提示+查收奖品按钮+emit事件
+  - `modules/moshi/components/StanzaDisplay.vue` - 白卡风格+ShareTools(隐藏)
+  - `modules/moshi/views/MoshiView.vue` - showStanza状态+claimPrize处理
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.7.1：SlotMachine 中奖提示改为"恭喜中奖：XX！" + "查收奖品"按钮
+  - [x] 步骤A.7.2：添加showStanza状态控制StanzaDisplay显示
+  - [x] 步骤A.7.3：StanzaDisplay 风格改造（白卡风格，与PoemViewer统一）
+
+#### - [x] 任务A.8：查看全诗功能
 
 - **核心思想**: 用户从 StanzaDisplay 可以点击查看完整诗歌
 - 交付物：
@@ -181,15 +206,23 @@
 - **风险评估**: 中等，涉及后端API和前端组件新增
 - 预期改动文件（预判）：
   - `application/src/services/moshiService.js`（新增API）
-  - `application/src/routes/moshiRoutes.js`（新增路由）
+  - `application/src/routes/moshi.js`（新增路由）
   - `modules/moshi/components/PoemViewer.vue`（新建）
   - `modules/moshi/components/StanzaDisplay.vue`（添加按钮）
-- 实际改动文件: [待记录]
-- 完成状态：⏳ 待执行
+- 实际改动文件:
+  - `application/src/services/moshiService.js` - 新增getPoem方法
+  - `application/src/routes/moshi.js` - 新增GET /poem/:poemId路由
+  - `modules/moshi/components/PoemViewer.vue` - 新建，全诗展示弹窗
+  - `modules/moshi/components/StanzaDisplay.vue` - 查看全诗按钮+viewFullPoem事件
+  - `modules/moshi/services/moshiApi.ts` - 新增getPoem API调用
+  - `modules/moshi/views/MoshiView.vue` - PoemViewer控制逻辑
+  - `shared/services/PoemImageGenerator.ts` - lint修复
+  - 删除 `modules/zhou/services/PoemImageGenerator.ts` - 遗留文件清理
+- 完成状态：✅ 已完成
 - 执行步骤：
-  - [ ] 步骤A.7.1：后端新增 getPoem API
-  - [ ] 步骤A.7.2：前端新增 moshi/PoemViewer 组件
-  - [ ] 步骤A.7.3：StanzaDisplay 添加"查看全诗"按钮
+  - [x] 步骤A.8.1：后端新增 getPoem API
+  - [x] 步骤A.8.2：前端新增 moshi/PoemViewer 组件
+  - [x] 步骤A.8.3：StanzaDisplay 添加"查看全诗"按钮
 
 ---
 

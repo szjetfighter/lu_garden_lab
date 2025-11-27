@@ -15,9 +15,12 @@ import {
 
 const store = useMoshiStore()
 
+// 事件
+const emit = defineEmits<{
+  viewFullPoem: [poemId: string]
+}>()
+
 const stanza = computed(() => store.currentStanza)
-// 只在中奖且不在动画中时显示
-const isVisible = computed(() => store.isWin && stanza.value && !store.isSpinning)
 
 // 状态
 const isCopied = ref(false)
@@ -139,7 +142,7 @@ const actionButtons = computed(() => [
 
 <template>
   <Transition name="fade-slide">
-    <div v-if="isVisible" class="stanza-display">
+    <div v-if="stanza" class="stanza-display">
       <div class="stanza-header">
         <span class="stanza-icon">📜</span>
         <span class="stanza-label">你摸到了一节诗</span>
@@ -153,12 +156,20 @@ const actionButtons = computed(() => [
         <span class="poem-source">{{ formattedSource }}</span>
       </div>
       
-      <!-- 分享工具 -->
+      <!-- 分享工具（暂时隐藏） -->
       <ShareTools
         :actions="actionButtons"
-        :show-actions="true"
+        :show-actions="false"
         layout="auto"
       />
+      
+      <!-- 查看全诗按钮 -->
+      <button 
+        class="view-full-poem-button"
+        @click="emit('viewFullPoem', stanza?.poemId || '')"
+      >
+        查看全诗 →
+      </button>
     </div>
   </Transition>
 </template>
@@ -168,20 +179,21 @@ const actionButtons = computed(() => [
   width: 100%;
   max-width: 500px;
   margin-top: 1.5rem;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #f5f0e6 0%, #ebe5d6 100%);
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 0.75rem;
-  border-left: 4px solid #c49b66;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
 }
 
 .stanza-header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #d5cfc0;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .stanza-icon {
@@ -189,17 +201,17 @@ const actionButtons = computed(() => [
 }
 
 .stanza-label {
-  color: #8b7355;
+  color: #6b7280;
   font-size: 0.9rem;
   font-weight: 500;
 }
 
 .stanza-content {
-  padding: 0.5rem 0;
+  padding: 1rem 0;
 }
 
 .stanza-text {
-  color: #2a2a2a;
+  color: #1f2937;
   font-size: 1.1rem;
   line-height: 2;
   font-family: 'Noto Serif SC', 'Source Han Serif CN', serif;
@@ -210,12 +222,12 @@ const actionButtons = computed(() => [
 .stanza-footer {
   margin-top: 1rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #d5cfc0;
+  border-top: 1px solid #e5e7eb;
   text-align: right;
 }
 
 .poem-source {
-  color: #8b7355;
+  color: #6b7280;
   font-size: 0.85rem;
   font-family: 'Noto Serif SC', 'Source Han Serif CN', serif;
 }
@@ -234,5 +246,26 @@ const actionButtons = computed(() => [
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+.view-full-poem-button {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6b7280;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-full-poem-button:hover {
+  background: #f9fafb;
+  color: #374151;
+  border-color: #d1d5db;
 }
 </style>

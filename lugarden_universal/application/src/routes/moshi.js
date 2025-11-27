@@ -49,4 +49,30 @@ router.get('/symbols', (req, res) => {
   });
 });
 
+/**
+ * GET /api/moshi/poem/:poemId
+ * 获取完整诗歌（包含所有诗节）
+ */
+router.get('/poem/:poemId', async (req, res, next) => {
+  try {
+    const { poemId } = req.params;
+    const poem = await moshiService.getPoem(poemId);
+    
+    if (!poem) {
+      return res.status(404).json({
+        status: 'error',
+        message: '诗歌不存在'
+      });
+    }
+    
+    return res.json({
+      status: 'success',
+      poem
+    });
+  } catch (error) {
+    console.error('[Moshi API] getPoem error:', error);
+    return next(error);
+  }
+});
+
 export default router;

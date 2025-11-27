@@ -16,20 +16,21 @@ import { getPrismaClient } from '../persistence/prismaClient.js';
 
 const SYMBOLS = {
   // 人物符号（稀有）- 使用自定义图标
-  maoxiaodou: { id: 'maoxiaodou', name: '毛小豆', poeticName: '长胖的人', type: 'character', emoji: null, image: '/毛小豆.png', weight: 8 },
-  huashao: { id: 'huashao', name: '华少', poeticName: '怎么都长不胖的人', type: 'character', emoji: null, image: '/华少.png', weight: 8 },
-  dongxiansheng: { id: 'dongxiansheng', name: '栋先生', poeticName: '在翻车路上的人', type: 'character', emoji: null, image: '/栋先生.png', weight: 8 },
-  zhangqiu: { id: 'zhangqiu', name: '张秋', poeticName: '是她，不是他的她', type: 'character', emoji: null, image: '/张秋.png', weight: 8 },
+  // poeticName: { b: 3连, m: 4连, u: 5连 }
+  maoxiaodou: { id: 'maoxiaodou', name: '毛小豆', poeticName: { b: '长胖的人', m: '长胖的人哭了', u: '长胖的人笑哭了' }, type: 'character', emoji: null, image: '/毛小豆.png', weight: 8 },
+  huashao: { id: 'huashao', name: '华少', poeticName: { b: '不胖的人', m: '都不胖的人', u: '怎么都长不胖的人' }, type: 'character', emoji: null, image: '/华少.png', weight: 8 },
+  dongxiansheng: { id: 'dongxiansheng', name: '栋先生', poeticName: { b: '路上的人', m: '在路上的人', u: '在路上翻车的人' }, type: 'character', emoji: null, image: '/栋先生.png', weight: 8 },
+  zhangqiu: { id: 'zhangqiu', name: '张秋', poeticName: { b: '是她！', m: '是她，不是他！', u: '是她，不是他的她！' }, type: 'character', emoji: null, image: '/张秋.png', weight: 8 },
   
   // 场景类型符号（常见）- 使用自定义图标
-  office: { id: 'office', name: '办公室', poeticName: '摸鱼摸鱼摸鱼', type: 'scene', emoji: null, image: '/办公室.png', weight: 15, sceneType: '办公室社交' },
-  brotherhood: { id: 'brotherhood', name: '兄弟会', poeticName: '你喷我，我喷你', type: 'scene', emoji: null, image: '/兄弟会.png', weight: 15, sceneType: '兄弟会社交' },
-  enclosed: { id: 'enclosed', name: '封闭空间', poeticName: '放空，不是防控', type: 'scene', emoji: null, image: '/封闭.png', weight: 15, sceneType: '封闭空间' },
-  social: { id: 'social', name: '社交', poeticName: '喝，就会吐', type: 'scene', emoji: null, image: '/商务社交.png', weight: 15, sceneType: '商务社交' },
-  sport: { id: 'sport', name: '运动', poeticName: '好身材是消费出来的', type: 'scene', emoji: null, image: '/运动.png', weight: 12, sceneType: '运动环境' },
+  office: { id: 'office', name: '办公室', poeticName: { b: '摸鱼', m: '摸鱼摸鱼', u: '摸鱼摸鱼摸摸鱼' }, type: 'scene', emoji: null, image: '/办公室.png', weight: 15, sceneType: '办公室社交' },
+  brotherhood: { id: 'brotherhood', name: '兄弟会', poeticName: { b: '你我约定', m: '你我约定不？', u: '你我约定不互喷，吗？' }, type: 'scene', emoji: null, image: '/兄弟会.png', weight: 15, sceneType: '兄弟会社交' },
+  enclosed: { id: 'enclosed', name: '封闭空间', poeticName: { b: '防控', m: '不是防控', u: '放空，不是防控' }, type: 'scene', emoji: null, image: '/封闭.png', weight: 15, sceneType: '封闭空间' },
+  social: { id: 'social', name: '社交', poeticName: { b: '给爷喝', m: '给爷喝到爽', u: '给爷喝到吐爽' }, type: 'scene', emoji: null, image: '/商务社交.png', weight: 15, sceneType: '商务社交' },
+  sport: { id: 'sport', name: '运动', poeticName: { b: '好身材', m: '好身材来的', u: '好身材是消费出来的' }, type: 'scene', emoji: null, image: '/运动.png', weight: 12, sceneType: '运动环境' },
   
   // Wild符号（最稀有）- 使用图片而非emoji
-  wild: { id: 'wild', name: '陆', poeticName: '陆', type: 'wild', emoji: null, image: '/lujiaming_icon.png', weight: 5 }
+  wild: { id: 'wild', name: '陆', poeticName: { b: '陆', m: '陆', u: '陆' }, type: 'wild', emoji: null, image: '/lujiaming_icon.png', weight: 5 }
 };
 
 const SYMBOL_LIST = Object.values(SYMBOLS);
@@ -120,9 +121,13 @@ function checkWins(matrix) {
       winningSymbols.add(targetId);
       // 只保留连线范围内的格子
       const validCells = cellsForThisSymbol.filter(([col]) => col < consecutiveCols);
+      // 根据连线数选择对应的poeticName: 3连=b, 4连=m, 5连=u
+      const winLevel = consecutiveCols === 3 ? 'b' : consecutiveCols === 4 ? 'm' : 'u';
+      const symbol = SYMBOLS[targetId];
       winDetails.push({
         symbolId: targetId,
-        symbol: SYMBOLS[targetId],
+        symbol: symbol,
+        poeticName: symbol.poeticName[winLevel], // 根据等级选择对应名称
         columns: consecutiveCols,
         cells: validCells  // 该符号对应的中奖格子
       });
@@ -232,7 +237,7 @@ function selectStanza(pools, winningSymbols) {
     }
   }
   
-  // 降级：从最大的池中随机选
+  // 降级：从最大的池中随机选（但primarySymbol始终是连线最长的）
   let maxPool = [];
   let maxSymbol = null;
   for (const symbolId of winningSymbols) {
@@ -245,7 +250,8 @@ function selectStanza(pools, winningSymbols) {
   
   if (maxPool.length > 0) {
     const stanza = maxPool[Math.floor(Math.random() * maxPool.length)];
-    return { stanza, source: 'fallback', primarySymbol: maxSymbol };
+    // primarySymbol用winningSymbols[0]（已按连线长度排序，最长的在前）
+    return { stanza, source: 'fallback', primarySymbol: winningSymbols[0] };
   }
   
   return null;
@@ -266,11 +272,18 @@ export const moshiService = {
     // 2. 判定连线
     const { winningSymbols, winDetails, winningCells } = checkWins(matrix);
     
-    // 3. 查询stanza池
-    const pools = await getStanzaPool(winningSymbols);
+    // 2.5 按连线长度降序排序（优先选择连线最长的符号）
+    const sortedWinningSymbols = [...winningSymbols].sort((a, b) => {
+      const detailA = winDetails.find(d => d.symbolId === a);
+      const detailB = winDetails.find(d => d.symbolId === b);
+      return (detailB?.columns || 0) - (detailA?.columns || 0);
+    });
     
-    // 4. 选择stanza
-    const result = selectStanza(pools, winningSymbols);
+    // 3. 查询stanza池
+    const pools = await getStanzaPool(sortedWinningSymbols);
+    
+    // 4. 选择stanza（现在winningSymbols[0]是连线最长的）
+    const result = selectStanza(pools, sortedWinningSymbols);
     
     // 5. 构建主要中奖符号详情
     let primaryWinDetail = null;

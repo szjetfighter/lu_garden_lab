@@ -14,6 +14,7 @@ export interface MoshiSymbol {
 export interface WinDetail {
   symbolId: string
   symbol: MoshiSymbol
+  poeticName: string  // 根据连线数选择的诗意名称
   columns: number
 }
 

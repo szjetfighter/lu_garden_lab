@@ -250,12 +250,17 @@ async function handleSpin() {
         return
       }
       
-      // 检测下一列是否有连线潜力
+      // 正确逻辑：只有当前面的列已经连上时，下一列才高亮
+      // - 第0列停止后：第1列不高亮（还没形成连线）
+      // - 第1列停止后：检测前2列(0+1)是否连上 → 如果是，第2列高亮（再连一个就中奖！）
+      // - 第2列停止后：检测前3列是否连上 → 如果是（已中奖），第3列高亮
       const nextCol = colIdx + 1
       let nextDelay = 250 // 默认快速
       
-      if (matrix && hasChainPotential(matrix, nextCol)) {
-        // 有潜力！给下一列设置chainLevel，触发特效
+      // 只有当前列>=1时才检测（第0列停止后不给第1列高亮）
+      // 检测的是"前colIdx+1列是否都连上"
+      if (colIdx >= 1 && matrix && hasChainPotential(matrix, colIdx)) {
+        // 前面的列已经形成连线！给下一列设置chainLevel，触发特效
         chainLevels.value[nextCol] = nextCol + 1
         chainLevels.value = [...chainLevels.value]
         // 使用增强延迟

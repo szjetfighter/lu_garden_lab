@@ -273,13 +273,58 @@
 
 ---
 
+#### - [x] 任务A.7：中奖逻辑完善与poeticName分等级
+
+- **核心思想**:
+  - 多符号中奖时优先选择最长连线作为primaryWinDetail
+  - 高亮逻辑改为"事后揭示"（真实老虎机体验，高亮≠必中）
+  - poeticName分3等级（b=3连, m=4连, u=5连），9奖池×3等级=27种组合
+- **poeticName设计**:
+  | 符号 | BIG WIN (3连) | MEGA WIN (4连) | ULTRA WIN (5连) |
+  |------|--------------|----------------|-----------------|
+  | 毛小豆 | 长胖的人 | 长胖的人哭了 | 长胖的人笑哭了 |
+  | 华少 | 不胖的人 | 都不胖的人 | 怎么都长不胖的人 |
+  | 栋先生 | 路上的人 | 在路上的人 | 在路上翻车的人 |
+  | 张秋 | 是她！ | 是她，不是他！ | 是她，不是他的她！ |
+  | 办公室 | 摸鱼 | 摸鱼摸鱼 | 摸鱼摸鱼摸摸鱼 |
+  | 兄弟会 | 你我约定 | 你我约定不？ | 你我约定不互喷，吗？ |
+  | 封闭空间 | 防控 | 不是防控 | 放空，不是防控 |
+  | 社交 | 给爷喝 | 给爷喝到爽 | 给爷喝到吐爽 |
+  | 运动 | 好身材 | 好身材来的 | 好身材是消费出来的 |
+- 交付物：
+  - moshiService.js - 后端优先最长连线+poeticName分等级
+  - SlotMachine.vue - 高亮逻辑修正
+  - WinModal.vue - ULTRA WIN增强+使用分等级poeticName
+  - moshi.ts - 类型更新
+- 验收标准：
+  - 多符号中奖时显示最长连线对应的标题
+  - 高亮只代表"有希望"，可能期待落空
+  - poeticName根据连线数显示不同内容
+  - TypeScript类型检查0错误，Vite构建成功
+- **风险评估**: 中风险，涉及后端逻辑
+- 实际改动文件:
+  - `application/src/services/moshiService.js` - 优先最长连线+poeticName分等级
+  - `frontend_vue/src/modules/moshi/components/SlotMachine.vue` - 高亮逻辑修正
+  - `frontend_vue/src/modules/moshi/components/WinModal.vue` - ULTRA WIN增强+显示分等级名称
+  - `frontend_vue/src/modules/moshi/types/moshi.ts` - WinDetail添加poeticName字段
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.7.1：后端按连线长度排序winningSymbols，优先最长连线
+  - [x] 步骤A.7.2：修正fallback路径也使用最长连线符号
+  - [x] 步骤A.7.3：前端高亮逻辑改为"事后揭示"而非"预知未来"
+  - [x] 步骤A.7.4：ULTRA WIN增强效果（随机放大+超强发光）
+  - [x] 步骤A.7.5：poeticName分3等级（b=3连, m=4连, u=5连）共27种组合
+  - [x] 步骤A.7.6：验证（TypeScript类型检查0错误，Vite构建成功）
+
+---
+
 ## 更新日志关联
 
 - **预计更新类型**: 前端优化
-- **更新目录**: `documentation/changelog/2025-11-27_摸诗宇宙前端深度优化/`
+- **更新目录**: `documentation/changelog/2025-11-28_摸诗宇宙前端深度优化/`
 
 ## 完成后的操作
 
-- [ ] 创建更新目录并移动为 `TODO.md`
-- [ ] 创建 `更新日志.md`
-- [ ] 提交所有更改到Git
+- [x] 创建更新目录并移动为 `TODO.md`
+- [x] 创建 `更新日志.md`
+- [x] 提交所有更改到Git

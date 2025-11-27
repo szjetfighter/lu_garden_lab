@@ -71,7 +71,7 @@ const winLevel = computed(() => {
             :alt="winDetail.symbol.name || ''" 
           />
           <span v-else class="win-symbol-emoji">{{ winDetail.symbol.emoji }}</span>
-          <span class="win-symbol-name">{{ winDetail.symbol.poeticName || winDetail.symbol.name }}</span>
+          <span class="win-symbol-name">{{ winDetail.poeticName || winDetail.symbol.name }}</span>
         </div>
         
         <!-- 查收奖品按钮 -->
@@ -238,18 +238,51 @@ const winLevel = computed(() => {
   75% { transform: translateX(1px); }
 }
 
-/* 5连 - ULTRA WIN - 金色系 + 闪电效果 */
+/* 5连 - ULTRA WIN - 金色系 + 随机放大 + 超强发光 */
 .win-title.win-ultra {
   color: #fbbf24;
   text-shadow: 
     0 0 20px rgba(251, 191, 36, 0.8),
     0 0 40px rgba(251, 191, 36, 0.6),
     0 0 60px rgba(251, 191, 36, 0.4),
+    0 0 80px rgba(251, 191, 36, 0.3),
     4px 4px 0 #f59e0b;
 }
 
 .win-title.win-ultra .win-char {
-  animation: char-bounce 0.6s ease-out both, glow-gold 0.5s ease-in-out infinite 0.6s, shake-heavy-text 0.08s ease-in-out infinite 0.6s;
+  animation: 
+    char-bounce 0.6s ease-out both, 
+    glow-gold-ultra 0.3s ease-in-out infinite 0.6s, 
+    shake-heavy-text 0.08s ease-in-out infinite 0.6s,
+    random-scale 0.5s ease-in-out infinite 0.6s;
+}
+
+@keyframes random-scale {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.15); }
+  50% { transform: scale(0.95); }
+  75% { transform: scale(1.1); }
+}
+
+@keyframes glow-gold-ultra {
+  0%, 100% { 
+    text-shadow: 
+      0 0 20px rgba(251, 191, 36, 0.8), 
+      0 0 40px rgba(251, 191, 36, 0.6), 
+      0 0 60px rgba(251, 191, 36, 0.4),
+      0 0 80px rgba(251, 191, 36, 0.3),
+      4px 4px 0 #f59e0b;
+    filter: brightness(1);
+  }
+  50% { 
+    text-shadow: 
+      0 0 40px rgba(251, 191, 36, 1), 
+      0 0 80px rgba(251, 191, 36, 0.9), 
+      0 0 120px rgba(251, 191, 36, 0.7),
+      0 0 160px rgba(251, 191, 36, 0.5),
+      4px 4px 0 #f59e0b;
+    filter: brightness(1.4);
+  }
 }
 
 @keyframes glow-gold {

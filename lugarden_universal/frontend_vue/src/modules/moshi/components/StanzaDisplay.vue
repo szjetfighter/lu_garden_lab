@@ -178,9 +178,9 @@ const actionButtons = computed(() => [
 
 <style scoped>
 .stanza-display {
-  width: 100%;
-  max-width: 500px;
-  margin-top: 1.5rem;
+  width: calc(100% - 2rem);
+  max-width: 48rem;
+  margin: 1.5rem auto 0;
   padding: 1.5rem 2rem;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 0.75rem;

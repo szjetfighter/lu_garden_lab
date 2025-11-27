@@ -209,7 +209,7 @@ const actionButtons = computed(() => [
 .poem-viewer-modal {
   position: relative;
   width: 100%;
-  max-width: 600px;
+  max-width: 48rem;
   max-height: 80vh;
   overflow-y: auto;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);

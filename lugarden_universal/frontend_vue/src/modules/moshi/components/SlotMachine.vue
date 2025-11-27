@@ -13,6 +13,7 @@ const store = useMoshiStore()
 
 // 事件
 const emit = defineEmits<{
+  showWin: []
   claimPrize: []
 }>()
 
@@ -135,6 +136,10 @@ async function handleSpin() {
     setTimeout(() => {
       columnStates.value = ['idle', 'idle', 'idle', 'idle', 'idle']
       isAnimating.value = false
+      // 8. 如果中奖，通知父组件显示弹窗
+      if (store.lastResult?.primaryWinDetail) {
+        emit('showWin')
+      }
     }, 5 * 250 + 500)
   }, remainingWait)
 }
@@ -185,20 +190,6 @@ async function handleSpin() {
       </div>
     </div>
     
-    <!-- 中奖信息：动画结束后才显示 -->
-    <div v-if="primaryWinDetail && !isAnimating" class="win-info">
-      <div class="win-congratulation">
-        🎉 恭喜中奖：
-        <img v-if="primaryWinDetail.symbol.image" :src="primaryWinDetail.symbol.image" class="win-symbol-image" alt="陆" />
-        <span v-else class="win-symbol">{{ primaryWinDetail.symbol.emoji }}</span>
-        <span class="win-text">{{ primaryWinDetail.symbol.poeticName || primaryWinDetail.symbol.name }}</span>
-        ！
-      </div>
-      <button class="claim-button" @click="emit('claimPrize')">
-        查收奖品
-      </button>
-    </div>
-    
     <!-- 摸诗按钮 -->
     <button 
       class="spin-button"
@@ -225,6 +216,9 @@ async function handleSpin() {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: calc(100% - 2rem);
+  max-width: 48rem;
+  margin: 0 auto;
   padding: 2rem;
   background: white;
   border-radius: var(--radius-base, 1rem);
@@ -346,68 +340,6 @@ async function handleSpin() {
   width: 2rem;
   height: 2rem;
   object-fit: contain;
-}
-
-.win-symbol-image {
-  width: 1.5rem;
-  height: 1.5rem;
-  object-fit: contain;
-}
-
-.win-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-  max-width: 500px;
-  margin-top: 1.5rem;
-  padding: 1.5rem 2rem;
-  background: white;
-  border-radius: var(--radius-base, 1rem);
-  box-shadow: var(--shadow-card, 0 4px 20px rgba(0, 0, 0, 0.08));
-}
-
-.win-congratulation {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #333;
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
-.win-symbol {
-  font-size: 1.5rem;
-}
-
-.win-text {
-  color: #1a1a2e;
-  font-weight: 600;
-}
-
-.claim-button {
-  min-height: 44px;
-  min-width: 120px;
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1a1a2e;
-  background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
-}
-
-.claim-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
-}
-
-.claim-button:active {
-  transform: translateY(0);
 }
 
 .spin-button {

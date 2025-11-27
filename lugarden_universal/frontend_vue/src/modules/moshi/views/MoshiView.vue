@@ -3,13 +3,17 @@
  * 摸诗宇宙主视图
  */
 
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
 import { useMoshiStore } from '../stores/moshiStore'
 import SlotMachine from '../components/SlotMachine.vue'
 import StanzaDisplay from '../components/StanzaDisplay.vue'
 import PoemViewer from '../components/PoemViewer.vue'
+import WinModal from '../components/WinModal.vue'
 
 const store = useMoshiStore()
+
+// 控制中奖弹窗
+const showWinModal = ref(false)
 
 // 控制诗节展示是否显示
 const showStanza = ref(false)
@@ -18,8 +22,22 @@ const showStanza = ref(false)
 const showFullPoem = ref(false)
 const currentPoemId = ref('')
 
-// 点击"查收奖品"按钮时显示诗节
+// 当前中奖详情
+const currentWinDetail = computed(() => store.lastResult?.primaryWinDetail || null)
+
+// 显示中奖弹窗
+const handleShowWin = () => {
+  showWinModal.value = true
+}
+
+// 关闭中奖弹窗
+const handleCloseWin = () => {
+  showWinModal.value = false
+}
+
+// 点击"查收奖品"按钮时：关闭弹窗，显示诗节
 const handleClaimPrize = () => {
+  showWinModal.value = false
   showStanza.value = true
 }
 
@@ -37,6 +55,7 @@ const handleCloseFullPoem = () => {
 
 // 监听新的spin，重置显示状态
 watch(() => store.spinCount, () => {
+  showWinModal.value = false
   showStanza.value = false
   showFullPoem.value = false
 })
@@ -51,12 +70,20 @@ onMounted(() => {
   <div class="moshi-view">
     <div class="moshi-container">
       <!-- 老虎机 -->
-      <SlotMachine @claim-prize="handleClaimPrize" />
+      <SlotMachine @show-win="handleShowWin" />
       
       <!-- 诗节展示：点击查收奖品后显示 -->
       <StanzaDisplay 
         v-if="showStanza" 
         @view-full-poem="handleViewFullPoem"
+      />
+      
+      <!-- 中奖弹窗 -->
+      <WinModal 
+        v-if="showWinModal && currentWinDetail"
+        :win-detail="currentWinDetail"
+        @close="handleCloseWin"
+        @claim-prize="handleClaimPrize"
       />
       
       <!-- 全诗展示 -->

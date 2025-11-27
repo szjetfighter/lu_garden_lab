@@ -125,6 +125,41 @@
 
 ---
 
+#### - [ ] 任务A.3：老虎机列级特效增强
+
+- **核心思想**: 
+  - 参考Slotomania等行业标准老虎机，为滚动中的列添加视觉特效
+  - 区分「滚动中」「停止瞬间」「静止」「中奖」四个状态的视觉层次
+- **特效清单**:
+  1. **运动模糊**: 滚动中的符号添加纵向blur，强化"在转"的质感
+  2. **光带扫过（改进版）**: 脉冲式闪烁而非匀速扫过，更窄更亮更快（0.25s周期）
+  3. **停止回弹增强**: overshoot + 多阶段bounce物理感
+  4. **滚动时列边框发光（多色动态版）**: 5列各有不同主题色（金/青/粉/紫/橙）+ 亮度呼吸动画
+  5. **中奖图标动态效果**: PNG图标scale放大 + rotateY 3D翻转效果
+- 交付物：
+  - SlotMachine.vue - 添加五种视觉特效
+- 验收标准：
+  - 滚动中的列与静止列有明显视觉区分
+  - 光带效果是脉冲式闪烁，不是匀速扫过
+  - 5列各有不同颜色的发光效果
+  - 中奖图标有放大+旋转动画
+  - TypeScript类型检查0错误，Vite构建成功
+- **风险评估**: 低风险，纯CSS动画改动
+- 预期改动文件：
+  - `frontend_vue/src/modules/moshi/components/SlotMachine.vue`
+- 实际改动文件:
+  - `frontend_vue/src/modules/moshi/components/SlotMachine.vue` - 模板添加动态col-N类绑定 + CSS添加五种特效
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.3.1：添加运动模糊效果（.spin-strip filter: blur(1.2px)）
+  - [x] 步骤A.3.2：添加脉冲式光带闪烁效果（flash-pulse动画，0.25s周期，opacity脉冲）
+  - [x] 步骤A.3.3：增强停止回弹效果（enhanced-bounce，5阶段overshoot+bounce）
+  - [x] 步骤A.3.4：添加多色动态列边框发光（5列5色：金/青/粉/紫/橙，glow-pulse呼吸动画）
+  - [x] 步骤A.3.5：添加中奖图标scale+rotateY动画（icon-celebrate，1.2s周期，±15°晃动+1.2x放大）
+  - [x] 步骤A.3.6：验证（TypeScript类型检查0错误，Vite构建成功1.45s）
+
+---
+
 ## 更新日志关联
 
 - **预计更新类型**: 前端优化

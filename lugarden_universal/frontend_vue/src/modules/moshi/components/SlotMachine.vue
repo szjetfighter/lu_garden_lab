@@ -161,7 +161,8 @@ async function handleSpin() {
         class="slot-column"
         :class="{ 
           spinning: columnStates[colIdx] === 'spinning',
-          stopped: columnStates[colIdx] === 'stopped'
+          stopped: columnStates[colIdx] === 'stopped',
+          [`col-${colIdx}`]: columnStates[colIdx] === 'spinning'
         }"
       >
         <!-- 滚动中：显示滚动条带 -->
@@ -270,6 +271,46 @@ async function handleSpin() {
   position: relative;
   height: calc(60px * 3 + 0.5rem * 2); /* 3个格子高度 + 间隙 */
   overflow: hidden;
+  border-radius: 0.5rem;
+  transition: box-shadow 0.3s ease;
+}
+
+/* A.3.4: 多色动态列边框发光 - 5列5色 */
+.slot-column.spinning.col-0 {
+  animation: glow-pulse-gold 0.8s ease-in-out infinite;
+}
+.slot-column.spinning.col-1 {
+  animation: glow-pulse-cyan 0.8s ease-in-out infinite 0.1s;
+}
+.slot-column.spinning.col-2 {
+  animation: glow-pulse-pink 0.8s ease-in-out infinite 0.2s;
+}
+.slot-column.spinning.col-3 {
+  animation: glow-pulse-purple 0.8s ease-in-out infinite 0.3s;
+}
+.slot-column.spinning.col-4 {
+  animation: glow-pulse-orange 0.8s ease-in-out infinite 0.4s;
+}
+
+@keyframes glow-pulse-gold {
+  0%, 100% { box-shadow: 0 0 8px rgba(248, 213, 107, 0.4), inset 0 0 4px rgba(248, 213, 107, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(248, 213, 107, 0.8), 0 0 30px rgba(248, 213, 107, 0.4), inset 0 0 8px rgba(248, 213, 107, 0.3); }
+}
+@keyframes glow-pulse-cyan {
+  0%, 100% { box-shadow: 0 0 8px rgba(34, 211, 238, 0.4), inset 0 0 4px rgba(34, 211, 238, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.8), 0 0 30px rgba(34, 211, 238, 0.4), inset 0 0 8px rgba(34, 211, 238, 0.3); }
+}
+@keyframes glow-pulse-pink {
+  0%, 100% { box-shadow: 0 0 8px rgba(244, 114, 182, 0.4), inset 0 0 4px rgba(244, 114, 182, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(244, 114, 182, 0.8), 0 0 30px rgba(244, 114, 182, 0.4), inset 0 0 8px rgba(244, 114, 182, 0.3); }
+}
+@keyframes glow-pulse-purple {
+  0%, 100% { box-shadow: 0 0 8px rgba(168, 85, 247, 0.4), inset 0 0 4px rgba(168, 85, 247, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.8), 0 0 30px rgba(168, 85, 247, 0.4), inset 0 0 8px rgba(168, 85, 247, 0.3); }
+}
+@keyframes glow-pulse-orange {
+  0%, 100% { box-shadow: 0 0 8px rgba(251, 146, 60, 0.4), inset 0 0 4px rgba(251, 146, 60, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(251, 146, 60, 0.8), 0 0 30px rgba(251, 146, 60, 0.4), inset 0 0 8px rgba(251, 146, 60, 0.3); }
 }
 
 /* 滚动条带容器 */
@@ -278,6 +319,37 @@ async function handleSpin() {
   flex-direction: column;
   gap: 0.5rem;
   animation: scroll-down 0.08s linear infinite;
+  /* A.3.1: 运动模糊 */
+  filter: blur(1.2px);
+}
+
+/* A.3.2: 脉冲式光带闪烁 */
+.slot-column.spinning::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(255, 255, 255, 0.9) 48%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(255, 255, 255, 0.9) 52%,
+    transparent 65%,
+    transparent 100%
+  );
+  animation: flash-pulse 0.25s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+}
+
+@keyframes flash-pulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.7; }
 }
 
 @keyframes scroll-down {
@@ -285,15 +357,32 @@ async function handleSpin() {
   100% { transform: translateY(-260px); }
 }
 
-/* 停止时的弹跳效果 */
+/* A.3.3: 停止回弹增强 - overshoot + 多阶段bounce */
 .slot-column.stopped {
-  animation: bounce 0.3s ease-out;
+  animation: enhanced-bounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes bounce {
-  0% { transform: translateY(-10px); }
-  50% { transform: translateY(5px); }
-  100% { transform: translateY(0); }
+@keyframes enhanced-bounce {
+  0% { 
+    transform: translateY(-18px);
+    filter: blur(0.8px);
+  }
+  25% { 
+    transform: translateY(10px);
+    filter: blur(0);
+  }
+  45% { 
+    transform: translateY(-5px);
+  }
+  65% { 
+    transform: translateY(3px);
+  }
+  80% { 
+    transform: translateY(-1px);
+  }
+  100% { 
+    transform: translateY(0);
+  }
 }
 
 .slot-cell {
@@ -317,6 +406,31 @@ async function handleSpin() {
     0 0 10px rgba(248, 213, 107, 0.5),
     0 0 20px rgba(248, 213, 107, 0.3);
   animation: pulse 1s ease-in-out infinite;
+  perspective: 500px;
+}
+
+/* A.3.5: 中奖图标scale+rotateY动画 */
+.slot-cell.winning .symbol-image {
+  animation: icon-celebrate 1.2s ease-in-out infinite;
+}
+
+.slot-cell.winning .symbol {
+  animation: icon-celebrate 1.2s ease-in-out infinite;
+}
+
+@keyframes icon-celebrate {
+  0%, 100% { 
+    transform: scale(1) rotateY(0deg);
+  }
+  25% { 
+    transform: scale(1.15) rotateY(15deg);
+  }
+  50% { 
+    transform: scale(1.2) rotateY(0deg);
+  }
+  75% { 
+    transform: scale(1.15) rotateY(-15deg);
+  }
 }
 
 @keyframes pulse {

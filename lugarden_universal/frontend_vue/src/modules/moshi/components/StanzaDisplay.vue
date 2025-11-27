@@ -205,8 +205,9 @@ const actionButtons = computed(() => [
         layout="auto"
       />
       
-      <!-- 查看全诗按钮 -->
+      <!-- 查看全诗按钮（暂时隐藏） -->
       <button 
+        v-if="false"
         class="view-full-poem-button"
         @click="emit('viewFullPoem', stanza?.poemId || '')"
       >

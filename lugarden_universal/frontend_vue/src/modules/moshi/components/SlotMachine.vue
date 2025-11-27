@@ -41,6 +41,9 @@ onMounted(async () => {
 // 每列状态: 'idle' | 'spinning' | 'stopped'
 const columnStates = ref<string[]>(['idle', 'idle', 'idle', 'idle', 'idle'])
 
+// A.5: 每列的连线等级 (0=无连线, 1-5=连线列数)
+const chainLevels = ref<number[]>([0, 0, 0, 0, 0])
+
 // 动画进行中标志（独立于API状态）
 const isAnimating = ref(false)
 
@@ -100,6 +103,102 @@ function getSpinningColumn(colIdx: number) {
   return spinningSymbols.value[colIdx] || []
 }
 
+// A.5: 计算每列的连线等级
+// 返回数组 [col0等级, col1等级, ...]
+// 等级含义: 0=该列断开, N=到该列为止连续匹配了N列
+function calculateChainLevels(matrix: MoshiSymbol[][]): number[] {
+  const levels = [0, 0, 0, 0, 0]
+  
+  // 获取第一列所有符号ID（包括wild作为万能匹配）
+  const firstColIds = new Set<string>()
+  for (const symbol of matrix[0]) {
+    if (symbol.type !== 'wild') {
+      firstColIds.add(symbol.id)
+    }
+  }
+  // 如果第一列有wild，看第二列有什么符号
+  if (matrix[0].some(s => s.type === 'wild') && matrix[1]) {
+    for (const symbol of matrix[1]) {
+      if (symbol.type !== 'wild') {
+        firstColIds.add(symbol.id)
+      }
+    }
+  }
+  
+  // 找出最长连线
+  let maxChain = 0
+  for (const targetId of firstColIds) {
+    let chain = 0
+    for (let col = 0; col < 5; col++) {
+      const hasMatch = matrix[col].some(s => s.id === targetId || s.type === 'wild')
+      if (hasMatch) {
+        chain++
+      } else {
+        break
+      }
+    }
+    if (chain > maxChain) {
+      maxChain = chain
+    }
+  }
+  
+  // 填充每列的等级
+  for (let col = 0; col < 5; col++) {
+    if (col < maxChain) {
+      levels[col] = col + 1  // 1, 2, 3, 4, 5
+    } else {
+      levels[col] = 0  // 断开
+    }
+  }
+  
+  return levels
+}
+
+// A.5: 根据连线等级计算延迟（大幅递增制造悬念）
+function getDelayForColumn(colIdx: number, level: number): number {
+  const baseDelay = 250
+  if (level === 0) return baseDelay  // 断开，快速结束
+  
+  // 有连线时大幅递增延迟
+  const delays = [250, 500, 1000, 2000, 3500]
+  return delays[Math.min(colIdx, 4)]
+}
+
+// A.5: 检测到第N列为止是否有连线潜力
+function hasChainPotential(matrix: MoshiSymbol[][], upToCol: number): boolean {
+  // 获取第一列所有符号ID
+  const firstColIds = new Set<string>()
+  for (const symbol of matrix[0]) {
+    if (symbol.type !== 'wild') {
+      firstColIds.add(symbol.id)
+    }
+  }
+  if (matrix[0].some(s => s.type === 'wild') && matrix[1]) {
+    for (const symbol of matrix[1]) {
+      if (symbol.type !== 'wild') {
+        firstColIds.add(symbol.id)
+      }
+    }
+  }
+  
+  // 检查是否有符号能连续匹配到upToCol
+  for (const targetId of firstColIds) {
+    let chain = 0
+    for (let col = 0; col <= upToCol && col < 5; col++) {
+      const hasMatch = matrix[col].some(s => s.id === targetId || s.type === 'wild')
+      if (hasMatch) {
+        chain++
+      } else {
+        break
+      }
+    }
+    if (chain > upToCol) {
+      return true  // 到upToCol为止都有匹配
+    }
+  }
+  return false
+}
+
 async function handleSpin() {
   // 使用本地动画状态，而非API状态
   if (isAnimating.value) return
@@ -123,26 +222,52 @@ async function handleSpin() {
   const elapsed = Date.now() - spinStartTime
   const remainingWait = Math.max(0, MIN_SPIN_DURATION - elapsed)
   
-  // 6. 等待后依次停止每列（间隔250ms）
+  // A.5: 获取最终矩阵用于逐步检测
+  const matrix = store.matrix
+  // 开始时所有列chainLevel都是0（无特效）
+  chainLevels.value = [0, 0, 0, 0, 0]
+  
+  // 6. 等待后依次停止每列（A.5: 逐步揭示特效）
   setTimeout(() => {
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => {
-        columnStates.value[i] = 'stopped'
-        columnStates.value = [...columnStates.value]
-      }, i * 250)
+    // 链式处理每列：停止当前列 → 检测下一列 → 设置特效 → 等待 → 停止下一列
+    const stopColumn = (colIdx: number) => {
+      // 停止当前列
+      columnStates.value[colIdx] = 'stopped'
+      columnStates.value = [...columnStates.value]
+      
+      // 如果是最后一列，完成
+      if (colIdx >= 4) {
+        // 延迟后进入idle状态
+        setTimeout(() => {
+          columnStates.value = ['idle', 'idle', 'idle', 'idle', 'idle']
+          chainLevels.value = [0, 0, 0, 0, 0]
+          isAnimating.value = false
+          store.commitStats()
+          if (store.lastResult?.primaryWinDetail) {
+            emit('showWin')
+          }
+        }, 500)
+        return
+      }
+      
+      // 检测下一列是否有连线潜力
+      const nextCol = colIdx + 1
+      let nextDelay = 250 // 默认快速
+      
+      if (matrix && hasChainPotential(matrix, nextCol)) {
+        // 有潜力！给下一列设置chainLevel，触发特效
+        chainLevels.value[nextCol] = nextCol + 1
+        chainLevels.value = [...chainLevels.value]
+        // 使用增强延迟
+        nextDelay = getDelayForColumn(nextCol, nextCol + 1)
+      }
+      
+      // 等待后停止下一列
+      setTimeout(() => stopColumn(nextCol), nextDelay)
     }
     
-    // 7. 全部停止后重置为idle，并解除动画锁
-    setTimeout(() => {
-      columnStates.value = ['idle', 'idle', 'idle', 'idle', 'idle']
-      isAnimating.value = false
-      // A.4: 动画结束后更新统计
-      store.commitStats()
-      // 8. 如果中奖，通知父组件显示弹窗
-      if (store.lastResult?.primaryWinDetail) {
-        emit('showWin')
-      }
-    }, 5 * 250 + 500)
+    // 从第0列开始，固定250ms后停止
+    setTimeout(() => stopColumn(0), 250)
   }, remainingWait)
 }
 </script>
@@ -164,7 +289,9 @@ async function handleSpin() {
         :class="{ 
           spinning: columnStates[colIdx] === 'spinning',
           stopped: columnStates[colIdx] === 'stopped',
-          [`col-${colIdx}`]: columnStates[colIdx] === 'spinning'
+          [`col-${colIdx}`]: columnStates[colIdx] === 'spinning',
+          [`chain-${chainLevels[colIdx]}`]: columnStates[colIdx] === 'spinning' && chainLevels[colIdx] > 0,
+          'no-chain': columnStates[colIdx] === 'spinning' && chainLevels[colIdx] === 0
         }"
       >
         <!-- 滚动中：显示滚动条带 -->
@@ -277,21 +404,51 @@ async function handleSpin() {
   transition: box-shadow 0.3s ease;
 }
 
-/* A.3.4: 多色动态列边框发光 - 5列5色 */
-.slot-column.spinning.col-0 {
+/* A.5: 无连线的列 - 无发光效果 */
+.slot-column.spinning.no-chain {
+  box-shadow: none;
+  animation: none;
+}
+
+/* A.3.4 + A.5: 多色动态列边框发光 - 只有连上的列才发光 */
+.slot-column.spinning.col-0:not(.no-chain) {
   animation: glow-pulse-gold 0.8s ease-in-out infinite;
 }
-.slot-column.spinning.col-1 {
+.slot-column.spinning.col-1:not(.no-chain) {
   animation: glow-pulse-cyan 0.8s ease-in-out infinite 0.1s;
 }
-.slot-column.spinning.col-2 {
+.slot-column.spinning.col-2:not(.no-chain) {
   animation: glow-pulse-pink 0.8s ease-in-out infinite 0.2s;
 }
-.slot-column.spinning.col-3 {
+.slot-column.spinning.col-3:not(.no-chain) {
   animation: glow-pulse-purple 0.8s ease-in-out infinite 0.3s;
 }
-.slot-column.spinning.col-4 {
+.slot-column.spinning.col-4:not(.no-chain) {
   animation: glow-pulse-orange 0.8s ease-in-out infinite 0.4s;
+}
+
+/* A.5: 4连 - 轻微抖动 + 星星效果 */
+.slot-column.spinning.chain-4 {
+  animation: glow-pulse-purple 0.8s ease-in-out infinite, shake-light 0.15s ease-in-out infinite;
+}
+
+/* A.5: 5连 - 剧烈抖动 + 闪电效果 */
+.slot-column.spinning.chain-5 {
+  animation: glow-pulse-orange 0.8s ease-in-out infinite, shake-heavy 0.1s ease-in-out infinite;
+}
+
+@keyframes shake-light {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+@keyframes shake-heavy {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  20% { transform: translateX(-3px) rotate(-1deg); }
+  40% { transform: translateX(3px) rotate(1deg); }
+  60% { transform: translateX(-3px) rotate(-1deg); }
+  80% { transform: translateX(3px) rotate(1deg); }
 }
 
 @keyframes glow-pulse-gold {
@@ -325,8 +482,8 @@ async function handleSpin() {
   filter: blur(1.2px);
 }
 
-/* A.3.2: 脉冲式光带闪烁 */
-.slot-column.spinning::after {
+/* A.5: 条件性光带 - chain-1/2/3有光带，chain-4/5用特殊特效 */
+.slot-column.spinning:not(.no-chain):not(.chain-4):not(.chain-5)::after {
   content: '';
   position: absolute;
   top: 0;
@@ -349,9 +506,154 @@ async function handleSpin() {
   opacity: 0;
 }
 
+/* 无连线的列没有光带 */
+.slot-column.spinning.no-chain::after {
+  display: none;
+}
+
 @keyframes flash-pulse {
   0%, 100% { opacity: 0; }
   50% { opacity: 0.7; }
+}
+
+/* A.5: 4连星星特效 - 两侧呼吸星星 */
+.slot-column.spinning.chain-4::before,
+.slot-column.spinning.chain-4::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.slot-column.spinning.chain-4::before {
+  content: '';
+  left: -4px;
+  background: linear-gradient(180deg, 
+    transparent 0%,
+    rgba(168, 85, 247, 0.8) 20%,
+    rgba(168, 85, 247, 0.3) 40%,
+    rgba(168, 85, 247, 0.9) 50%,
+    rgba(168, 85, 247, 0.3) 60%,
+    rgba(168, 85, 247, 0.8) 80%,
+    transparent 100%
+  );
+  animation: star-side-pulse 0.4s ease-in-out infinite;
+  box-shadow: 
+    0 0 15px rgba(168, 85, 247, 0.8),
+    0 0 30px rgba(168, 85, 247, 0.5),
+    -5px 0 20px rgba(168, 85, 247, 0.6);
+}
+
+.slot-column.spinning.chain-4::after {
+  content: '';
+  right: -4px;
+  background: linear-gradient(180deg, 
+    transparent 0%,
+    rgba(168, 85, 247, 0.8) 25%,
+    rgba(168, 85, 247, 0.3) 45%,
+    rgba(168, 85, 247, 0.9) 55%,
+    rgba(168, 85, 247, 0.3) 65%,
+    rgba(168, 85, 247, 0.8) 85%,
+    transparent 100%
+  );
+  animation: star-side-pulse 0.4s ease-in-out infinite 0.2s;
+  box-shadow: 
+    0 0 15px rgba(168, 85, 247, 0.8),
+    0 0 30px rgba(168, 85, 247, 0.5),
+    5px 0 20px rgba(168, 85, 247, 0.6);
+}
+
+@keyframes star-side-pulse {
+  0%, 100% { 
+    opacity: 0.5;
+    transform: scaleY(0.9);
+  }
+  50% { 
+    opacity: 1;
+    transform: scaleY(1.1);
+  }
+}
+
+/* A.5: 5连闪电特效 - 超级赛亚人气场 */
+.slot-column.spinning.chain-5::before,
+.slot-column.spinning.chain-5::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.slot-column.spinning.chain-5::before {
+  content: '';
+  left: -6px;
+  background: linear-gradient(180deg, 
+    transparent 0%,
+    rgba(251, 191, 36, 1) 10%,
+    transparent 20%,
+    rgba(251, 191, 36, 1) 30%,
+    transparent 40%,
+    rgba(251, 191, 36, 1) 50%,
+    transparent 60%,
+    rgba(251, 191, 36, 1) 70%,
+    transparent 80%,
+    rgba(251, 191, 36, 1) 90%,
+    transparent 100%
+  );
+  animation: lightning-crackle 0.1s steps(3) infinite;
+  box-shadow: 
+    0 0 20px rgba(251, 191, 36, 1),
+    0 0 40px rgba(251, 191, 36, 0.8),
+    0 0 60px rgba(251, 191, 36, 0.5),
+    -8px 0 30px rgba(251, 191, 36, 0.7);
+  filter: blur(1px);
+}
+
+.slot-column.spinning.chain-5::after {
+  content: '';
+  right: -6px;
+  background: linear-gradient(180deg, 
+    transparent 5%,
+    rgba(251, 191, 36, 1) 15%,
+    transparent 25%,
+    rgba(251, 191, 36, 1) 35%,
+    transparent 45%,
+    rgba(251, 191, 36, 1) 55%,
+    transparent 65%,
+    rgba(251, 191, 36, 1) 75%,
+    transparent 85%,
+    rgba(251, 191, 36, 1) 95%,
+    transparent 100%
+  );
+  animation: lightning-crackle 0.1s steps(3) infinite 0.05s;
+  box-shadow: 
+    0 0 20px rgba(251, 191, 36, 1),
+    0 0 40px rgba(251, 191, 36, 0.8),
+    0 0 60px rgba(251, 191, 36, 0.5),
+    8px 0 30px rgba(251, 191, 36, 0.7);
+  filter: blur(1px);
+}
+
+@keyframes lightning-crackle {
+  0% { 
+    opacity: 1;
+    transform: scaleY(1) translateY(0);
+  }
+  33% { 
+    opacity: 0.7;
+    transform: scaleY(1.05) translateY(-2px);
+  }
+  66% { 
+    opacity: 1;
+    transform: scaleY(0.95) translateY(2px);
+  }
+  100% { 
+    opacity: 0.8;
+    transform: scaleY(1) translateY(0);
+  }
 }
 
 @keyframes scroll-down {
@@ -403,6 +705,7 @@ async function handleSpin() {
 
 /* 中奖格子高亮 */
 .slot-cell.winning {
+  background: #fffbeb; /* 淡黄色背景 */
   border-color: #f8d56b;
   box-shadow: 
     0 0 10px rgba(248, 213, 107, 0.5),

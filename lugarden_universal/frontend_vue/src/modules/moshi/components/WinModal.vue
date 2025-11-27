@@ -2,12 +2,14 @@
 /**
  * 中奖弹窗组件
  * 显示中奖信息和查收奖品按钮
+ * 根据连线数量显示不同的动画特效
  */
 
+import { computed } from 'vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import type { WinDetail } from '../types/moshi'
 
-defineProps<{
+const props = defineProps<{
   winDetail: WinDetail
 }>()
 
@@ -15,6 +17,30 @@ const emit = defineEmits<{
   close: []
   claimPrize: []
 }>()
+
+// 根据连线数量获取标题和样式
+const winLevel = computed(() => {
+  const columns = props.winDetail.columns || 3
+  if (columns >= 5) {
+    return {
+      title: 'ULTRA WIIIIIIIN',
+      class: 'win-ultra',
+      icon: '⚡'
+    }
+  } else if (columns >= 4) {
+    return {
+      title: 'MEGA WIIIN',
+      class: 'win-mega',
+      icon: '✦'
+    }
+  } else {
+    return {
+      title: 'BIG WIN',
+      class: 'win-big',
+      icon: '🎉'
+    }
+  }
+})
 </script>
 
 <template>
@@ -27,10 +53,14 @@ const emit = defineEmits<{
       
       <div class="win-content">
         <!-- 庆祝图标 -->
-        <div class="celebration-icon">🎉</div>
+        <div class="celebration-icon" :class="winLevel.class">{{ winLevel.icon }}</div>
         
-        <!-- 恭喜文字 -->
-        <h2 class="win-title">恭喜中奖！</h2>
+        <!-- 动态中奖标题 -->
+        <h2 class="win-title" :class="winLevel.class">
+          <span v-for="(char, idx) in winLevel.title" :key="idx" class="win-char" :style="{ animationDelay: `${idx * 0.05}s` }">
+            {{ char }}
+          </span>
+        </h2>
         
         <!-- 中奖符号展示 -->
         <div class="win-symbol-display">
@@ -107,17 +137,136 @@ const emit = defineEmits<{
   animation: bounce 0.6s ease-in-out infinite alternate;
 }
 
+.celebration-icon.win-big {
+  animation: bounce 0.6s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 10px rgba(236, 72, 153, 0.5));
+}
+
+.celebration-icon.win-mega {
+  animation: bounce 0.5s ease-in-out infinite alternate, icon-glow-purple 0.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.7));
+}
+
+.celebration-icon.win-ultra {
+  font-size: 5rem;
+  animation: bounce 0.4s ease-in-out infinite alternate, icon-glow-gold 0.3s ease-in-out infinite, icon-shake 0.1s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.9));
+}
+
+@keyframes icon-glow-purple {
+  0%, 100% { filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.7)); }
+  50% { filter: drop-shadow(0 0 30px rgba(168, 85, 247, 1)); }
+}
+
+@keyframes icon-glow-gold {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.9)) brightness(1); }
+  50% { filter: drop-shadow(0 0 40px rgba(251, 191, 36, 1)) brightness(1.3); }
+}
+
+@keyframes icon-shake {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(-3deg); }
+  75% { transform: translateY(-5px) rotate(3deg); }
+}
+
 @keyframes bounce {
   from { transform: translateY(0); }
   to { transform: translateY(-10px); }
 }
 
 .win-title {
-  font-size: 1.75rem;
-  font-weight: bold;
-  color: #1a1a2e;
+  font-size: 2.5rem;
+  font-weight: 900;
   margin: 0 0 1.5rem 0;
-  font-family: 'Noto Serif SC', 'Source Han Serif CN', serif;
+  font-family: 'Impact', 'Arial Black', sans-serif;
+  letter-spacing: 0.1em;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.win-char {
+  display: inline-block;
+  animation: char-bounce 0.6s ease-out both;
+}
+
+@keyframes char-bounce {
+  0% { transform: translateY(-30px) scale(0.5); opacity: 0; }
+  60% { transform: translateY(5px) scale(1.1); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* 3连 - BIG WIN - 粉色系 */
+.win-title.win-big {
+  color: #ec4899;
+  text-shadow: 
+    0 0 10px rgba(236, 72, 153, 0.5),
+    0 0 20px rgba(236, 72, 153, 0.3),
+    2px 2px 0 #f9a8d4;
+}
+
+.win-title.win-big .win-char {
+  animation: char-bounce 0.6s ease-out both, glow-pink 1.5s ease-in-out infinite 0.6s;
+}
+
+@keyframes glow-pink {
+  0%, 100% { text-shadow: 0 0 10px rgba(236, 72, 153, 0.5), 0 0 20px rgba(236, 72, 153, 0.3), 2px 2px 0 #f9a8d4; }
+  50% { text-shadow: 0 0 20px rgba(236, 72, 153, 0.8), 0 0 40px rgba(236, 72, 153, 0.5), 2px 2px 0 #f9a8d4; }
+}
+
+/* 4连 - MEGA WIN - 紫色系 */
+.win-title.win-mega {
+  color: #a855f7;
+  text-shadow: 
+    0 0 15px rgba(168, 85, 247, 0.6),
+    0 0 30px rgba(168, 85, 247, 0.4),
+    3px 3px 0 #c084fc;
+}
+
+.win-title.win-mega .win-char {
+  animation: char-bounce 0.6s ease-out both, glow-purple 1s ease-in-out infinite 0.6s, shake-text 0.1s ease-in-out infinite 0.6s;
+}
+
+@keyframes glow-purple {
+  0%, 100% { text-shadow: 0 0 15px rgba(168, 85, 247, 0.6), 0 0 30px rgba(168, 85, 247, 0.4), 3px 3px 0 #c084fc; }
+  50% { text-shadow: 0 0 30px rgba(168, 85, 247, 1), 0 0 60px rgba(168, 85, 247, 0.7), 3px 3px 0 #c084fc; }
+}
+
+@keyframes shake-text {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+
+/* 5连 - ULTRA WIN - 金色系 + 闪电效果 */
+.win-title.win-ultra {
+  color: #fbbf24;
+  text-shadow: 
+    0 0 20px rgba(251, 191, 36, 0.8),
+    0 0 40px rgba(251, 191, 36, 0.6),
+    0 0 60px rgba(251, 191, 36, 0.4),
+    4px 4px 0 #f59e0b;
+}
+
+.win-title.win-ultra .win-char {
+  animation: char-bounce 0.6s ease-out both, glow-gold 0.5s ease-in-out infinite 0.6s, shake-heavy-text 0.08s ease-in-out infinite 0.6s;
+}
+
+@keyframes glow-gold {
+  0%, 100% { 
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 0 40px rgba(251, 191, 36, 0.6), 0 0 60px rgba(251, 191, 36, 0.4), 4px 4px 0 #f59e0b;
+    filter: brightness(1);
+  }
+  50% { 
+    text-shadow: 0 0 40px rgba(251, 191, 36, 1), 0 0 80px rgba(251, 191, 36, 0.8), 0 0 120px rgba(251, 191, 36, 0.6), 4px 4px 0 #f59e0b;
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes shake-heavy-text {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-2px) rotate(-0.5deg); }
+  75% { transform: translateX(2px) rotate(0.5deg); }
 }
 
 .win-symbol-display {

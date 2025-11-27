@@ -222,8 +222,8 @@ router.get('/universes', async (req, res, next) => {
         return aPriority - bPriority;
       }
 
-      // 同优先级内按更新时间降序排序
-      return new Date(b.updatedAt) - new Date(a.updatedAt);
+      // 同优先级内按更新时间升序排序（最近更新的在后）
+      return new Date(a.updatedAt) - new Date(b.updatedAt);
     });
     
     console.log(`[Portal API] 从数据库查询到 ${universes.length} 个宇宙，已按业务优先级排序`);

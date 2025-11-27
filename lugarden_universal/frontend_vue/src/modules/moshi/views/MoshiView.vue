@@ -73,15 +73,6 @@ onMounted(() => {
         </div>
       </Transition>
     </div>
-    
-    <!-- 背景装饰 -->
-    <div class="bg-decoration">
-      <div class="star" v-for="i in 20" :key="i" :style="{
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`,
-        animationDelay: `${Math.random() * 3}s`
-      }"></div>
-    </div>
   </div>
 </template>
 
@@ -92,16 +83,13 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(180deg, #0a0a15 0%, #1a1a2e 50%, #16213e 100%);
-  position: relative;
-  overflow: hidden;
+  background-color: var(--bg-primary);
 }
 
 .moshi-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 1;
 }
 
 .error-toast {
@@ -114,28 +102,6 @@ onMounted(() => {
   color: white;
   border-radius: 0.5rem;
   box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
-}
-
-/* 背景星星装饰 */
-.bg-decoration {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.star {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  background: white;
-  border-radius: 50%;
-  opacity: 0.3;
-  animation: twinkle 3s infinite ease-in-out;
-}
-
-@keyframes twinkle {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.8; }
 }
 
 /* 过渡 */

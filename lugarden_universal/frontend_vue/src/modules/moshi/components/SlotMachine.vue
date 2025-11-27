@@ -145,7 +145,7 @@ async function handleSpin() {
     <!-- 标题 -->
     <div class="slot-header">
       <h2 class="slot-title">摸诗</h2>
-      <p class="slot-subtitle">转动命运的轮盘，遇见属于你的诗节</p>
+      <p class="slot-subtitle">COME ON！让我康康你的手气 👀</p>
     </div>
     
     <!-- 矩阵区域 -->
@@ -226,9 +226,9 @@ async function handleSpin() {
   flex-direction: column;
   align-items: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border-radius: 1rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  background: white;
+  border-radius: var(--radius-base, 1rem);
+  box-shadow: var(--shadow-card, 0 4px 20px rgba(0, 0, 0, 0.08));
 }
 
 .slot-header {
@@ -239,13 +239,12 @@ async function handleSpin() {
 .slot-title {
   font-size: 2rem;
   font-weight: bold;
-  color: #f8d56b;
+  color: #1a1a2e;
   margin: 0;
-  text-shadow: 0 2px 10px rgba(248, 213, 107, 0.3);
 }
 
 .slot-subtitle {
-  color: #a0a0b0;
+  color: #666;
   font-size: 0.9rem;
   margin-top: 0.5rem;
 }
@@ -254,17 +253,20 @@ async function handleSpin() {
   display: flex;
   gap: 0.5rem;
   padding: 1rem;
-  background: linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 100%);
+  background: #f5f5f5;
   border-radius: 0.75rem;
-  border: 2px solid #333;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+  border: 3px solid #b8860b;
+  box-shadow: 
+    inset 0 2px 8px rgba(0, 0, 0, 0.05),
+    0 4px 12px rgba(184, 134, 11, 0.2);
 }
 
 .slot-matrix.win {
   border-color: #f8d56b;
   box-shadow: 
-    inset 0 2px 10px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(248, 213, 107, 0.3);
+    inset 0 2px 8px rgba(0, 0, 0, 0.05),
+    0 0 25px rgba(248, 213, 107, 0.5),
+    0 0 40px rgba(248, 213, 107, 0.3);
 }
 
 .slot-column {
@@ -308,9 +310,9 @@ async function handleSpin() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #2a2a4a 0%, #1a1a3a 100%);
+  background: white;
   border-radius: 0.5rem;
-  border: 1px solid #444;
+  border: 2px solid #b8860b;
   transition: all 0.3s ease;
 }
 
@@ -319,8 +321,7 @@ async function handleSpin() {
   border-color: #f8d56b;
   box-shadow: 
     0 0 10px rgba(248, 213, 107, 0.5),
-    0 0 20px rgba(248, 213, 107, 0.3),
-    inset 0 0 10px rgba(248, 213, 107, 0.1);
+    0 0 20px rgba(248, 213, 107, 0.3);
   animation: pulse 1s ease-in-out infinite;
 }
 
@@ -328,14 +329,12 @@ async function handleSpin() {
   0%, 100% { 
     box-shadow: 
       0 0 10px rgba(248, 213, 107, 0.5),
-      0 0 20px rgba(248, 213, 107, 0.3),
-      inset 0 0 10px rgba(248, 213, 107, 0.1);
+      0 0 20px rgba(248, 213, 107, 0.3);
   }
   50% { 
     box-shadow: 
       0 0 15px rgba(248, 213, 107, 0.7),
-      0 0 30px rgba(248, 213, 107, 0.5),
-      inset 0 0 15px rgba(248, 213, 107, 0.2);
+      0 0 30px rgba(248, 213, 107, 0.5);
   }
 }
 
@@ -360,18 +359,20 @@ async function handleSpin() {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  margin-top: 1rem;
-  padding: 1rem 2rem;
-  background: rgba(248, 213, 107, 0.1);
-  border-radius: 0.75rem;
-  border: 1px solid rgba(248, 213, 107, 0.3);
+  width: 100%;
+  max-width: 500px;
+  margin-top: 1.5rem;
+  padding: 1.5rem 2rem;
+  background: white;
+  border-radius: var(--radius-base, 1rem);
+  box-shadow: var(--shadow-card, 0 4px 20px rgba(0, 0, 0, 0.08));
 }
 
 .win-congratulation {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #f8d56b;
+  color: #333;
   font-size: 1.1rem;
   font-weight: 500;
 }
@@ -381,14 +382,16 @@ async function handleSpin() {
 }
 
 .win-text {
-  color: #f8d56b;
+  color: #1a1a2e;
   font-weight: 600;
 }
 
 .claim-button {
-  padding: 0.75rem 2rem;
+  min-height: 44px;
+  min-width: 120px;
+  padding: 0.75rem 1.25rem;
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 600;
   color: #1a1a2e;
   background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
   border: none;
@@ -409,9 +412,11 @@ async function handleSpin() {
 
 .spin-button {
   margin-top: 1.5rem;
-  padding: 1rem 3rem;
-  font-size: 1.25rem;
-  font-weight: bold;
+  min-height: 44px;
+  min-width: 140px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
   color: #1a1a2e;
   background: linear-gradient(180deg, #f8d56b 0%, #e6c35a 100%);
   border: none;

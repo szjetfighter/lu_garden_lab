@@ -12,17 +12,11 @@
         />
       </div>
 
-      <!-- 项目信息 -->
+      <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
+        毛小豆宇宙
+      </h1>
       <div class="text-center mb-8">
-        <h1 class="content-title animate-fadeInDown">
-          毛小豆宇宙
-        </h1>
-        <div class="content-subtitle animate-fadeIn" style="animation-delay: 0.2s;">
-          毛小豆故事演绎，演绎了你的故事么？
-        </div>
-        <p class="text-gray-500 mb-8">
-          作者: 西尔
-        </p>
+        <p class="text-gray-600">毛小豆故事演绎，演绎了你的故事么？</p>
       </div>
       
       <!-- 子项目列表 -->
@@ -36,11 +30,11 @@
           <div class="flex-1">
             <h2 class="text-2xl font-bold mb-4 text-gray-800">摸诗</h2>
             <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">
-              转动命运的轮盘，用老虎机的方式遇见属于你的诗节。
-              每一次转动，都是一次与诗歌的随机相遇。
+              棒子老虎鸡？不如老虎机！
             </div>
           </div>
-          <div class="flex justify-end mt-4">
+          <div class="flex justify-between items-center mt-4">
+            <p class="text-xs text-gray-500 m-0">作者: 西尔</p>
             <button class="btn-primary">
               开始摸诗
             </button>

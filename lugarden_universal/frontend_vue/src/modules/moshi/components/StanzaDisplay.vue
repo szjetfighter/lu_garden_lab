@@ -218,10 +218,10 @@ const actionButtons = computed(() => [
 </template>
 
 <style scoped>
+/* A.8: 采用zhou标准布局模式，避免PC调试与真机差异 */
 .stanza-display {
-  width: calc(100% - 2rem);
-  max-width: 48rem;
-  margin: 1.5rem auto 0;
+  max-width: 28rem;
+  margin: 1.5rem auto 2rem;
   padding: 1.5rem 2rem;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 0.75rem;

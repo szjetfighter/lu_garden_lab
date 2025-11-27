@@ -4,13 +4,20 @@
  */
 
 import { onMounted, ref, watch, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useMoshiStore } from '../stores/moshiStore'
 import SlotMachine from '../components/SlotMachine.vue'
 import StanzaDisplay from '../components/StanzaDisplay.vue'
 import PoemViewer from '../components/PoemViewer.vue'
 import WinModal from '../components/WinModal.vue'
+import BackButton from '@/shared/components/BackButton.vue'
 
 const store = useMoshiStore()
+const router = useRouter()
+
+const goBack = () => {
+  router.back()
+}
 
 // 控制中奖弹窗
 const showWinModal = ref(false)
@@ -70,12 +77,23 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="moshi-view">
-    <div class="moshi-container">
+  <div class="min-h-screen" style="background-color: var(--bg-primary);">
+    <div class="container mx-auto px-4 py-8">
+      <!-- 返回按钮 -->
+      <div class="mb-6">
+        <BackButton 
+          text="返回"
+          variant="default"
+          size="medium"
+          :hover-animation="true"
+          @click="goBack"
+        />
+      </div>
+      
       <!-- 老虎机 -->
       <SlotMachine @show-win="handleShowWin" />
       
-      <!-- 诗节展示：点击查收奖品后显示 -->
+      <!-- 诗节展示 -->
       <StanzaDisplay 
         v-if="showStanza" 
         @view-full-poem="handleViewFullPoem"
@@ -107,20 +125,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.moshi-view {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  background-color: var(--bg-primary);
-}
-
-.moshi-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+/* 采用zhou标准布局模式：container mx-auto px-4 py-8 */
+/* 不使用flex居中，避免PC调试与真机显示差异 */
 
 .error-toast {
   position: fixed;

@@ -318,6 +318,67 @@
 
 ---
 
+#### - [x] 任务A.8：修复PC调试与真机显示差异 - 采用zhou标准布局模式
+
+- **问题描述**:
+  - A.1实现的"手机端卡片留白"在PC调试模式下正常
+  - 但在真机（小米13 Chrome）上留白效果不明显，卡片几乎撑满屏幕
+  - PC模拟器和真机渲染存在差异
+
+- **根因分析**:
+  | 对比项 | zhou模块（无差异） | moshi模块（有差异） |
+  |--------|-------------------|---------------------|
+  | 水平居中 | `mx-auto`（margin居中） | `justify-content: center`（flex居中） |
+  | 边距控制 | `px-4`（固定16px） | `calc(100% - 2rem)`（依赖计算） |
+  | 宽度限制 | `max-w-*`（Tailwind预设） | `max-width: 48rem`（自定义） |
+  | 容器模式 | `container`（Tailwind响应式） | 自定义flex布局 |
+  
+  **核心问题**：`calc(100% - 2rem)`的100%基准在flex布局中不确定，真机和PC计算结果不同
+
+- **⚠️ AI反思与教训**:
+  1. **没有复用已有方案**：zhou模块已有成熟的、经过真机验证的布局模式，但A.1时完全没有参考
+  2. **重新发明轮子**：用calc+flex自创方案，而不是复用Tailwind标准容器模式
+  3. **验证不充分**：只在PC调试模式验证，未意识到需要真机验证
+  4. **缺乏全局视野**：做moshi布局修改时，应该先研究项目中其他模块的实现方式
+  
+  **正确做法**：在修改任何模块的布局前，先查看项目中其他模块（如zhou）的实现，复用已验证的模式
+
+- **解决方案**:
+  - MoshiView：改用zhou的`container mx-auto px-4 py-8`模式
+  - SlotMachine：改用`max-w-md mx-auto`，移除calc和flex居中
+  - 确保与zhou模块布局行为完全一致
+
+- 交付物：
+  - MoshiView.vue - 容器布局重构
+  - SlotMachine.vue - 宽度控制重构
+- 验收标准：
+  - PC调试和真机显示一致
+  - 卡片两侧有明显留白，圆角可见
+  - 与zhou模块布局行为一致
+- **风险评估**: 低风险，仅修改布局CSS
+- 实际改动文件:
+  - `frontend_vue/src/modules/moshi/views/MoshiView.vue`
+    - 改用`container mx-auto px-4 py-8`标准容器模式
+    - 添加返回按钮（使用`@/shared/components/BackButton.vue`）
+    - 与zhou模块完全一致的布局结构
+  - `frontend_vue/src/modules/moshi/components/SlotMachine.vue`
+    - `max-width: 28rem`，移除calc
+    - `padding: 1.5rem`
+  - `frontend_vue/src/modules/moshi/components/StanzaDisplay.vue`
+    - `max-width: 28rem`，移除calc
+    - `margin: 1.5rem auto 2rem`（添加底部边距确保滚动到底时内容完整显示）
+  - `frontend_vue/src/modules/moshi/components/PoemViewer.vue` - 不改（模态弹窗，flex居中正确）
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.8.1：MoshiView改用zhou标准容器模式（container mx-auto px-4 py-8）
+  - [x] 步骤A.8.2：SlotMachine移除calc，改用max-width: 28rem
+  - [x] 步骤A.8.3：StanzaDisplay移除calc，改用max-width: 28rem
+  - [x] 步骤A.8.4：添加返回按钮（与zhou一致，使用shared/BackButton）
+  - [x] 步骤A.8.5：StanzaDisplay添加底部边距2rem（解决滚动到底内容截断问题）
+  - [x] 步骤A.8.6：验证构建成功
+
+---
+
 ## 更新日志关联
 
 - **预计更新类型**: 前端优化

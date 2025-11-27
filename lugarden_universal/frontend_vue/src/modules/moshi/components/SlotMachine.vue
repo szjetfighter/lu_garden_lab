@@ -347,14 +347,15 @@ async function handleSpin() {
 </template>
 
 <style scoped>
+/* A.8: 采用zhou标准布局模式，避免PC调试与真机差异 */
+/* 使用max-w + mx-auto，不使用calc */
 .slot-machine {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: calc(100% - 2rem);
-  max-width: 48rem;
+  max-width: 28rem;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem;
   background: white;
   border-radius: var(--radius-base, 1rem);
   box-shadow: var(--shadow-card, 0 4px 20px rgba(0, 0, 0, 0.08));

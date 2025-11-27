@@ -15,6 +15,7 @@ export const useMoshiStore = defineStore('moshi', () => {
   const spinCount = ref(0)
   const winCount = ref(0)
   const error = ref<string | null>(null)
+  const pendingWin = ref(false) // A.4: 暂存中奖状态
   
   // 计算属性
   const winRate = computed(() => {
@@ -37,11 +38,8 @@ export const useMoshiStore = defineStore('moshi', () => {
       
       matrix.value = result.matrix
       lastResult.value = result
-      spinCount.value++
-      
-      if (result.win) {
-        winCount.value++
-      }
+      // A.4: 暂存中奖状态，不立即更新统计
+      pendingWin.value = result.win
     } catch (e) {
       error.value = e instanceof Error ? e.message : '摸诗失败'
       console.error('[MoshiStore] spin error:', e)
@@ -50,11 +48,21 @@ export const useMoshiStore = defineStore('moshi', () => {
     }
   }
   
+  // A.4: 动画结束后调用，更新统计
+  function commitStats() {
+    spinCount.value++
+    if (pendingWin.value) {
+      winCount.value++
+    }
+    pendingWin.value = false
+  }
+  
   function reset() {
     matrix.value = null
     lastResult.value = null
     spinCount.value = 0
     winCount.value = 0
+    pendingWin.value = false
     error.value = null
   }
   
@@ -72,6 +80,7 @@ export const useMoshiStore = defineStore('moshi', () => {
     isWin,
     // 动作
     spin,
+    commitStats,
     reset
   }
 })

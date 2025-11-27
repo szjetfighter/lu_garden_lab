@@ -136,6 +136,8 @@ async function handleSpin() {
     setTimeout(() => {
       columnStates.value = ['idle', 'idle', 'idle', 'idle', 'idle']
       isAnimating.value = false
+      // A.4: 动画结束后更新统计
+      store.commitStats()
       // 8. 如果中奖，通知父组件显示弹窗
       if (store.lastResult?.primaryWinDetail) {
         emit('showWin')

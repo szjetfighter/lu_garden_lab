@@ -53,11 +53,14 @@ const handleCloseFullPoem = () => {
   currentPoemId.value = ''
 }
 
-// 监听新的spin，重置显示状态
-watch(() => store.spinCount, () => {
-  showWinModal.value = false
-  showStanza.value = false
-  showFullPoem.value = false
+// A.4: 监听isSpinning开始时重置显示状态（解耦统计更新和弹窗重置）
+watch(() => store.isSpinning, (newVal, oldVal) => {
+  // 开始新的spin时重置状态
+  if (newVal && !oldVal) {
+    showWinModal.value = false
+    showStanza.value = false
+    showFullPoem.value = false
+  }
 })
 
 onMounted(() => {

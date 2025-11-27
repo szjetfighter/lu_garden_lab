@@ -125,7 +125,7 @@
 
 ---
 
-#### - [ ] 任务A.3：老虎机列级特效增强
+#### - [x] 任务A.3：老虎机列级特效增强
 
 - **核心思想**: 
   - 参考Slotomania等行业标准老虎机，为滚动中的列添加视觉特效
@@ -157,6 +157,37 @@
   - [x] 步骤A.3.4：添加多色动态列边框发光（5列5色：金/青/粉/紫/橙，glow-pulse呼吸动画）
   - [x] 步骤A.3.5：添加中奖图标scale+rotateY动画（icon-celebrate，1.2s周期，±15°晃动+1.2x放大）
   - [x] 步骤A.3.6：验证（TypeScript类型检查0错误，Vite构建成功1.45s）
+
+---
+
+#### - [x] 任务A.4：中奖统计更新时机优化
+
+- **核心思想**: 
+  - 统计数字应在动画结束后才更新，与视觉同步
+  - 修改MoshiView的watch：监听isSpinning而非spinCount，解耦状态重置和统计更新
+- 交付物：
+  - moshiStore.ts - 添加pendingWin和commitStats方法
+  - MoshiView.vue - watch改为监听isSpinning
+  - SlotMachine.vue - 动画结束时调用commitStats
+- 验收标准：
+  - 统计在动画结束后更新
+  - 弹窗正常显示
+  - TypeScript类型检查0错误，Vite构建成功
+- **风险评估**: 中风险，涉及状态管理逻辑
+- 预期改动文件：
+  - `frontend_vue/src/modules/moshi/stores/moshiStore.ts`
+  - `frontend_vue/src/modules/moshi/views/MoshiView.vue`
+  - `frontend_vue/src/modules/moshi/components/SlotMachine.vue`
+- 实际改动文件:
+  - `frontend_vue/src/modules/moshi/stores/moshiStore.ts` - 添加pendingWin和commitStats
+  - `frontend_vue/src/modules/moshi/views/MoshiView.vue` - watch改为监听isSpinning开始
+  - `frontend_vue/src/modules/moshi/components/SlotMachine.vue` - 动画结束调用commitStats
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.4.1：store添加pendingWin和commitStats
+  - [x] 步骤A.4.2：MoshiView watch改为监听isSpinning（从false→true时重置）
+  - [x] 步骤A.4.3：SlotMachine动画结束时调用commitStats
+  - [x] 步骤A.4.4：验证（TypeScript类型检查0错误，Vite构建成功1.20s）
 
 ---
 

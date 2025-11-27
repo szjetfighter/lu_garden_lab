@@ -125,6 +125,16 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false
     }
   },
+  // 摸诗宇宙
+  {
+    path: '/moshi',
+    name: 'MoshiView',
+    component: () => import('@/modules/moshi/views/MoshiView.vue'),
+    meta: {
+      title: '摸诗宇宙 - 陆家花园',
+      requiresAuth: false
+    }
+  },
   // 404 重定向
   {
     path: '/:pathMatch(.*)*',

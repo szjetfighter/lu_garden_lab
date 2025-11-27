@@ -13,6 +13,7 @@ import authRouter from './src/routes/auth.js';
 import myWorksRouter from './src/routes/myWorks.js';
 import deleteAccountRouter from './src/routes/deleteAccount.js';
 import checkUsernameRouter from './src/routes/checkUsername.js';
+import moshiRouter from './src/routes/moshi.js';
 import { errorHandler } from './src/middlewares/errorHandler.js';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -658,6 +659,7 @@ ta的感受是：${userFeeling}
 app.use('/api/universes', universesRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/portal', portalRouter);
+app.use('/api/moshi', moshiRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/auth', checkUsernameRouter);
 app.use('/api/my-works', myWorksRouter);

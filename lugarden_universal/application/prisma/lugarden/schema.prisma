@@ -61,6 +61,7 @@ model Universe {
   maoxiaodouMetadatas MaoxiaodouMetadata[]
   maoxiaodouStanzas MaoxiaodouStanza[]
   maoxiaodouStanzaSceneLinks MaoxiaodouStanzaSceneLink[]
+  maoxiaodouSceneCharacterLinks MaoxiaodouSceneCharacterLink[]
   
   // 跨宇宙关联关系
   crossUniverseSourceLinks CrossUniverseContentLink[] @relation("CrossUniverseSource")
@@ -211,6 +212,7 @@ model MaoxiaodouCharacter {
   universe Universe @relation(fields: [universeId], references: [id])
   sourceRelations MaoxiaodouCharacterRelation[] @relation("SourceCharacter")
   targetRelations MaoxiaodouCharacterRelation[] @relation("TargetCharacter")
+  sceneLinks MaoxiaodouSceneCharacterLink[]
   @@unique([universeId, name])
 }
 
@@ -237,6 +239,7 @@ model MaoxiaodouScene {
   poem MaoxiaodouPoem @relation(fields: [poemId], references: [id])
   universe Universe @relation(fields: [universeId], references: [id])
   stanzaLinks MaoxiaodouStanzaSceneLink[]
+  characterLinks MaoxiaodouSceneCharacterLink[]
 }
 
 // 诗节扩展（Stanza）- 诗歌的最小叙事单元
@@ -264,6 +267,18 @@ model MaoxiaodouStanzaSceneLink {
   scene MaoxiaodouScene @relation(fields: [sceneId], references: [id])
   universe Universe @relation(fields: [universeId], references: [id])
   @@unique([stanzaId, sceneId])
+}
+
+// 场景-角色桥表（多对多关系）
+model MaoxiaodouSceneCharacterLink {
+  id String @id
+  sceneId String
+  characterId String
+  universeId String
+  scene MaoxiaodouScene @relation(fields: [sceneId], references: [id])
+  character MaoxiaodouCharacter @relation(fields: [characterId], references: [id])
+  universe Universe @relation(fields: [universeId], references: [id])
+  @@unique([sceneId, characterId])
 }
 
 model MaoxiaodouTerminology {

@@ -1335,6 +1335,33 @@
             "poem_title": "新年快乐"
           }
         ]
+      },
+      {
+        "id": "xueli",
+        "name": "雪梨",
+        "aliases": [],
+        "role": "张秋的滑冰搭子",
+        "description": "出现在《金牌得主》的滑冰训练场景中，是张秋新认识的摸鱼搭子。",
+        "personality": {
+          "traits": [
+            "运动",
+            "社交"
+          ]
+        },
+        "relationships": [
+          {
+            "target_id": "zhangqiu",
+            "type": "朋友",
+            "description": "滑冰搭子",
+            "strength": 0.4
+          }
+        ],
+        "appearances": [
+          {
+            "poem_id": "gold_medal_winner",
+            "poem_title": "金牌得主"
+          }
+        ]
       }
     ]
   }

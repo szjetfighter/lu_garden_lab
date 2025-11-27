@@ -85,7 +85,7 @@ function mapUniverseToPortalFormat(universe, includeAnalytics = false) {
 function getUniverseMeta(universe) {
   const metaMapping = {
     'universe_zhou_spring_autumn': '诗歌问答 · 古典解读',
-    'universe_maoxiaodou': '故事世界 · 角色扮演'
+    'universe_maoxiaodou': '角色 · 场景 · 故事 · 诗'
   };
   
   return metaMapping[universe.code] || '探索发现 · 未知领域';

@@ -319,6 +319,41 @@
   - [x] 步骤A.11.5：SlotMachine滚动态支持图片渲染
   - [x] 步骤A.11.6：替换所有emoji为自定义PNG图标
 
+#### - [x] 任务A.12：毛小豆宇宙架构重构与文案优化
+
+- **核心思想**: 将"摸诗宇宙"重命名为"毛小豆宇宙"，建立二级入口架构，优化各页面文案
+- 交付物：
+  - 一级入口改为"毛小豆宇宙"
+  - 新增MainProjectSelection入口页面
+  - "摸诗"作为子项目入口
+  - 禁用旧public fallback，强制Vue模式
+  - 两个宇宙的文案优化
+- 验收标准：
+  - UniversePortal显示"毛小豆宇宙"
+  - 点击后进入MainProjectSelection
+  - 选择"摸诗"进入老虎机
+  - 旧静态页面不再可访问
+- **风险评估**: 中等，涉及路由、数据库和多文件改动
+- 实际改动文件:
+  - `application/server.js` - 禁用旧public fallback，强制Vue模式（历史代码保留注释）
+  - `application/src/routes/portal.js` - meta更新为"角色 · 场景 · 故事 · 诗"
+  - 数据库Universe表 - name: "毛小豆宇宙", description: "毛小豆故事演绎，演绎了你的故事么？"
+  - `frontend_vue/src/router/index.ts` - /moshi → /maoxiaodou + /maoxiaodou/moshi
+  - `frontend_vue/src/modules/portal/stores/portal.ts` - 导航配置和fallback数据更新
+  - `frontend_vue/src/modules/moshi/views/MainProjectSelection.vue` - 新建（原SubProjectSelection重命名）
+  - `frontend_vue/src/modules/moshi/components/SlotMachine.vue` - 标题改为"摸诗"
+  - `frontend_vue/src/modules/zhou/views/MainProjectSelection.vue` - 描述改为"这里的诗，是你的回答"
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.12.1：后端server.js禁用旧public fallback
+  - [x] 步骤A.12.2：数据库Universe表更新name和description
+  - [x] 步骤A.12.3：后端portal.js更新meta
+  - [x] 步骤A.12.4：前端路由重构（/maoxiaodou二级路由）
+  - [x] 步骤A.12.5：前端portal store导航配置和fallback数据更新
+  - [x] 步骤A.12.6：创建moshi MainProjectSelection页面
+  - [x] 步骤A.12.7：SlotMachine标题改为"摸诗"
+  - [x] 步骤A.12.8：zhou MainProjectSelection描述优化
+
 ---
 
 ### **阶段11-27_B：体验增强（可选）**

@@ -59,15 +59,19 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 静态文件目录配置：支持Vue前端和传统前端切换（带存在性回退）
-const USE_VUE_FRONTEND = process.env.USE_VUE_FRONTEND !== 'false';
-const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+// 静态文件目录配置
+// [2025-11-27] Vue迁移已完成，禁用旧public目录fallback
+// 原因：静默降级会显示过时界面（紫色旧版），造成用户困惑
+// 历史代码保留如下，如需回退可取消注释：
+// const USE_VUE_FRONTEND = process.env.USE_VUE_FRONTEND !== 'false';
+// const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+// const vueReady = (() => {
+//   try { return fs.existsSync(VUE_INDEX_PATH); } catch { return false; }
+// })();
+// const STATIC_DIR = USE_VUE_FRONTEND && vueReady ? VUE_DIST_DIR : PUBLIC_DIR;
 const VUE_DIST_DIR = path.join(__dirname, '..', 'frontend_vue', 'dist');
 const VUE_INDEX_PATH = path.join(VUE_DIST_DIR, 'index.html');
-const vueReady = (() => {
-  try { return fs.existsSync(VUE_INDEX_PATH); } catch { return false; }
-})();
-const STATIC_DIR = USE_VUE_FRONTEND && vueReady ? VUE_DIST_DIR : PUBLIC_DIR;
+const STATIC_DIR = VUE_DIST_DIR;
 
 // 中间件
 app.use(cors());
@@ -681,29 +685,23 @@ app.get('/api/health', async (_req, res) => {
   }
 });
 
-// SPA路由支持：所有非API路由返回index.html（仅在使用Vue前端时）
-if (USE_VUE_FRONTEND) {
-  app.get('*', (req, res) => {
-    // 排除API路由、静态资源和特定文件
-    if (req.path.startsWith('/api') || 
-        req.path.includes('.') || 
-        req.path.startsWith('/admin')) {
-      return res.status(404).send('Not Found');
-    }
-    if (vueReady) {
-      return res.sendFile(path.join(VUE_DIST_DIR, 'index.html'));
-    }
-    // 回退至传统静态首页
-    return res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
-  });
-}
+// SPA路由支持：所有非API路由返回index.html
+// [2025-11-27] Vue迁移已完成，强制Vue模式
+app.get('*', (req, res) => {
+  // 排除API路由、静态资源和特定文件
+  if (req.path.startsWith('/api') || 
+      req.path.includes('.') || 
+      req.path.startsWith('/admin')) {
+    return res.status(404).send('Not Found');
+  }
+  return res.sendFile(VUE_INDEX_PATH);
+});
 
 // 启动
 app.listen(PORT, () => {
-  const frontendType = USE_VUE_FRONTEND ? 'Vue' : '传统HTML';
-  console.log(`🚀 "陆家花园"已在 http://localhost:${PORT} 盛开 (${frontendType}前端)`);
+  console.log(`🚀 "陆家花园"已在 http://localhost:${PORT} 盛开 (Vue前端)`);
   console.log(`🔑 后台管理入口: http://localhost:${PORT}/admin`);
-  console.log(`📁 静态文件目录: ${STATIC_DIR} (vueReady=${vueReady})`);
+  console.log(`📁 静态文件目录: ${STATIC_DIR}`);
 });
 
 // 全局错误处理

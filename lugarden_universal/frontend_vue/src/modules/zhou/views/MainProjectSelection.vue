@@ -16,7 +16,7 @@
         周与春秋
       </h1>
       <div class="text-center mb-8">
-        <p class="text-gray-600">请选择一个项目开始你的诗歌之旅</p>
+        <p class="text-gray-600">这里的诗，是你的回答</p>
       </div>
       
       <!-- 加载状态 -->

@@ -144,7 +144,7 @@ async function handleSpin() {
   <div class="slot-machine">
     <!-- 标题 -->
     <div class="slot-header">
-      <h2 class="slot-title">摸诗宇宙</h2>
+      <h2 class="slot-title">摸诗</h2>
       <p class="slot-subtitle">转动命运的轮盘，遇见属于你的诗节</p>
     </div>
     

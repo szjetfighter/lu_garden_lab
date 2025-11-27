@@ -125,13 +125,22 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false
     }
   },
-  // 摸诗宇宙
+  // 毛小豆宇宙
   {
-    path: '/moshi',
+    path: '/maoxiaodou',
+    name: 'MaoxiaodouSelection',
+    component: () => import('@/modules/moshi/views/MainProjectSelection.vue'),
+    meta: {
+      title: '毛小豆宇宙 - 陆家花园',
+      requiresAuth: false
+    }
+  },
+  {
+    path: '/maoxiaodou/moshi',
     name: 'MoshiView',
     component: () => import('@/modules/moshi/views/MoshiView.vue'),
     meta: {
-      title: '摸诗宇宙 - 陆家花园',
+      title: '摸诗 - 毛小豆宇宙',
       requiresAuth: false
     }
   },

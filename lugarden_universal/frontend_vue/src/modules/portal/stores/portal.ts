@@ -61,7 +61,7 @@ export const usePortalStore = defineStore('portal', () => {
   // 宇宙导航配置（将来可从API获取）
   const navigationConfig: UniverseNavigation = {
     zhou: '/zhou',
-    maoxiaodou: '/moshi',  // 摸诗宇宙入口
+    maoxiaodou: '/maoxiaodou',  // 毛小豆宇宙入口
     // 可扩展其他宇宙
   }
 
@@ -170,10 +170,10 @@ export const usePortalStore = defineStore('portal', () => {
           },
           {
             id: 'maoxiaodou',
-            name: '摸诗宇宙',
-            description: '转动命运的轮盘，用老虎机的方式遇见属于你的诗节。',
+            name: '毛小豆宇宙',
+            description: '毛小豆故事演绎，演绎了你的故事么？',
             status: 'published',
-            meta: '诗歌抽取 · 互动体验',
+            meta: '角色 · 场景 · 故事 · 诗',
             version: '1.0.0',
             lastUpdated: '2025-11-27'
           }

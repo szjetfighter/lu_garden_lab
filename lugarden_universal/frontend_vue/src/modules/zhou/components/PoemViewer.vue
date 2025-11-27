@@ -182,7 +182,8 @@ const props = withDefaults(defineProps<Props>(), {
   showDownload: false,
   showShare: false,
   showAiLabel: false,
-  createdAt: null
+  createdAt: null,
+  watermarkPrefix: null
 })
 
 const emit = defineEmits<Emits>()
@@ -499,13 +500,14 @@ const downloadPoem = async () => {
     }
     
     // 使用Canvas生成图片
-    const blob = await PoemImageGenerator.createCard({
+    const blob = await PoemImageGenerator.createZhouCard({
       title: title,
       quote: props.quoteText ? formattedQuoteText.value : null,
       quoteCitation: props.quoteCitation ? formattedQuoteCitation.value : null,
       content: poemContent,
       author: props.author || null,
-      createdAt: formattedCreatedAt
+      createdAt: formattedCreatedAt,
+      watermarkPrefix: props.watermarkPrefix || null
     })
     
     if (!blob) {

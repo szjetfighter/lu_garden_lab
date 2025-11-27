@@ -94,10 +94,12 @@ const downloadStanza = async () => {
     const title = stanza.value.poem?.title || '诗节'
     const fileName = `${title.replace(/[^\w\s\u4e00-\u9fa5-]/g, '')}.png`
     
-    const blob = await PoemImageGenerator.createCard({
+    const blob = await PoemImageGenerator.createMoshiCard({
       title: title,
-      content: formattedContent.value,
-      source: formattedSource.value
+      stanzas: [{
+        index: stanza.value.index || 1,
+        content: formattedContent.value
+      }]
     })
     
     if (!blob) throw new Error('图片生成失败')
@@ -156,10 +158,10 @@ const actionButtons = computed(() => [
         <span class="poem-source">{{ formattedSource }}</span>
       </div>
       
-      <!-- 分享工具（暂时隐藏） -->
+      <!-- 分享工具 -->
       <ShareTools
         :actions="actionButtons"
-        :show-actions="false"
+        :show-actions="true"
         layout="auto"
       />
       
@@ -229,6 +231,7 @@ const actionButtons = computed(() => [
 .poem-source {
   color: #6b7280;
   font-size: 0.85rem;
+  font-weight: bold;
   font-family: 'Noto Serif SC', 'Source Han Serif CN', serif;
 }
 

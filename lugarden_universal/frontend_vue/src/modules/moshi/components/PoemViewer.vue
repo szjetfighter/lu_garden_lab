@@ -102,9 +102,12 @@ const downloadPoem = async () => {
     const title = poem.value.title
     const fileName = `${title.replace(/[^\w\s\u4e00-\u9fa5-]/g, '')}.png`
     
-    const blob = await PoemImageGenerator.createCard({
+    const blob = await PoemImageGenerator.createMoshiCard({
       title: title,
-      content: fullContent.value
+      stanzas: poem.value.stanzas.map(s => ({
+        index: s.index,
+        content: s.content
+      }))
     })
     
     if (!blob) throw new Error('图片生成失败')
@@ -179,10 +182,10 @@ const actionButtons = computed(() => [
           </div>
         </div>
         
-        <!-- 分享工具（暂时隐藏） -->
+        <!-- 分享工具 -->
         <ShareTools
           :actions="actionButtons"
-          :show-actions="false"
+          :show-actions="true"
           layout="auto"
         />
       </div>

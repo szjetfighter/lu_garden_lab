@@ -5,15 +5,35 @@
  * 共享服务：可被所有宇宙模块使用
  */
 
-export interface PoemImageConfig {
+// ============================================
+// 周与春秋 配置
+// ============================================
+export interface ZhouImageConfig {
   title: string
   quote?: string | null
   quoteCitation?: string | null
   content: string
   author?: string | null
   createdAt?: string | null // 创建时间，用于水印
-  source?: string | null    // 出处（如"诗名 · 一"）
+  watermarkPrefix?: string | null // 水印前缀，如"吴任几"，完整水印为"吴任几 © 陆家花园"
 }
+
+// ============================================
+// 摸诗宇宙 配置
+// ============================================
+export interface MoshiStanza {
+  index: number
+  content: string
+}
+
+export interface MoshiImageConfig {
+  title: string           // 诗名（用于生成来源"诗名 · 一"）
+  stanzas: MoshiStanza[]
+}
+
+// 中文数字映射
+const CHINESE_NUMBERS = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十',
+  '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十']
 
 // LayoutMetrics 预留接口，未来可用于更复杂的布局计算
 // interface LayoutMetrics {
@@ -89,10 +109,10 @@ const STYLES = {
  */
 export class PoemImageGenerator {
   
-  /**
-   * 生成诗歌卡片图片
-   */
-  public static async createCard(config: PoemImageConfig): Promise<Blob | null> {
+  // ============================================
+  // 周与春秋 - 生成诗歌卡片
+  // ============================================
+  public static async createZhouCard(config: ZhouImageConfig): Promise<Blob | null> {
     // 等待字体加载
     await document.fonts.ready
     
@@ -138,12 +158,6 @@ export class PoemImageGenerator {
     totalContentHeight += contentLines.length * STYLES.contentSize * STYLES.contentLineHeight
     totalContentHeight += STYLES.contentMarginBottom
     
-    // 出处高度（如"诗名 · 一"）
-    if (config.source) {
-      totalContentHeight += STYLES.sourceMarginTop
-      totalContentHeight += STYLES.sourceSize * 1.5
-    }
-    
     // 作者高度
     if (config.author) {
       totalContentHeight += STYLES.authorMarginTop
@@ -153,7 +167,7 @@ export class PoemImageGenerator {
     }
     
     // 水印高度
-    if (config.createdAt) {
+    if (config.createdAt || config.watermarkPrefix) {
       totalContentHeight += STYLES.watermarkMarginTop
       totalContentHeight += STYLES.watermarkSize * 1.5
     }
@@ -252,17 +266,6 @@ export class PoemImageGenerator {
     }
     currentY += STYLES.contentMarginBottom
     
-    // 绘制出处（如"诗名 · 一"）
-    if (config.source) {
-      currentY += STYLES.sourceMarginTop
-      ctx.fillStyle = STYLES.sourceColor
-      ctx.font = `${STYLES.sourceSize}px ${STYLES.fontFamily}`
-      ctx.textAlign = 'right'
-      const rightX = STYLES.bgPadding + cardWidth - STYLES.cardPaddingX
-      ctx.fillText(config.source, rightX, currentY)
-      currentY += STYLES.sourceSize * 1.5
-    }
-    
     // 绘制作者
     if (config.author) {
       currentY += STYLES.authorMarginTop
@@ -288,11 +291,13 @@ export class PoemImageGenerator {
     }
     
     // 绘制水印
-    if (config.createdAt) {
+    if (config.createdAt || config.watermarkPrefix) {
       currentY += STYLES.watermarkMarginTop
       
-      // 格式化时间：2025-11-25 12:09于©陆家花园
-      const watermarkText = `${config.createdAt}于©陆家花园`
+      // 如果有 watermarkPrefix，使用 "前缀 © 陆家花园" 格式；否则用时间戳格式
+      const watermarkText = config.watermarkPrefix 
+        ? `${config.watermarkPrefix} © 陆家花园`
+        : `${config.createdAt}于©陆家花园`
       
       ctx.fillStyle = STYLES.watermarkColor
       ctx.font = `${STYLES.watermarkSize}px ${STYLES.fontFamily}`
@@ -307,6 +312,177 @@ export class PoemImageGenerator {
       }, 'image/png', 1.0)
     })
   }
+  
+  // ============================================
+  // 摸诗宇宙 - 生成诗歌卡片
+  // 单诗节：无标题，右下角"诗名 · 一"
+  // 多诗节：有标题，诗节间分割线
+  // ============================================
+  public static async createMoshiCard(config: MoshiImageConfig): Promise<Blob | null> {
+    await document.fonts.ready
+    
+    const scale = STYLES.scale
+    const baseWidth = STYLES.baseWidth
+    const isSingleStanza = config.stanzas.length === 1
+    const moshiContentSize = 28 // 正文字号（比标题小）
+    
+    const tempCanvas = document.createElement('canvas')
+    const tempCtx = tempCanvas.getContext('2d')
+    if (!tempCtx) return null
+    
+    const cardWidth = baseWidth - STYLES.bgPadding * 2
+    const contentWidth = cardWidth - STYLES.cardPaddingX * 2
+    
+    // 计算各部分高度
+    let totalContentHeight = STYLES.cardPaddingTop
+    
+    // 标题高度（单诗节带节号，多诗节纯标题）
+    let titleLines: string[] = []
+    tempCtx.font = `bold ${STYLES.titleSize}px ${STYLES.fontFamily}`
+    if (isSingleStanza) {
+      const stanzaIndex = config.stanzas[0].index
+      const chineseNum = CHINESE_NUMBERS[stanzaIndex] || stanzaIndex.toString()
+      const titleWithIndex = `${config.title} · ${chineseNum}`
+      titleLines = this.wrapText(tempCtx, titleWithIndex, contentWidth)
+    } else {
+      titleLines = this.wrapText(tempCtx, config.title, contentWidth)
+    }
+    totalContentHeight += titleLines.length * STYLES.titleSize * STYLES.titleLineHeight
+    // 多诗节时增大标题与正文间距
+    const titleMargin = isSingleStanza ? STYLES.titleMarginBottom : STYLES.titleMarginBottom + 16
+    totalContentHeight += titleMargin
+    
+    // 诗节高度（正文不加粗）
+    tempCtx.font = `${moshiContentSize}px ${STYLES.fontFamily}`
+    const stanzaLinesArray: string[][] = []
+    for (let i = 0; i < config.stanzas.length; i++) {
+      const stanza = config.stanzas[i]
+      const lines = this.wrapTextMultiParagraph(tempCtx, stanza.content, contentWidth)
+      stanzaLinesArray.push(lines)
+      
+      totalContentHeight += lines.length * moshiContentSize * STYLES.contentLineHeight
+      
+      // 分割线（最后一节后不加，仅多诗节）
+      if (!isSingleStanza && i < config.stanzas.length - 1) {
+        totalContentHeight += 32 + 1 + 32
+      }
+    }
+    totalContentHeight += STYLES.contentMarginBottom
+    
+    // 水印高度（固定显示）
+    totalContentHeight += STYLES.watermarkMarginTop
+    totalContentHeight += STYLES.watermarkSize * 1.5
+    
+    totalContentHeight += STYLES.cardPaddingBottom
+    
+    // 画布尺寸
+    const cardHeight = totalContentHeight
+    const canvasWidth = baseWidth
+    const canvasHeight = cardHeight + STYLES.bgPadding * 2
+    
+    const canvas = document.createElement('canvas')
+    canvas.width = canvasWidth * scale
+    canvas.height = canvasHeight * scale
+    
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+    
+    ctx.scale(scale, scale)
+    
+    // 灰色背景
+    ctx.fillStyle = STYLES.bgColor
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+    
+    // 卡片阴影
+    ctx.save()
+    ctx.shadowColor = STYLES.cardShadowColor
+    ctx.shadowBlur = STYLES.cardShadowBlur
+    ctx.shadowOffsetY = STYLES.cardShadowOffsetY
+    
+    // 卡片背景
+    const cardX = STYLES.bgPadding
+    const cardY = STYLES.bgPadding
+    const gradient = ctx.createLinearGradient(cardX, cardY, cardX + cardWidth, cardY + cardHeight)
+    gradient.addColorStop(0, STYLES.cardBgStart)
+    gradient.addColorStop(1, STYLES.cardBgEnd)
+    
+    ctx.fillStyle = gradient
+    this.roundRect(ctx, cardX, cardY, cardWidth, cardHeight, STYLES.cardRadius)
+    ctx.fill()
+    ctx.restore()
+    
+    // 绘制内容
+    let currentY = STYLES.bgPadding + STYLES.cardPaddingTop
+    const centerX = canvasWidth / 2
+    
+    // 标题（单诗节带节号，多诗节纯标题）
+    ctx.fillStyle = STYLES.titleColor
+    ctx.font = `bold ${STYLES.titleSize}px ${STYLES.fontFamily}`
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+    
+    for (const line of titleLines) {
+      ctx.fillText(line, centerX, currentY)
+      currentY += STYLES.titleSize * STYLES.titleLineHeight
+    }
+    // 多诗节时增大标题与正文间距
+    currentY += isSingleStanza ? STYLES.titleMarginBottom : STYLES.titleMarginBottom + 16
+    
+    // 诗节（不加粗）
+    ctx.fillStyle = STYLES.contentColor
+    ctx.font = `${moshiContentSize}px ${STYLES.fontFamily}`
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+    
+    for (let i = 0; i < stanzaLinesArray.length; i++) {
+      const lines = stanzaLinesArray[i]
+      
+      for (const line of lines) {
+        if (line === '') {
+          currentY += moshiContentSize * 0.5
+        } else {
+          ctx.fillText(line, centerX, currentY)
+          currentY += moshiContentSize * STYLES.contentLineHeight
+        }
+      }
+      
+      // 分割线（仅多诗节，最后一节后不加）
+      if (!isSingleStanza && i < stanzaLinesArray.length - 1) {
+        currentY += 32
+        
+        ctx.strokeStyle = STYLES.separatorColor
+        ctx.lineWidth = 1
+        ctx.beginPath()
+        const lineStartX = STYLES.bgPadding + STYLES.cardPaddingX + 60
+        const lineEndX = STYLES.bgPadding + cardWidth - STYLES.cardPaddingX - 60
+        ctx.moveTo(lineStartX, currentY)
+        ctx.lineTo(lineEndX, currentY)
+        ctx.stroke()
+        
+        currentY += 1 + 32
+      }
+    }
+    currentY += STYLES.contentMarginBottom
+    
+    // 水印（固定：西尔 © 陆家花园）
+    currentY += STYLES.watermarkMarginTop
+    const watermarkText = '西尔 © 陆家花园'
+    
+    ctx.fillStyle = STYLES.watermarkColor
+    ctx.font = `${STYLES.watermarkSize}px ${STYLES.fontFamily}`
+    ctx.textAlign = 'center'
+    ctx.fillText(watermarkText, centerX, currentY)
+    
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob)
+      }, 'image/png', 1.0)
+    })
+  }
+  
+  // ============================================
+  // 共享工具方法
+  // ============================================
   
   /**
    * 绘制圆角矩形

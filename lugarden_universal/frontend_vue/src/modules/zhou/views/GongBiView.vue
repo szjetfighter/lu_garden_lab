@@ -125,8 +125,8 @@
             :quote-citation="generatedPoem.quoteSource"
             :main-text="generatedPoem.content"
             animation-delay="0.2s"
-            :show-actions="true"
-            :show-download="true"
+            :show-actions="false"
+            :show-download="false"
             :show-ai-label="true"
           />
           

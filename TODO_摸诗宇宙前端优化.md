@@ -224,6 +224,70 @@
   - [x] 步骤A.8.2：前端新增 moshi/PoemViewer 组件
   - [x] 步骤A.8.3：StanzaDisplay 添加"查看全诗"按钮
 
+#### - [ ] 任务A.9：PoemImageGenerator 宇宙分离
+
+- **核心思想**: 将图片生成器按宇宙分离，支持不同的数据结构和样式
+- 交付物：
+  - `createZhouCard` - 周与春秋专用（现有逻辑重命名）
+  - `createMoshiCard` - 摸诗宇宙专用（新增，支持 stanzas + 分割线）
+- 验收标准：
+  - zhou 调用 `createZhouCard({ title, content, author, ... })`
+  - moshi 调用 `createMoshiCard({ title, stanzas: [{index, content}], ... })`
+  - moshi 图片中诗节之间有分割线
+- **风险评估**: 低，共享工具方法不变
+- 预期改动文件（预判）：
+  - `shared/services/PoemImageGenerator.ts`（重构）
+  - `modules/zhou/components/PoemViewer.vue`（调用改名）
+  - `modules/moshi/components/StanzaDisplay.vue`（调用新方法）
+  - `modules/moshi/components/PoemViewer.vue`（调用新方法）
+- 实际改动文件:
+  - `shared/services/PoemImageGenerator.ts` - 拆分接口+双方法
+  - `modules/zhou/components/PoemViewer.vue` - 调用createZhouCard
+  - `modules/moshi/components/StanzaDisplay.vue` - 调用createMoshiCard
+  - `modules/moshi/components/PoemViewer.vue` - 调用createMoshiCard
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.9.1：现有 createCard 重命名为 createZhouCard
+  - [x] 步骤A.9.2：新增 MoshiImageConfig 接口（支持 stanzas）
+  - [x] 步骤A.9.3：新增 createMoshiCard 方法（stanzas + 分割线）
+  - [x] 步骤A.9.4：更新 zhou/PoemViewer 调用
+  - [x] 步骤A.9.5：更新 moshi 组件调用
+
+#### - [x] 任务A.10：Moshi图片生成样式优化
+
+- **核心思想**: 优化摸诗宇宙图片生成的视觉效果
+- 交付物：
+  - 单诗节图片：顶部标题"诗名 · 一"格式（居中加粗）
+  - 多诗节图片：增大标题与正文间距
+  - 正文字号28px + 不加粗
+  - 水印统一为"西尔 © 陆家花园"（moshi）/ "吴任几 © 陆家花园"（zhou ResultScreen）
+  - 网页端StanzaDisplay来源文字加粗
+  - 共笔页面禁用ShareTools（增值功能）
+- 验收标准：
+  - 单诗节下载图片顶部显示"诗名 · 一"（居中加粗）
+  - 正文字体比标题小且不加粗
+  - 水印位置一致
+- **风险评估**: 低
+- 预期改动文件（预判）：
+  - `shared/services/PoemImageGenerator.ts`
+  - `modules/moshi/components/StanzaDisplay.vue`
+- 实际改动文件:
+  - `shared/services/PoemImageGenerator.ts` - createMoshiCard重构、ZhouImageConfig新增watermarkPrefix
+  - `modules/moshi/components/StanzaDisplay.vue` - 来源文字加粗
+  - `modules/moshi/components/PoemViewer.vue` - 启用ShareTools
+  - `modules/zhou/types/zhou.ts` - PoemViewerProps新增watermarkPrefix
+  - `modules/zhou/components/PoemViewer.vue` - 支持watermarkPrefix
+  - `modules/zhou/views/ResultScreen.vue` - 传入watermarkPrefix="吴任几"
+  - `modules/zhou/views/GongBiView.vue` - 禁用ShareTools
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.10.1：createMoshiCard 单诗节顶部标题"诗名 · 一"
+  - [x] 步骤A.10.2：正文字号缩小 + 去掉加粗
+  - [x] 步骤A.10.3：水印统一为"西尔 © 陆家花园"
+  - [x] 步骤A.10.4：网页端StanzaDisplay来源文字加粗
+  - [x] 步骤A.10.5：zhou ResultScreen水印"吴任几 © 陆家花园"
+  - [x] 步骤A.10.6：共笔页面禁用ShareTools
+
 ---
 
 ### **阶段11-27_B：体验增强（可选）**

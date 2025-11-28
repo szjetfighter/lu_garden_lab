@@ -238,9 +238,9 @@ const winLevel = computed(() => {
   75% { transform: translateX(1px); }
 }
 
-/* 5连 - ULTRA WIN - 金色系 + 随机放大 + 超强发光 */
+/* 5连 - ULTRA WIN - 深琥珀金 + 随机放大 + 超强发光 */
 .win-title.win-ultra {
-  color: #fbbf24;
+  color: #d97706;
   text-shadow: 
     0 0 20px rgba(251, 191, 36, 0.8),
     0 0 40px rgba(251, 191, 36, 0.6),
@@ -259,9 +259,9 @@ const winLevel = computed(() => {
 
 @keyframes random-scale {
   0%, 100% { transform: scale(1); }
-  25% { transform: scale(1.15); }
-  50% { transform: scale(0.95); }
-  75% { transform: scale(1.1); }
+  25% { transform: scale(1.25); }
+  50% { transform: scale(0.85); }
+  75% { transform: scale(1.2); }
 }
 
 @keyframes glow-gold-ultra {

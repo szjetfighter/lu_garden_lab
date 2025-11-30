@@ -246,12 +246,11 @@
 - **核心思想**:
   - 根据连线数量（3/4/5连）显示不同的中奖标题和动画效果
   - 配色与对应column特效色系一致，形成视觉统一
-- **标题设计**:
-  | 连线 | 标题 | 图标 | 配色 | 动画特效 |
-  |------|------|------|------|----------|
-  | 3连 | BIG WIN | 🎉 | 粉色(#ec4899) | 字符弹跳+呼吸发光 |
-  | 4连 | MEGA WIIIN | ✦ | 紫色(#a855f7) | 字符弹跳+发光+抖动 |
-  | 5连 | ULTRA WIIIIIIIN | ⚡ | 金色(#fbbf24) | 字符弹跳+强发光+剧烈抖动 |
+- **标题设计**:| 连线 | 标题            | 图标 | 配色          | 动画特效                 |
+  | ---- | --------------- | ---- | ------------- | ------------------------ |
+  | 3连  | BIG WIN         | 🎉   | 粉色(#ec4899) | 字符弹跳+呼吸发光        |
+  | 4连  | MEGA WIIIN      | ✦   | 紫色(#a855f7) | 字符弹跳+发光+抖动       |
+  | 5连  | ULTRA WIIIIIIIN | ⚡   | 金色(#fbbf24) | 字符弹跳+强发光+剧烈抖动 |
 - 交付物：
   - WinModal.vue - 动态标题逻辑+分级动画
 - 验收标准：
@@ -265,11 +264,11 @@
   - `frontend_vue/src/modules/moshi/components/StanzaDisplay.vue` - 隐藏"查看全诗"按钮
 - 完成状态：✅ 已完成
 - 执行步骤：
-  - [x] 步骤A.6.1：添加winLevel computed根据columns返回标题/样式/图标
-  - [x] 步骤A.6.2：模板改为动态渲染，字符逐个显示
-  - [x] 步骤A.6.3：添加3连粉色/4连紫色/5连金色的CSS动画
-  - [x] 步骤A.6.4：隐藏"查看全诗"按钮（v-if="false"）
-  - [x] 步骤A.6.5：验证（TypeScript类型检查0错误，Vite构建成功1.31s）
+  - [X] 步骤A.6.1：添加winLevel computed根据columns返回标题/样式/图标
+  - [X] 步骤A.6.2：模板改为动态渲染，字符逐个显示
+  - [X] 步骤A.6.3：添加3连粉色/4连紫色/5连金色的CSS动画
+  - [X] 步骤A.6.4：隐藏"查看全诗"按钮（v-if="false"）
+  - [X] 步骤A.6.5：验证（TypeScript类型检查0错误，Vite构建成功1.31s）
 
 ---
 
@@ -279,18 +278,17 @@
   - 多符号中奖时优先选择最长连线作为primaryWinDetail
   - 高亮逻辑改为"事后揭示"（真实老虎机体验，高亮≠必中）
   - poeticName分3等级（b=3连, m=4连, u=5连），9奖池×3等级=27种组合
-- **poeticName设计**:
-  | 符号 | BIG WIN (3连) | MEGA WIN (4连) | ULTRA WIN (5连) |
-  |------|--------------|----------------|-----------------|
-  | 毛小豆 | 长胖的人 | 长胖的人哭了 | 长胖的人笑哭了 |
-  | 华少 | 不胖的人 | 都不胖的人 | 怎么都长不胖的人 |
-  | 栋先生 | 路上的人 | 在路上的人 | 在路上翻车的人 |
-  | 张秋 | 是她！ | 是她，不是他！ | 是她，不是他的她！ |
-  | 办公室 | 摸鱼 | 摸鱼摸鱼 | 摸鱼摸鱼摸摸鱼 |
-  | 兄弟会 | 你我约定 | 你我约定不？ | 你我约定不互喷，吗？ |
-  | 封闭空间 | 防控 | 不是防控 | 放空，不是防控 |
-  | 社交 | 给爷喝 | 给爷喝到爽 | 给爷喝到吐爽 |
-  | 运动 | 好身材 | 好身材来的 | 好身材是消费出来的 |
+- **poeticName设计**:| 符号     | BIG WIN (3连) | MEGA WIN (4连) | ULTRA WIN (5连)      |
+  | -------- | ------------- | -------------- | -------------------- |
+  | 毛小豆   | 长胖的人      | 长胖的人哭了   | 长胖的人笑哭了       |
+  | 华少     | 不胖的人      | 都不胖的人     | 怎么都长不胖的人     |
+  | 栋先生   | 路上的人      | 在路上的人     | 在路上翻车的人       |
+  | 张秋     | 是她！        | 是她，不是他！ | 是她，不是他的她！   |
+  | 办公室   | 摸鱼          | 摸鱼摸鱼       | 摸鱼摸鱼摸摸鱼       |
+  | 兄弟会   | 你我约定      | 你我约定不？   | 你我约定不互喷，吗？ |
+  | 封闭空间 | 防控          | 不是防控       | 放空，不是防控       |
+  | 社交     | 给爷喝        | 给爷喝到爽     | 给爷喝到吐爽         |
+  | 运动     | 好身材        | 好身材来的     | 好身材是消费出来的   |
 - 交付物：
   - moshiService.js - 后端优先最长连线+poeticName分等级
   - SlotMachine.vue - 高亮逻辑修正
@@ -309,57 +307,60 @@
   - `frontend_vue/src/modules/moshi/types/moshi.ts` - WinDetail添加poeticName字段
 - 完成状态：✅ 已完成
 - 执行步骤：
-  - [x] 步骤A.7.1：后端按连线长度排序winningSymbols，优先最长连线
-  - [x] 步骤A.7.2：修正fallback路径也使用最长连线符号
-  - [x] 步骤A.7.3：前端高亮逻辑改为"事后揭示"而非"预知未来"
-  - [x] 步骤A.7.4：ULTRA WIN增强效果（随机放大+超强发光）
-  - [x] 步骤A.7.5：poeticName分3等级（b=3连, m=4连, u=5连）共27种组合
-  - [x] 步骤A.7.6：验证（TypeScript类型检查0错误，Vite构建成功）
+  - [X] 步骤A.7.1：后端按连线长度排序winningSymbols，优先最长连线
+  - [X] 步骤A.7.2：修正fallback路径也使用最长连线符号
+  - [X] 步骤A.7.3：前端高亮逻辑改为"事后揭示"而非"预知未来"
+  - [X] 步骤A.7.4：ULTRA WIN增强效果（随机放大+超强发光）
+  - [X] 步骤A.7.5：poeticName分3等级（b=3连, m=4连, u=5连）共27种组合
+  - [X] 步骤A.7.6：验证（TypeScript类型检查0错误，Vite构建成功）
 
 ---
 
 #### - [x] 任务A.8：修复PC调试与真机显示差异 - 采用zhou标准布局模式
 
 - **问题描述**:
+
   - A.1实现的"手机端卡片留白"在PC调试模式下正常
   - 但在真机（小米13 Chrome）上留白效果不明显，卡片几乎撑满屏幕
   - PC模拟器和真机渲染存在差异
-
 - **根因分析**:
-  | 对比项 | zhou模块（无差异） | moshi模块（有差异） |
-  |--------|-------------------|---------------------|
-  | 水平居中 | `mx-auto`（margin居中） | `justify-content: center`（flex居中） |
-  | 边距控制 | `px-4`（固定16px） | `calc(100% - 2rem)`（依赖计算） |
-  | 宽度限制 | `max-w-*`（Tailwind预设） | `max-width: 48rem`（自定义） |
-  | 容器模式 | `container`（Tailwind响应式） | 自定义flex布局 |
-  
-  **核心问题**：`calc(100% - 2rem)`的100%基准在flex布局中不确定，真机和PC计算结果不同
 
+  | 对比项   | zhou模块（无差异）              | moshi模块（有差异）                     |
+  | -------- | ------------------------------- | --------------------------------------- |
+  | 水平居中 | `mx-auto`（margin居中）       | `justify-content: center`（flex居中） |
+  | 边距控制 | `px-4`（固定16px）            | `calc(100% - 2rem)`（依赖计算）       |
+  | 宽度限制 | `max-w-*`（Tailwind预设）     | `max-width: 48rem`（自定义）          |
+  | 容器模式 | `container`（Tailwind响应式） | 自定义flex布局                          |
+
+  **核心问题**：`calc(100% - 2rem)`的100%基准在flex布局中不确定，真机和PC计算结果不同
 - **⚠️ AI反思与教训**:
+
   1. **没有复用已有方案**：zhou模块已有成熟的、经过真机验证的布局模式，但A.1时完全没有参考
   2. **重新发明轮子**：用calc+flex自创方案，而不是复用Tailwind标准容器模式
   3. **验证不充分**：只在PC调试模式验证，未意识到需要真机验证
   4. **缺乏全局视野**：做moshi布局修改时，应该先研究项目中其他模块的实现方式
-  
+
   **正确做法**：在修改任何模块的布局前，先查看项目中其他模块（如zhou）的实现，复用已验证的模式
-
 - **解决方案**:
-  - MoshiView：改用zhou的`container mx-auto px-4 py-8`模式
-  - SlotMachine：改用`max-w-md mx-auto`，移除calc和flex居中
-  - 确保与zhou模块布局行为完全一致
 
+  - MoshiView：改用zhou的 `container mx-auto px-4 py-8`模式
+  - SlotMachine：改用 `max-w-md mx-auto`，移除calc和flex居中
+  - 确保与zhou模块布局行为完全一致
 - 交付物：
+
   - MoshiView.vue - 容器布局重构
   - SlotMachine.vue - 宽度控制重构
 - 验收标准：
+
   - PC调试和真机显示一致
   - 卡片两侧有明显留白，圆角可见
   - 与zhou模块布局行为一致
 - **风险评估**: 低风险，仅修改布局CSS
 - 实际改动文件:
+
   - `frontend_vue/src/modules/moshi/views/MoshiView.vue`
-    - 改用`container mx-auto px-4 py-8`标准容器模式
-    - 添加返回按钮（使用`@/shared/components/BackButton.vue`）
+    - 改用 `container mx-auto px-4 py-8`标准容器模式
+    - 添加返回按钮（使用 `@/shared/components/BackButton.vue`）
     - 与zhou模块完全一致的布局结构
   - `frontend_vue/src/modules/moshi/components/SlotMachine.vue`
     - `max-width: 28rem`，移除calc
@@ -370,58 +371,79 @@
   - `frontend_vue/src/modules/moshi/components/PoemViewer.vue` - 不改（模态弹窗，flex居中正确）
 - 完成状态：✅ 已完成
 - 执行步骤：
-  - [x] 步骤A.8.1：MoshiView改用zhou标准容器模式（container mx-auto px-4 py-8）
-  - [x] 步骤A.8.2：SlotMachine移除calc，改用max-width: 28rem
-  - [x] 步骤A.8.3：StanzaDisplay移除calc，改用max-width: 28rem
-  - [x] 步骤A.8.4：添加返回按钮（与zhou一致，使用shared/BackButton）
-  - [x] 步骤A.8.5：StanzaDisplay添加底部边距2rem（解决滚动到底内容截断问题）
-  - [x] 步骤A.8.6：验证构建成功
+
+  - [X] 步骤A.8.1：MoshiView改用zhou标准容器模式（container mx-auto px-4 py-8）
+  - [X] 步骤A.8.2：SlotMachine移除calc，改用max-width: 28rem
+  - [X] 步骤A.8.3：StanzaDisplay移除calc，改用max-width: 28rem
+  - [X] 步骤A.8.4：添加返回按钮（与zhou一致，使用shared/BackButton）
+  - [X] 步骤A.8.5：StanzaDisplay添加底部边距2rem（解决滚动到底内容截断问题）
+  - [X] 步骤A.8.6：验证构建成功
 
 #### - [x] 任务A.9：SlotMachine响应式布局优化
 
 - **问题描述**:
+
   - A.8完成后，PC调试模式下SlotMachine卡片有留白
   - 但真机上卡片仍然撑满屏幕，没有留白
   - slot-matrix与slot-machine的边距视觉上不一致
-
 - **根因分析**:
-  | 问题 | 原因 |
-  |------|------|
-  | 真机无留白 | slot-cell使用固定60px宽度，5列撑满了容器 |
-  | moshi无响应式 | 整个moshi模块没有@media响应式设计 |
-  | 边距不一致 | slot-matrix固定宽度居中，与slot-machine的padding叠加 |
 
+  | 问题          | 原因                                                 |
+  | ------------- | ---------------------------------------------------- |
+  | 真机无留白    | slot-cell使用固定60px宽度，5列撑满了容器             |
+  | moshi无响应式 | 整个moshi模块没有@media响应式设计                    |
+  | 边距不一致    | slot-matrix固定宽度居中，与slot-machine的padding叠加 |
 - **⚠️ AI反思与教训**:
+
   1. **没有检查内部固定宽度**：只改了容器的max-width，忽略了内部slot-cell是固定60px
   2. **没有对比zhou的响应式机制**：zhou使用clamp()和@media实现响应式，moshi完全没有
   3. **层层调试耗时**：从vw→rem→flex-shrink多次尝试，应该先完整分析问题
   4. **忽视了flex布局特性**：slot-matrix用gap固定间距会导致宽度不自适应
-  
+
   **正确做法**：
+
   - 先分析完整的宽度计算链（容器→matrix→cell）
   - 对比zhou模块的响应式实现方式
   - 使用flex的justify-content: space-between让间距自适应
-
 - **解决方案**:
+
   - slot-cell从60px改为3rem（48px），适应窄屏
   - slot-machine添加width: 100% + box-sizing: border-box
   - slot-matrix改用width: 100% + justify-content: space-between
   - 移除固定gap，让cell间距自适应
-
 - 实际改动文件:
+
   - `frontend_vue/src/modules/moshi/components/SlotMachine.vue`
-    - `.slot-machine`: 添加`width: 100%`, `box-sizing: border-box`, `padding: 1rem`
+    - `.slot-machine`: 添加 `width: 100%`, `box-sizing: border-box`, `padding: 1rem`
     - `.slot-matrix`: `width: 100%`, `justify-content: space-between`, 移除gap
-    - `.slot-cell`: `3rem`替代`60px`
+    - `.slot-cell`: `3rem`替代 `60px`
     - `.slot-column height`: 同步更新计算
 - 完成状态：✅ 已完成
 - 执行步骤：
-  - [x] 步骤A.9.1：分析问题根因（slot-cell固定宽度）
-  - [x] 步骤A.9.2：slot-cell改为3rem响应式宽度
-  - [x] 步骤A.9.3：slot-machine添加width: 100%确保不溢出
-  - [x] 步骤A.9.4：slot-matrix改用space-between自适应间距
-  - [x] 步骤A.9.5：验证真机显示正确
-  - [x] 步骤A.9.6：验证构建成功
+
+  - [X] 步骤A.9.1：分析问题根因（slot-cell固定宽度）
+  - [X] 步骤A.9.2：slot-cell改为3rem响应式宽度
+  - [X] 步骤A.9.3：slot-machine添加width: 100%确保不溢出
+  - [X] 步骤A.9.4：slot-matrix改用space-between自适应间距
+  - [X] 步骤A.9.5：验证真机显示正确
+  - [X] 步骤A.9.6：验证构建成功
+
+#### - [x] 任务A.10：ULTRA WIN特效优化
+
+- **核心思想**: 手机端ULTRA WIN文字不够醒目，需要增强可见性
+- 交付物：
+  - 字体颜色调深（同色系内，从亮金到深琥珀金）
+  - 随机缩放效果增强
+- 验收标准：
+  - 手机端ULTRA WIN文字清晰可辨
+  - 缩放动画更加明显
+- **风险评估**: 低
+- 实际改动文件:
+  - `frontend_vue/src/modules/moshi/components/WinModal.vue`
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [X] 步骤A.10.1：字体颜色从#fbbf24改为#d97706
+  - [X] 步骤A.10.2：random-scale范围从0.95-1.15扩大到0.85-1.25
 
 ---
 
@@ -432,6 +454,6 @@
 
 ## 完成后的操作
 
-- [x] 创建更新目录并移动为 `TODO.md`
-- [x] 创建 `更新日志.md`
-- [x] 提交所有更改到Git
+- [X] 创建更新目录并移动为 `TODO.md`
+- [X] 创建 `更新日志.md`
+- [X] 提交所有更改到Git

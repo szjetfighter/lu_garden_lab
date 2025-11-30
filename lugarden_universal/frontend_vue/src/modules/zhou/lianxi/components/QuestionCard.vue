@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ZhouQuestion } from '@/modules/zhou/types/zhou'
+import type { ZhouQuestion } from '@/modules/zhou/lianxi/types/zhou'
 
 // 组件Props
 interface Props {

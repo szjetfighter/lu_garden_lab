@@ -186,10 +186,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useZhouStore } from '@/modules/zhou/stores/zhou'
-import { createGongBi, getGongBiErrorMessage } from '@/modules/zhou/services/gongBiApi'
+import { useZhouStore } from '@/modules/zhou/lianxi/stores/zhou'
+import { createGongBi, getGongBiErrorMessage } from '@/modules/zhou/lianxi/services/gongBiApi'
 import { saveGongBiWork, isAuthenticated } from '@/core/auth/services/authApi'
-import PoemViewer from '@/modules/zhou/components/PoemViewer.vue'
+import PoemViewer from '@/modules/zhou/lianxi/components/PoemViewer.vue'
 import { ErrorState, UserNavigation } from '@/shared/components'
 
 const router = useRouter()

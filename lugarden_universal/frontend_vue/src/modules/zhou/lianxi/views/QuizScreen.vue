@@ -116,8 +116,8 @@
 <script setup lang="ts">
 import { onMounted, watch, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useZhouStore } from '@/modules/zhou/stores/zhou'
-import QuestionCard from '@/modules/zhou/components/QuestionCard.vue'
+import { useZhouStore } from '@/modules/zhou/lianxi/stores/zhou'
+import QuestionCard from '@/modules/zhou/lianxi/components/QuestionCard.vue'
 import LoadingSpinner from '@/shared/components/LoadingSpinner.vue'
 import { ArrowDownTrayIcon } from '@heroicons/vue/24/outline'
 import ErrorState from '@/shared/components/ErrorState.vue'

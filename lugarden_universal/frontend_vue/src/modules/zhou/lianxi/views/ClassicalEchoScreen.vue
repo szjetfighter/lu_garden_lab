@@ -69,8 +69,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useZhouStore } from '@/modules/zhou/stores/zhou'
-import ClassicalEchoDisplay from '@/modules/zhou/components/ClassicalEchoDisplay.vue'
+import { useZhouStore } from '@/modules/zhou/lianxi/stores/zhou'
+import ClassicalEchoDisplay from '@/modules/zhou/lianxi/components/ClassicalEchoDisplay.vue'
 
 const router = useRouter()
 const zhouStore = useZhouStore()

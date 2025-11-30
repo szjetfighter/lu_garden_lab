@@ -208,7 +208,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ExclamationTriangleIcon, HandRaisedIcon } from '@heroicons/vue/24/outline'
 import { LoadingSpinner, ErrorState, EmptyState } from '@/shared/components'
-import { PoemViewer } from '@/modules/zhou/components'
+import { PoemViewer } from '@/modules/zhou/lianxi/components'
 import { getMyWorks, clearToken, deleteAccount, getUserInfo } from '../services/authApi'
 import type { Work } from '../services/authApi'
 

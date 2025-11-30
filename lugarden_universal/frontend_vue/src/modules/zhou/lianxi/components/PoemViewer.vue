@@ -141,7 +141,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { PoemViewerProps } from '@/modules/zhou/types/zhou'
+import type { PoemViewerProps } from '@/modules/zhou/lianxi/types/zhou'
 import ShareTools from '@/shared/components/ShareTools.vue'
 import { PoemImageGenerator } from '@/shared/services/PoemImageGenerator'
 import { 

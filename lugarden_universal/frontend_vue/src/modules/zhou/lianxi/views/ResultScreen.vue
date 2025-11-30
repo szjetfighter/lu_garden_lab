@@ -200,10 +200,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useZhouStore } from '@/modules/zhou/stores/zhou'
-import PoemViewer from '@/modules/zhou/components/PoemViewer.vue'
-import ControlButtons from '@/modules/zhou/components/ControlButtons.vue'
-import InterpretationDisplay from '@/modules/zhou/components/InterpretationDisplay.vue'
+import { useZhouStore } from '@/modules/zhou/lianxi/stores/zhou'
+import PoemViewer from '@/modules/zhou/lianxi/components/PoemViewer.vue'
+import ControlButtons from '@/modules/zhou/lianxi/components/ControlButtons.vue'
+import InterpretationDisplay from '@/modules/zhou/lianxi/components/InterpretationDisplay.vue'
 import { LoadingSpinner, ErrorState, UserNavigation } from '@/shared/components'
 
 const router = useRouter()

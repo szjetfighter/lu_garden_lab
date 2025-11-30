@@ -9,6 +9,14 @@ import { useMoshiStore } from '../stores/moshiStore'
 import { moshiApi } from '../services/moshiApi'
 import type { MoshiSymbol } from '../types/moshi'
 
+/**
+ * 根据符号ID获取图片URL
+ * 使用Vite的new URL()实现静态资源导入
+ */
+function getSymbolImage(symbolId: string): string {
+  return new URL(`../assets/images/symbols/${symbolId}.png`, import.meta.url).href
+}
+
 const store = useMoshiStore()
 
 // 事件
@@ -61,12 +69,11 @@ function generateSpinningSymbols(): MoshiSymbol[][] {
 }
 
 // 默认符号对象（未开始时显示陆家明图标）
-const defaultSymbol: { id: string; name: string; poeticName: string; emoji: null; image: string; type: 'wild' } = {
+const defaultSymbol: { id: string; name: string; poeticName: string; emoji: null; type: 'wild' } = {
   id: 'wild',
   name: '陆',
   poeticName: '陆',
   emoji: null,
-  image: '/lujiaming_icon.png',
   type: 'wild'
 }
 const defaultSymbols = [
@@ -306,8 +313,7 @@ async function handleSpin() {
             :key="idx" 
             class="slot-cell"
           >
-            <img v-if="symbol.image" :src="symbol.image" class="symbol-image" :alt="symbol.name || ''" />
-            <span v-else class="symbol">{{ symbol.emoji }}</span>
+            <img :src="getSymbolImage(symbol.id)" class="symbol-image" :alt="symbol.name || ''" />
           </div>
         </div>
         <!-- 停止后：显示最终结果 -->
@@ -318,8 +324,7 @@ async function handleSpin() {
             class="slot-cell"
             :class="{ winning: isWinningCell(colIdx, rowIdx) && columnStates[colIdx] === 'idle' }"
           >
-            <img v-if="symbol.image" :src="symbol.image" class="symbol-image" alt="陆" />
-            <span v-else class="symbol">{{ symbol.emoji }}</span>
+            <img :src="getSymbolImage(symbol.id)" class="symbol-image" :alt="symbol.name || ''" />
           </div>
         </template>
       </div>

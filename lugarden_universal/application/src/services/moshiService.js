@@ -15,22 +15,22 @@ import { getPrismaClient } from '../persistence/prismaClient.js';
 // ================================
 
 const SYMBOLS = {
-  // 人物符号（稀有）- 使用自定义图标
+  // 人物符号（稀有）
   // poeticName: { b: 3连, m: 4连, u: 5连 }
-  maoxiaodou: { id: 'maoxiaodou', name: '毛小豆', poeticName: { b: '长胖的人', m: '长胖的人哭了', u: '长胖的人笑哭了' }, type: 'character', emoji: null, image: '/毛小豆.png', weight: 8 },
-  huashao: { id: 'huashao', name: '华少', poeticName: { b: '不胖的人', m: '都不胖的人', u: '怎么都长不胖的人' }, type: 'character', emoji: null, image: '/华少.png', weight: 8 },
-  dongxiansheng: { id: 'dongxiansheng', name: '栋先生', poeticName: { b: '路上的人', m: '在路上的人', u: '在路上翻车的人' }, type: 'character', emoji: null, image: '/栋先生.png', weight: 8 },
-  zhangqiu: { id: 'zhangqiu', name: '张秋', poeticName: { b: '是她！', m: '是她，不是他！', u: '是她，不是他的她！' }, type: 'character', emoji: null, image: '/张秋.png', weight: 8 },
+  maoxiaodou: { id: 'maoxiaodou', name: '毛小豆', poeticName: { b: '长胖的人', m: '长胖的人哭了', u: '长胖的人笑哭了' }, type: 'character', weight: 8 },
+  huashao: { id: 'huashao', name: '华少', poeticName: { b: '不胖的人', m: '都不胖的人', u: '怎么都长不胖的人' }, type: 'character', weight: 8 },
+  dongxiansheng: { id: 'dongxiansheng', name: '栋先生', poeticName: { b: '路上的人', m: '在路上的人', u: '在路上翻车的人' }, type: 'character', weight: 8 },
+  zhangqiu: { id: 'zhangqiu', name: '张秋', poeticName: { b: '是她！', m: '是她，不是他！', u: '是她，不是他的她！' }, type: 'character', weight: 8 },
   
-  // 场景类型符号（常见）- 使用自定义图标
-  office: { id: 'office', name: '办公室', poeticName: { b: '摸鱼', m: '摸鱼摸鱼', u: '摸鱼摸鱼摸摸鱼' }, type: 'scene', emoji: null, image: '/办公室.png', weight: 15, sceneType: '办公室社交' },
-  brotherhood: { id: 'brotherhood', name: '兄弟会', poeticName: { b: '你我约定', m: '你我约定不？', u: '你我约定不互喷，吗？' }, type: 'scene', emoji: null, image: '/兄弟会.png', weight: 15, sceneType: '兄弟会社交' },
-  enclosed: { id: 'enclosed', name: '封闭空间', poeticName: { b: '防控', m: '不是防控', u: '放空，不是防控' }, type: 'scene', emoji: null, image: '/封闭.png', weight: 15, sceneType: '封闭空间' },
-  social: { id: 'social', name: '社交', poeticName: { b: '给爷喝', m: '给爷喝到爽', u: '给爷喝到吐爽' }, type: 'scene', emoji: null, image: '/商务社交.png', weight: 15, sceneType: '商务社交' },
-  sport: { id: 'sport', name: '运动', poeticName: { b: '好身材', m: '好身材来的', u: '好身材是消费出来的' }, type: 'scene', emoji: null, image: '/运动.png', weight: 12, sceneType: '运动环境' },
+  // 场景类型符号（常见）
+  office: { id: 'office', name: '办公室', poeticName: { b: '摸鱼', m: '摸鱼摸鱼', u: '摸鱼摸鱼摸摸鱼' }, type: 'scene', weight: 15, sceneType: '办公室社交' },
+  brotherhood: { id: 'brotherhood', name: '兄弟会', poeticName: { b: '你我约定', m: '你我约定不？', u: '你我约定不互喷，吗？' }, type: 'scene', weight: 15, sceneType: '兄弟会社交' },
+  enclosed: { id: 'enclosed', name: '封闭空间', poeticName: { b: '防控', m: '不是防控', u: '放空，不是防控' }, type: 'scene', weight: 15, sceneType: '封闭空间' },
+  social: { id: 'social', name: '社交', poeticName: { b: '给爷喝', m: '给爷喝到爽', u: '给爷喝到吐爽' }, type: 'scene', weight: 15, sceneType: '商务社交' },
+  sport: { id: 'sport', name: '运动', poeticName: { b: '好身材', m: '好身材来的', u: '好身材是消费出来的' }, type: 'scene', weight: 12, sceneType: '运动环境' },
   
-  // Wild符号（最稀有）- 使用图片而非emoji
-  wild: { id: 'wild', name: '陆', poeticName: { b: '陆', m: '陆', u: '陆' }, type: 'wild', emoji: null, image: '/lujiaming_icon.png', weight: 5 }
+  // Wild符号（最稀有）
+  wild: { id: 'wild', name: '陆', poeticName: { b: '陆', m: '陆', u: '陆' }, type: 'wild', weight: 5 }
 };
 
 const SYMBOL_LIST = Object.values(SYMBOLS);

@@ -144,6 +144,16 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false
     }
   },
+  // 曹僧宇宙
+  {
+    path: '/caogong/xinpin',
+    name: 'XinpinView',
+    component: () => import('@/modules/caogong/xinpin/views/XinpinView.vue'),
+    meta: {
+      title: '新品发布 - 曹僧宇宙',
+      requiresAuth: false
+    }
+  },
   // 404 重定向
   {
     path: '/:pathMatch(.*)*',

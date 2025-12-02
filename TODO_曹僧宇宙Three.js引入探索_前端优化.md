@@ -45,6 +45,36 @@
    - [x] 步骤A.1.4：修复模型材质（透明/双面渲染）
    - [x] 步骤A.1.5：统一产品旋转动画
 
+#### - [x] 任务A.2：售货机顶部霓虹灯招牌
+- **核心思想**: 使用Troika-three-text + Cyberpunk字体 + 多层叠加模拟厚度
+- 交付物：
+  - 3D霓虹灯文字"NEW ARRIVAL"（Cyberpunk风格）
+  - 霓虹灯发光效果（粉色主体+白色光晕）
+  - 删除HTML覆盖层
+- 验收标准：
+  - 文字有设计感（Cyberpunk字体）
+  - 多层叠加产生厚度/描边效果
+  - 配合Bloom发光效果
+- **风险评估**: 低风险
+- 技术方案：**Troika + Cyberpunk字体 + 多层叠加**
+  - 本地加载cyberpunk.ttf字体
+  - 双层Text叠加（白色光晕底层+粉色主体顶层）
+  - Bloom后处理增强发光
+- 实际改动文件：
+  - `VendingMachine3D.vue` — Troika文字实现
+  - `assets/fonts/cyberpunk.ttf` — Cyberpunk风格字体
+- 完成状态：✅ 已完成
+- 技术验证记录：
+  - [x] TubeGeometry手工建模：效果差，工作量大，不可行
+  - [x] Blender MCP：已验证可行，作为技能储备，当前阶段耗时过高
+  - [x] Google Fonts远程加载：中文字体过大，加载慢，不可行
+- 执行步骤：
+   - [x] 步骤A.2.1：Troika初版完成
+   - [x] 步骤A.2.2：加载Cyberpunk本地字体
+   - [x] 步骤A.2.3：多层叠加模拟厚度/描边
+   - [x] 步骤A.2.4：调整Bloom发光效果
+   - [x] 步骤A.2.5：清理废弃代码和文件（删除neon目录、useNeonText.ts）
+
 ---
 
 ## 实际修复记录

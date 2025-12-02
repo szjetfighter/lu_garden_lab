@@ -6,8 +6,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
+import { Text } from 'troika-three-text'
 import type { CaogongProduct } from '../types/xinpin'
 import { products } from '../data/products'
+
+// Cyberpunk字体
+import cyberpunkFontUrl from '../assets/fonts/cyberpunk.ttf?url'
 import ProductModal from './ProductModal.vue'
 
 // 产品ID到GLB文件的映射
@@ -208,11 +212,45 @@ function createVendingMachine(sceneRef: THREE.Scene) {
   const signGlowMaterial = new THREE.MeshBasicMaterial({
     color: 0xff6b9d,
     transparent: true,
-    opacity: 0.9
+    opacity: 0.3  // 降低背景亮度，让文字突出
   })
   const signGlow = new THREE.Mesh(signGlowGeometry, signGlowMaterial)
-  signGlow.position.set(0, 4, 0.6)
+  signGlow.position.set(0, 4, 0.55)
   machineGroup.add(signGlow)
+  
+  // 3D霓虹灯文字：Troika多层叠加
+  const neonTextGroup = new THREE.Group()
+  neonTextGroup.position.set(0, 4, 0.7)
+  
+  // 底层：白色描边/光晕（稍大）
+  const glowText = new Text()
+  glowText.text = 'NEW ARRIVAL'
+  glowText.font = cyberpunkFontUrl
+  glowText.fontSize = 0.4
+  glowText.color = 0xffffff
+  glowText.anchorX = 'center'
+  glowText.anchorY = 'middle'
+  glowText.outlineWidth = 0.025
+  glowText.outlineColor = 0xffffff
+  glowText.outlineOpacity = 0.6
+  glowText.position.z = -0.01  // 稍微靠后
+  glowText.sync()
+  neonTextGroup.add(glowText)
+  
+  // 顶层：粉色主体
+  const mainText = new Text()
+  mainText.text = 'NEW ARRIVAL'
+  mainText.font = cyberpunkFontUrl
+  mainText.fontSize = 0.4
+  mainText.color = 0xff6b9d
+  mainText.anchorX = 'center'
+  mainText.anchorY = 'middle'
+  mainText.outlineWidth = 0.012
+  mainText.outlineColor = 0xffb6c1
+  mainText.sync()
+  neonTextGroup.add(mainText)
+  
+  sceneRef.add(neonTextGroup)
   
   // 霓虹边框 - 更粗更亮
   const neonMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffff })
@@ -582,11 +620,7 @@ onUnmounted(() => {
       </div>
     </div>
     
-    <!-- 顶部标题覆盖层 -->
-    <div class="title-overlay">
-      <h1 class="title">新品发布</h1>
-      <p class="subtitle">曹僧诗歌售卖机 · 3D</p>
-    </div>
+    <!-- 顶部标题已移至3D场景中 -->
     
     <!-- 底部信息 -->
     <div class="footer-overlay">

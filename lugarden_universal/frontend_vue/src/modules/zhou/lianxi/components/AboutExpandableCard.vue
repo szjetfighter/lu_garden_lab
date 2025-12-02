@@ -8,6 +8,11 @@
 import { ref } from 'vue'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/24/outline'
 
+// 导入Feature配图 (0.3x压缩版本)
+import image1 from '@/modules/zhou/lianxi/assets/images/zhou_image1@0.3x.png'
+import image2 from '@/modules/zhou/lianxi/assets/images/zhou_image2@0.3x.png'
+import image3 from '@/modules/zhou/lianxi/assets/images/zhou_image3@0.3x.png'
+
 const isExpanded = ref(false)
 
 const toggleExpand = () => {
@@ -23,18 +28,21 @@ const content = {
   features: [
     {
       id: 'divination',
-      title: 'I. 占卜式阅读',
-      description: '基于个人当下状态的说明书，每个人都可以成为周易大师'
+      title: 'I · 占卜式阅读',
+      description: '基于个人当下状态的说明书，每个人都可以成为周易大师',
+      image: image1
     },
     {
       id: 'cocreation',
-      title: 'II. 瞬时共创',
-      description: '将灵感告诉AI，通过算法解构与再生，即时共创专属诗歌'
+      title: 'II · 瞬时共创',
+      description: '将灵感告诉AI，通过算法解构与再生，即时共创专属诗歌',
+      image: image2
     },
     {
       id: 'digital-art',
-      title: 'III. 数字存在艺术',
-      description: '诗歌作为可留存或流转的数字痕迹，赋予永恒艺术生命'
+      title: 'III · 数字存在艺术',
+      description: '诗歌作为可留存或流转的数字痕迹，赋予永恒艺术生命',
+      image: image3
     }
   ]
 }
@@ -68,7 +76,6 @@ const content = {
           <p class="content-intro">{{ content.intro }}</p>
           
           <div class="features-section">
-            <p class="features-title">◆ 三大核心体验 ◆</p>
             <div 
               v-for="feature in content.features" 
               :key="feature.id"
@@ -76,6 +83,13 @@ const content = {
             >
               <h4 class="feature-title">{{ feature.title }}</h4>
               <p class="feature-desc">{{ feature.description }}</p>
+              <img 
+                v-if="feature.image" 
+                :src="feature.image" 
+                :alt="feature.title" 
+                class="feature-image"
+                loading="lazy"
+              />
             </div>
           </div>
         </div>
@@ -106,7 +120,7 @@ const content = {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
+  padding: var(--spacing-base);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -133,53 +147,48 @@ const content = {
 }
 
 .content-inner {
-  padding: 1.5rem;
+  padding: var(--spacing-xl);
   text-align: center;
 }
 
+/* 统一使用页面已有的字号和颜色 */
+/* text-2xl=1.5rem, text-xl=1.25rem, text-base=1rem, text-sm=0.875rem, text-xs=0.75rem */
+/* text-gray-800=#1f2937, text-gray-600=#4b5563, text-gray-500=#6b7280 */
+
 .content-headline {
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: #1a365d;
-  margin-bottom: 0.5rem;
-  font-family: 'Noto Serif SC', 'Source Han Serif CN', serif;
+  font-size: 1.25rem;  /* text-xl */
+  font-weight: 700;    /* font-bold */
+  color: #1f2937;      /* text-gray-800 */
+  margin-bottom: var(--spacing-base);
 }
 
 .content-tagline {
-  font-size: 0.9375rem;
-  color: #4a5568;
-  margin-bottom: 0.25rem;
+  font-size: 0.875rem; /* text-sm，与keywords一致 */
+  color: #4b5563;      /* text-gray-600 */
+  margin-bottom: var(--spacing-xs);
 }
 
 .content-keywords {
-  font-size: 0.8125rem;
-  color: #718096;
-  margin-bottom: 1.25rem;
+  font-size: 0.875rem; /* text-sm */
+  color: #6b7280;      /* text-gray-500 */
+  margin-bottom: var(--spacing-lg);
 }
 
 .content-intro {
-  font-size: 0.875rem;
-  color: #2d3748;
-  line-height: 1.8;
+  font-size: 0.875rem; /* text-sm，与feature-desc一致 */
+  color: #4b5563;      /* text-gray-600 */
+  line-height: 1.75;
   text-align: left;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--spacing-lg);
 }
 
 .features-section {
   text-align: left;
-  margin-top: 1rem;
-}
-
-.features-title {
-  font-size: 0.8125rem;
-  color: #1a365d;
-  text-align: center;
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.1em;
+  margin-top: var(--spacing-lg);
 }
 
 .feature-item {
-  padding: 0.5rem 0;
+  padding: var(--spacing-base) 0;
   border-bottom: 1px solid #f1f5f9;
 }
 
@@ -188,16 +197,26 @@ const content = {
 }
 
 .feature-title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 0.125rem;
+  font-size: 1rem;     /* text-base */
+  font-weight: 600;    /* font-semibold */
+  color: #1f2937;      /* text-gray-800 */
+  margin-bottom: var(--spacing-xs);
+  text-align: center;
 }
 
 .feature-desc {
-  font-size: 0.8125rem;
-  color: #4a5568;
+  font-size: 0.875rem; /* text-sm */
+  color: #4b5563;      /* text-gray-600 */
   line-height: 1.5;
+}
+
+.feature-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-top: var(--spacing-base);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* 展开动画 */

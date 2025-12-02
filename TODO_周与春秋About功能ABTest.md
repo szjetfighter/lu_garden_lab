@@ -167,6 +167,22 @@ III. 数字存在艺术
   - 箭头图标颜色同步调整
 - 完成状态：✅ 已完成
 
+#### - [x] 任务C.5：内容排版与配图 ✅
+- **核心思想**: 完善About卡片展开内容的排版和配图
+- 实际改动文件：
+  - `modules/zhou/lianxi/components/AboutExpandableCard.vue`
+  - `modules/zhou/lianxi/assets/images/zhou_image1@0.3x.png` — 新增
+  - `modules/zhou/lianxi/assets/images/zhou_image2@0.3x.png` — 新增
+  - `modules/zhou/lianxi/assets/images/zhou_image3@0.3x.png` — 新增
+- 改动内容：
+  - 添加3张Feature配图（压缩至0.3x，总计约550KB）
+  - 移除"◆ 三大核心体验 ◆"装饰性标题
+  - Feature标题格式改为 "I · 占卜式阅读" 并居中
+  - 统一间距到项目标准CSS变量（`var(--spacing-*)`）
+  - 增大整体间距（content-inner用xl，其他关键间距用lg）
+  - 统一字号（tagline、intro、feature-desc都用text-sm）
+- 完成状态：✅ 已完成
+
 ---
 
 ## 风险评估
@@ -189,6 +205,7 @@ III. 数字存在艺术
 - ✅ C.2 PC端宽度对齐
 - ✅ C.3 折叠时透明效果
 - ✅ C.4 标题文字优化
+- ✅ C.5 内容排版与配图
 - ✅ type-check 通过
 - ✅ build 通过
 

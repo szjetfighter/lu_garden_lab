@@ -118,27 +118,64 @@ function onClick(event: MouseEvent) {
 function createVendingMachine(sceneRef: THREE.Scene) {
   const machineGroup = new THREE.Group()
   
-  // 售货机主体 - 更有质感的金属外壳
+  // 售货机主体 - 只渲染内侧，不遮挡产品
   const bodyGeometry = new THREE.BoxGeometry(5, 7, 2)
   const bodyMaterial = new THREE.MeshStandardMaterial({
     color: 0x1a1a1a,
     metalness: 0.9,
-    roughness: 0.2
+    roughness: 0.2,
+    side: THREE.BackSide  // 只渲染内侧
   })
   const body = new THREE.Mesh(bodyGeometry, bodyMaterial)
   body.position.set(0, 0, 0)
   machineGroup.add(body)
   
-  // 内部展示区域（凹陷）
-  const innerGeometry = new THREE.BoxGeometry(4.4, 5.2, 1.2)
-  const innerMaterial = new THREE.MeshStandardMaterial({
+  // 背面遮挡板（防止从背面看穿）
+  const backCoverGeometry = new THREE.PlaneGeometry(5, 7)
+  const backCoverMaterial = new THREE.MeshStandardMaterial({
+    color: 0x1a1a1a,
+    metalness: 0.9,
+    roughness: 0.2
+  })
+  const backCover = new THREE.Mesh(backCoverGeometry, backCoverMaterial)
+  backCover.position.set(0, 0, -1)
+  backCover.rotation.y = Math.PI  // 朝向背面
+  machineGroup.add(backCover)
+  
+  // 外框边缘（左右上下四条边）
+  const frameMaterial = new THREE.MeshStandardMaterial({
+    color: 0x1a1a1a,
+    metalness: 0.9,
+    roughness: 0.2
+  })
+  // 左边框
+  const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(0.3, 7, 2), frameMaterial)
+  leftFrame.position.set(-2.35, 0, 0)
+  machineGroup.add(leftFrame)
+  // 右边框
+  const rightFrame = new THREE.Mesh(new THREE.BoxGeometry(0.3, 7, 2), frameMaterial)
+  rightFrame.position.set(2.35, 0, 0)
+  machineGroup.add(rightFrame)
+  // 上边框
+  const topFrame = new THREE.Mesh(new THREE.BoxGeometry(5, 0.5, 2), frameMaterial)
+  topFrame.position.set(0, 3.25, 0)
+  machineGroup.add(topFrame)
+  // 下边框
+  const bottomFrame = new THREE.Mesh(new THREE.BoxGeometry(5, 1, 2), frameMaterial)
+  bottomFrame.position.set(0, -3, 0)
+  machineGroup.add(bottomFrame)
+  
+  // 内部展示背板（只渲染背面，不遮挡产品）
+  const backPanelGeometry = new THREE.PlaneGeometry(4.4, 5.2)
+  const backPanelMaterial = new THREE.MeshStandardMaterial({
     color: 0x0a0a0a,
     metalness: 0.5,
-    roughness: 0.8
+    roughness: 0.8,
+    side: THREE.FrontSide
   })
-  const inner = new THREE.Mesh(innerGeometry, innerMaterial)
-  inner.position.set(0, 0.4, 0.5)
-  machineGroup.add(inner)
+  const backPanel = new THREE.Mesh(backPanelGeometry, backPanelMaterial)
+  backPanel.position.set(0, 0.4, -0.2)
+  machineGroup.add(backPanel)
   
   // 玻璃面板
   const glassGeometry = new THREE.BoxGeometry(4.5, 5.3, 0.05)
@@ -240,13 +277,13 @@ function createVendingMachine(sceneRef: THREE.Scene) {
   
   sceneRef.add(machineGroup)
   
-  // 霓虹灯光源
+  // 霓虹灯光源（内部照明）
   const lights = [
-    { color: 0x00ffff, intensity: 3, pos: [0, 3.5, 3] },
-    { color: 0xff6b9d, intensity: 2, pos: [0, 4.5, 3] },
-    { color: 0x00ffff, intensity: 1.5, pos: [-3, 0, 3] },
-    { color: 0x00ffff, intensity: 1.5, pos: [3, 0, 3] },
-    { color: 0x00ffff, intensity: 2, pos: [0, -3, 2] }
+    { color: 0x00ffff, intensity: 3, pos: [0, 2, 0.5] },
+    { color: 0xff6b9d, intensity: 2, pos: [0, 3.5, 0.5] },
+    { color: 0x00ffff, intensity: 1.5, pos: [-1.5, 0, 0.5] },
+    { color: 0x00ffff, intensity: 1.5, pos: [1.5, 0, 0.5] },
+    { color: 0x00ffff, intensity: 2, pos: [0, -2, 0.5] }
   ]
   
   lights.forEach(({ color, intensity, pos }) => {
@@ -311,8 +348,37 @@ async function loadProductModels(sceneRef: THREE.Scene) {
     try {
       // 加载GLB模型
       const modelPath = new URL(`../assets/GLB/${modelFile}`, import.meta.url).href
+      console.log(`Loading: ${product.id} -> ${modelFile}`)
       const gltf = await loader.loadAsync(modelPath)
       const model = gltf.scene
+      console.log(`Loaded: ${product.id}`, model)
+      
+      // 修复模型材质：设置双面渲染 + 修复透明材质
+      model.traverse((child) => {
+        if (child instanceof THREE.Mesh && child.material) {
+          const fixMaterial = (mat: THREE.Material) => {
+            mat.side = THREE.DoubleSide
+            // 修复过度透明的材质
+            if (mat instanceof THREE.MeshStandardMaterial || mat instanceof THREE.MeshPhysicalMaterial) {
+              // 强制设置不透明
+              mat.transparent = false
+              mat.opacity = 1
+              mat.depthWrite = true
+              // 如果没有颜色，设置默认颜色
+              if (!mat.map && mat.color.getHex() === 0xffffff) {
+                mat.color.setHex(0x88ccff)
+                mat.metalness = 0.3
+                mat.roughness = 0.2
+              }
+            }
+          }
+          if (Array.isArray(child.material)) {
+            child.material.forEach(fixMaterial)
+          } else {
+            fixMaterial(child.material)
+          }
+        }
+      })
       
       // 计算模型边界并缩放
       const box = new THREE.Box3().setFromObject(model)
@@ -358,9 +424,9 @@ function animate() {
   animationId = requestAnimationFrame(animate)
   time += 0.01
   
-  // 产品微微旋转
-  productGroups.forEach((group, i) => {
-    group.rotation.y = Math.sin(time + i * 0.5) * 0.1
+  // 产品持续旋转（统一速度）
+  productGroups.forEach((group) => {
+    group.rotation.y += 0.005  // 每帧旋转0.005弧度
   })
   
   // 更新控制器
@@ -428,12 +494,12 @@ async function initThreeJS() {
   const renderPass = new RenderPass(scene.value, camera.value)
   composer.value.addPass(renderPass)
   
-  // 白色背景调试模式下关闭Bloom
+  // 白色背景下关闭Bloom
   // const bloomPass = new UnrealBloomPass(
   //   new THREE.Vector2(width, height),
-  //   1.2,   // strength - 增强
-  //   0.5,   // radius
-  //   0.75   // threshold - 降低阈值让更多东西发光
+  //   1.0,   // strength
+  //   0.4,   // radius
+  //   0.8    // threshold
   // )
   // composer.value.addPass(bloomPass)
   

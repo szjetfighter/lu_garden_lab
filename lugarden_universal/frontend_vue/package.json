@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
+    "@types/three": "^0.181.0",
     "pinia": "^3.0.3",
+    "three": "^0.181.2",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"
   },

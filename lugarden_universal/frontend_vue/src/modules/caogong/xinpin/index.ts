@@ -10,6 +10,7 @@ export { products, catalogIntro, creationDate } from './data/products'
 
 // Components
 export { default as VendingMachine } from './components/VendingMachine.vue'
+export { default as VendingMachine3D } from './components/VendingMachine3D.vue'
 export { default as ProductSlot } from './components/ProductSlot.vue'
 export { default as ProductModal } from './components/ProductModal.vue'
 

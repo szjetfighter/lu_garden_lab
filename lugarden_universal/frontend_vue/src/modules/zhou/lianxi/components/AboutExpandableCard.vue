@@ -50,7 +50,7 @@ const content = {
       class="card-header"
       @click="toggleExpand"
     >
-      <span class="card-title">about周与春秋练习</span>
+      <span class="card-title">About周与春秋练习</span>
       <component 
         :is="isExpanded ? ChevronUpIcon : ChevronDownIcon" 
         class="w-5 h-5 chevron-icon"
@@ -118,14 +118,13 @@ const content = {
 }
 
 .card-title {
-  font-size: 0.9375rem;
-  color: #64748b;
-  font-style: italic;
-  letter-spacing: 0.05em;
+  font-size: 0.875rem;
+  color: #6b7280;  /* text-gray-500，与"作者"文字一致 */
+  letter-spacing: 0.02em;
 }
 
 .chevron-icon {
-  color: #94a3b8;
+  color: #6b7280;  /* 与标题颜色一致 */
   transition: transform 0.3s ease;
 }
 

@@ -80,8 +80,11 @@
         </div>
         
         <!-- About可展开卡片 (A/B测试位置1) -->
-        <div class="mt-6 max-w-2xl mx-auto animate-fadeInUp" style="animation-delay: 0.3s;">
-          <AboutExpandableCard />
+        <!-- 使用相同的grid-responsive布局，确保与项目卡片宽度一致 -->
+        <div class="mt-6 grid grid-responsive">
+          <div class="animate-fadeInUp" style="animation-delay: 0.3s;">
+            <AboutExpandableCard />
+          </div>
         </div>
       </div>
     </div>

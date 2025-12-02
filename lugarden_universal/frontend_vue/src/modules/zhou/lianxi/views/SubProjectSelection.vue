@@ -15,15 +15,36 @@
       <!-- 项目信息 -->
       <div v-if="zhouStore.navigation.currentMainProject" class="text-center mb-8">
         <h1 class="content-title animate-fadeInDown">
+          <span 
+            class="about-link" 
+            @click.stop="showAboutModal = true"
+          >about</span>
           {{ zhouStore.navigation.currentMainProject.name }}
         </h1>
         <div class="content-subtitle animate-fadeIn" style="animation-delay: 0.2s;">
           {{ zhouStore.navigation.currentMainProject.description }}
         </div>
         <p class="text-gray-500 mb-8">
-          作者: {{ zhouStore.navigation.currentMainProject.poet || '未指定' }}
+          <span 
+            class="author-link"
+            @click.stop="showAuthorModal = true"
+          >作者: {{ zhouStore.navigation.currentMainProject.poet || '未指定' }}</span>
         </p>
       </div>
+      
+      <!-- About弹窗 (A/B测试位置2) -->
+      <AboutModal 
+        :is-open="showAboutModal" 
+        variant="about"
+        @close="showAboutModal = false" 
+      />
+      
+      <!-- 作者理念弹窗 (A/B测试位置3) -->
+      <AboutModal 
+        :is-open="showAuthorModal" 
+        variant="author"
+        @close="showAuthorModal = false" 
+      />
       
       <!-- 子项目列表 -->
       <div v-if="zhouStore.navigation.currentMainProject?.subProjects" class="grid grid-responsive">
@@ -72,13 +93,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useZhouStore } from '@/modules/zhou/lianxi/stores/zhou'
 import BackButton from '@/shared/components/BackButton.vue'
 import LoadingSpinner from '@/shared/components/LoadingSpinner.vue'
 import { PencilIcon } from '@heroicons/vue/24/outline'
 import EmptyState from '@/shared/components/EmptyState.vue'
+import AboutModal from '@/modules/zhou/lianxi/components/AboutModal.vue'
+
+// 弹窗状态
+const showAboutModal = ref(false)
+const showAuthorModal = ref(false)
 
 const router = useRouter()
 const route = useRoute()
@@ -136,3 +162,32 @@ const selectChapter = (chapterName: string) => {
 }
 </script>
 
+<style scoped>
+/* About可点击字符 (A/B测试位置2) */
+.about-link {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-style: italic;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: color 0.2s;
+}
+
+.about-link:hover {
+  color: #64748b;
+}
+
+/* 作者可点击 (A/B测试位置3) */
+.author-link {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.author-link:hover {
+  color: #1a365d;
+  text-decoration: underline;
+}
+</style>

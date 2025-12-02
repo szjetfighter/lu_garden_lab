@@ -74,46 +74,51 @@ III. 数字存在艺术
 
 ### **阶段A：共享组件准备**
 
-#### - [ ] 任务A.1：创建AboutModal通用组件
-- **核心思想**: 基于ProductModal模式，创建适用于About内容的弹窗组件
-- 预期改动文件：
+#### - [x] 任务A.1：创建AboutModal通用组件 ✅
+- **核心思想**: 基于PoemViewer模式，创建适用于About内容的弹窗组件
+- 实际改动文件：
   - `modules/zhou/lianxi/components/AboutModal.vue` — 新建
+  - `modules/zhou/lianxi/components/AboutExpandableCard.vue` — 新建
 - 交付物：
-  - 支持标题、内容区域
+  - 支持about/author两种variant
   - 符合项目弹窗动画规范
   - 支持Teleport到body
+- 完成状态： 已完成
 
 ---
 
 ### **阶段B：三个位置的About入口实现**
 
-#### - [ ] 任务B.1：图1位置 — 可展开卡片
+#### - [x] 任务B.1：图1位置 — 可展开卡片 
 - **核心思想**: 在MainProjectSelection页面的项目卡片下方，添加可展开的About卡片
-- 预期改动文件：
+- 实际改动文件：
   - `modules/zhou/lianxi/views/MainProjectSelection.vue`
+  - `modules/zhou/lianxi/components/AboutExpandableCard.vue`
 - 交付物：
   - 可展开/收起的卡片组件
-  - 标题："about周与春秋练习"
+  - 标题：“about周与春秋练习”
   - 展开后显示PPT简短版内容
-- 设计参考：类似"最好不要点"的神秘感风格
+- 完成状态： 已完成
 
-#### - [ ] 任务B.2：图2位置 — 标题旁"about"字符
-- **核心思想**: 在SubProjectSelection页面标题"周与春秋练习"旁添加可点击的"about"文字
-- 预期改动文件：
+#### - [x] 任务B.2：图2位置 — 标题旁“about”字符 
+- **核心思想**: 在SubProjectSelection页面标题“周与春秋练习”旁添加可点击的“about”文字
+- 实际改动文件：
   - `modules/zhou/lianxi/views/SubProjectSelection.vue`
 - 交付物：
-  - 可点击的"about"文字（样式：小号、灰色、下划线）
-  - 点击触发弹窗
+  - 可点击的“about”文字（样式：小号、灰色、虚线下划线）
+  - 点击触发AboutModal (variant="about")
   - 弹窗内容：PPT简短版
+- 完成状态： 已完成
 
-#### - [ ] 任务B.3：图3位置 — 作者可点击
-- **核心思想**: 将"作者：吴任几"改为可点击，展示作者理念
-- 预期改动文件：
+#### - [x] 任务B.3：图3位置 — 作者可点击 
+- **核心思想**: 将“作者：吴任几”改为可点击，展示作者理念
+- 实际改动文件：
   - `modules/zhou/lianxi/views/SubProjectSelection.vue`
 - 交付物：
-  - "作者：吴任几"可点击（样式：hover变色、cursor指针）
-  - 点击触发弹窗
+  - “作者：吴任几”可点击（样式：hover变色+下划线、cursor指针）
+  - 点击触发AboutModal (variant="author")
   - 弹窗内容：作者理念 + 陆家花园Feature说明
+- 完成状态： 已完成
 
 ---
 
@@ -145,9 +150,22 @@ III. 数字存在艺术
 | 弹窗样式不统一 | 低 | 低 | 复用ProductModal模式 |
 
 ## 当前状态
-📋 **待开始**
+🟢 **阶段A+B已完成，待A/B测试评估**
+
+### 已完成
+- ✅ A.1 AboutModal通用组件
+- ✅ B.1 图1可展开卡片
+- ✅ B.2 图2 about字符弹窗
+- ✅ B.3 图3作者可点击弹窗
+- ✅ type-check 通过
+- ✅ build 通过
+
+### 待评估
+- ⏳ C.1 功能验证（吴任几反馈）
+- ⏳ C.2 A/B测试评估（确定保留方案）
 
 ---
 *基于陆家花园项目TODO模板创建*
 *创建时间：2025-12-02*
+*阶段A+B完成时间：2025-12-03*
 *关联资源：周与春秋练习 介绍2025.pdf*

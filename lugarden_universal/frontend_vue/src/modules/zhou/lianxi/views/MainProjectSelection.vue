@@ -57,24 +57,31 @@
       </div>
       
       <!-- 项目列表 -->
-      <div v-else class="grid grid-responsive">
-        <div 
-          v-for="(project, index) in zhouStore.universeData.projects" 
-          :key="project.id"
-          class="unified-content-card rounded-base animate-fadeInUp flex flex-col h-full"
-          :style="{ animationDelay: `${0.1 * index}s` }"
-          @click="selectProject(project)"
-        >
-          <div class="flex-1">
-            <h2 class="text-2xl font-bold mb-2 text-gray-800">{{ project.name }}</h2>
-            <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">{{ project.description }}</div>
+      <div v-else>
+        <div class="grid grid-responsive">
+          <div 
+            v-for="(project, index) in zhouStore.universeData.projects" 
+            :key="project.id"
+            class="unified-content-card rounded-base animate-fadeInUp flex flex-col h-full"
+            :style="{ animationDelay: `${0.1 * index}s` }"
+            @click="selectProject(project)"
+          >
+            <div class="flex-1">
+              <h2 class="text-2xl font-bold mb-2 text-gray-800">{{ project.name }}</h2>
+              <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">{{ project.description }}</div>
+            </div>
+            <div class="flex justify-between items-center mt-4">
+              <p class="text-xs text-gray-500 m-0">作者: {{ project.poet || '未指定' }}</p>
+              <button class="btn-primary">
+                进入
+              </button>
+            </div>
           </div>
-          <div class="flex justify-between items-center mt-4">
-            <p class="text-xs text-gray-500 m-0">作者: {{ project.poet || '未指定' }}</p>
-            <button class="btn-primary">
-              进入
-            </button>
-          </div>
+        </div>
+        
+        <!-- About可展开卡片 (A/B测试位置1) -->
+        <div class="mt-6 max-w-2xl mx-auto animate-fadeInUp" style="animation-delay: 0.3s;">
+          <AboutExpandableCard />
         </div>
       </div>
     </div>
@@ -90,6 +97,7 @@ import LoadingSpinner from '@/shared/components/LoadingSpinner.vue'
 import ErrorState from '@/shared/components/ErrorState.vue'
 import EmptyState from '@/shared/components/EmptyState.vue'
 import BackButton from '@/shared/components/BackButton.vue'
+import AboutExpandableCard from '@/modules/zhou/lianxi/components/AboutExpandableCard.vue'
 
 const router = useRouter()
 const zhouStore = useZhouStore()

@@ -24,24 +24,24 @@ const content = {
   headline: '「周与春秋练习」',
   tagline: '基于AI技术的第一部开放性诗集',
   keywords: '命理学 ｜ 疗愈 ｜ 当代人的精神互助',
-  intro: '吴任几历时五年的沉淀之作，融合中国原生信仰与现代生活体验。引导用户从"阅读"到"创造"，从"感悟"到"存在"的完整美学旅程。',
+  intro: '吴任几历时五年的沉淀之作，融合中国原生信仰与现代生活体验。引导读者从阅读到创造，从感悟到存在的完整美学旅程。',
   features: [
     {
       id: 'divination',
       title: 'I · 占卜式阅读',
-      description: '基于个人当下状态的说明书，每个人都可以成为周易大师',
+      description: '基于个人当下状态的说明书，每个人都可以成为卜问大师',
       image: image1
     },
     {
       id: 'cocreation',
       title: 'II · 瞬时共创',
-      description: '将灵感告诉AI，通过算法解构与再生，即时共创专属诗歌',
+      description: '把灵感传递给陆家明——陆家花园的AI诗人，由TA创作即就诗歌，体验GEN世代共笔',
       image: image2
     },
     {
       id: 'digital-art',
       title: 'III · 数字存在艺术',
-      description: '诗歌作为可留存或流转的数字痕迹，赋予永恒艺术生命',
+      description: '共笔诗歌作为可留存或流转的数字痕迹，赋予永恒艺术生命',
       image: image3
     }
   ]

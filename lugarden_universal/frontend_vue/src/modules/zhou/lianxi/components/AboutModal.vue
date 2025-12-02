@@ -1,63 +1,25 @@
 <script setup lang="ts">
 /**
- * About弹窗组件
- * 用于展示周与春秋项目介绍内容
+ * 作者简介弹窗组件
+ * 用于展示吴任几的作者简介
  * 设计参考: modules/mao/moshi/components/PoemViewer.vue
  */
 
 import { XMarkIcon } from '@heroicons/vue/24/outline'
+import authorPhoto from '@/modules/zhou/lianxi/assets/images/author@0.3x.png'
 
 defineProps<{
   isOpen: boolean
-  title?: string
-  variant?: 'about' | 'author'  // about=项目介绍, author=作者理念
 }>()
 
 const emit = defineEmits<{
   close: []
 }>()
 
-// PPT简短版内容
-const aboutContent = {
-  headline: '「周与春秋练习」',
-  tagline: '基于AI技术的第一部开放性诗集',
-  keywords: '命理学 ｜ 疗愈 ｜ 当代人的精神互助',
-  intro: '吴任几历时五年的沉淀之作，融合中国原生信仰与现代生活体验。引导用户从"阅读"到"创造"，从"感悟"到"存在"的完整美学旅程。',
-  features: [
-    {
-      id: 'divination',
-      title: 'I. 占卜式阅读',
-      description: '基于个人当下状态的说明书，每个人都可以成为周易大师'
-    },
-    {
-      id: 'cocreation',
-      title: 'II. 瞬时共创',
-      description: '将灵感告诉AI，通过算法解构与再生，即时共创专属诗歌'
-    },
-    {
-      id: 'digital-art',
-      title: 'III. 数字存在艺术',
-      description: '诗歌作为可留存或流转的数字痕迹，赋予永恒艺术生命'
-    }
-  ]
-}
-
-// 作者理念内容
+// 作者简介内容
 const authorContent = {
-  headline: '关于诗人：吴任几',
-  intro: '《周与春秋练习》是吴任几历时五年的沉淀之作。',
-  philosophy: {
-    title: '创作理念',
-    content: '融合中国原生信仰（周易卦象）与现代生活体验，打破传统阅读的边界，让诗歌成为"回答"而非"阅读物"。'
-  },
-  features: {
-    title: '陆家花园实现的Feature',
-    items: [
-      '占卜式问答 — 通过问题匹配专属诗歌',
-      '诗人解读 — "最好不要点"的神秘按钮',
-      '瞬时共创 — AI驱动的即时诗歌生成（规划中）'
-    ]
-  }
+  name: '吴任几',
+  bio: '诗人，1997年出生于上海，毕业于英国利兹大学社会学院。曾获复旦大学光华诗歌奖等荣誉。诗歌作品刊登于《诗刊》《星星》《上海文学》《作品》等，收入《中国诗歌2019年度精选》（人民文学出版社）、《2018—2019中国新诗年鉴》（四川民族出版社）、《Poems From Chinese Millennials》(New Zealand: Wai-te-ata Press)等多本年鉴。'
 }
 </script>
 
@@ -75,48 +37,11 @@ const authorContent = {
             <XMarkIcon class="w-6 h-6" />
           </button>
 
-          <!-- About项目介绍 -->
-          <div v-if="variant !== 'author'" class="modal-body">
-            <h2 class="modal-headline">{{ aboutContent.headline }}</h2>
-            <p class="modal-tagline">{{ aboutContent.tagline }}</p>
-            <p class="modal-keywords">{{ aboutContent.keywords }}</p>
-            
-            <p class="modal-intro">{{ aboutContent.intro }}</p>
-            
-            <div class="features-section">
-              <p class="features-title">◆ 三大核心体验 ◆</p>
-              <div 
-                v-for="feature in aboutContent.features" 
-                :key="feature.id"
-                class="feature-item"
-              >
-                <h3 class="feature-title">{{ feature.title }}</h3>
-                <p class="feature-desc">{{ feature.description }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Author作者理念 -->
-          <div v-else class="modal-body">
-            <h2 class="modal-headline">{{ authorContent.headline }}</h2>
-            <p class="modal-intro">{{ authorContent.intro }}</p>
-            
-            <div class="philosophy-section">
-              <p class="section-title">◆ {{ authorContent.philosophy.title }} ◆</p>
-              <p class="section-content">{{ authorContent.philosophy.content }}</p>
-            </div>
-            
-            <div class="features-section">
-              <p class="section-title">◆ {{ authorContent.features.title }} ◆</p>
-              <ul class="feature-list">
-                <li 
-                  v-for="(item, index) in authorContent.features.items" 
-                  :key="index"
-                >
-                  {{ item }}
-                </li>
-              </ul>
-            </div>
+          <!-- 作者简介 -->
+          <div class="modal-body author-body">
+            <img :src="authorPhoto" alt="吴任几" class="author-photo" />
+            <h2 class="author-name">{{ authorContent.name }}</h2>
+            <p class="author-bio">{{ authorContent.bio }}</p>
           </div>
         </div>
       </div>
@@ -264,6 +189,36 @@ const authorContent = {
   position: absolute;
   left: 0;
   color: #1a365d;
+}
+
+/* 作者简介样式 */
+.author-body {
+  text-align: left;
+}
+
+.author-photo {
+  display: block;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 0 auto var(--spacing-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.author-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+.author-bio {
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.8;
+  text-align: justify;
 }
 
 /* 过渡动画 */

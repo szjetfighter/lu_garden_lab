@@ -15,10 +15,6 @@
       <!-- 项目信息 -->
       <div v-if="zhouStore.navigation.currentMainProject" class="text-center mb-8">
         <h1 class="content-title animate-fadeInDown">
-          <span 
-            class="about-link" 
-            @click.stop="showAboutModal = true"
-          >about</span>
           {{ zhouStore.navigation.currentMainProject.name }}
         </h1>
         <div class="content-subtitle animate-fadeIn" style="animation-delay: 0.2s;">
@@ -32,17 +28,9 @@
         </p>
       </div>
       
-      <!-- About弹窗 (A/B测试位置2) -->
-      <AboutModal 
-        :is-open="showAboutModal" 
-        variant="about"
-        @close="showAboutModal = false" 
-      />
-      
-      <!-- 作者理念弹窗 (A/B测试位置3) -->
+      <!-- 作者简介弹窗 -->
       <AboutModal 
         :is-open="showAuthorModal" 
-        variant="author"
         @close="showAuthorModal = false" 
       />
       
@@ -103,7 +91,6 @@ import EmptyState from '@/shared/components/EmptyState.vue'
 import AboutModal from '@/modules/zhou/lianxi/components/AboutModal.vue'
 
 // 弹窗状态
-const showAboutModal = ref(false)
 const showAuthorModal = ref(false)
 
 const router = useRouter()

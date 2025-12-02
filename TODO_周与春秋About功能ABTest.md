@@ -183,6 +183,19 @@ III. 数字存在艺术
   - 统一字号（tagline、intro、feature-desc都用text-sm）
 - 完成状态：✅ 已完成
 
+#### - [x] 任务C.6：作者简介弹窗优化 ✅
+- **核心思想**: 简化AboutModal为纯作者简介，移除重复的项目介绍内容
+- 实际改动文件：
+  - `modules/zhou/lianxi/components/AboutModal.vue`
+  - `modules/zhou/lianxi/views/SubProjectSelection.vue`
+  - `modules/zhou/lianxi/assets/images/author@0.3x.png` — 新增
+- 改动内容：
+  - AboutModal移除about variant，只保留作者简介功能
+  - 添加作者照片（圆形居中，120x120px）
+  - 更新作者简介文案（完整简历）
+  - SubProjectSelection移除about入口，只保留"作者"点击弹窗
+- 完成状态：✅ 已完成
+
 ---
 
 ## 风险评估
@@ -199,13 +212,14 @@ III. 数字存在艺术
 ### 已完成
 - ✅ A.1 AboutModal通用组件
 - ✅ B.1 图1可展开卡片
-- ✅ B.2 图2 about字符弹窗
+- ✅ B.2 图2 about字符弹窗（已移除，与B.1重复）
 - ✅ B.3 图3作者可点击弹窗
 - ✅ C.1 可展开卡片风格统一
 - ✅ C.2 PC端宽度对齐
 - ✅ C.3 折叠时透明效果
 - ✅ C.4 标题文字优化
 - ✅ C.5 内容排版与配图
+- ✅ C.6 作者简介弹窗优化
 - ✅ type-check 通过
 - ✅ build 通过
 

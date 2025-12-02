@@ -24,7 +24,7 @@
           <span 
             class="author-link"
             @click.stop="showAuthorModal = true"
-          >作者: {{ zhouStore.navigation.currentMainProject.poet || '未指定' }}</span>
+          >About {{ zhouStore.navigation.currentMainProject.poet || '未指定' }}</span>
         </p>
       </div>
       

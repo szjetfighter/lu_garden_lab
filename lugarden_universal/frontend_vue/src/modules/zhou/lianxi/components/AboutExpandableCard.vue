@@ -58,7 +58,7 @@ const content = {
       class="card-header"
       @click="toggleExpand"
     >
-      <span class="card-title">About周与春秋练习</span>
+      <span class="card-title">About 周与春秋练习</span>
       <component 
         :is="isExpanded ? ChevronUpIcon : ChevronDownIcon" 
         class="w-5 h-5 chevron-icon"

@@ -136,7 +136,27 @@ III. 数字存在艺术
   - 边框线改为 `rgba(255, 255, 255, 0.3)` 与全局一致
 - 完成状态：✅ 已完成
 
-#### - [ ] 任务C.2：A/B测试评估
+#### - [x] 任务C.2：PC端宽度对齐 ✅
+- **核心思想**: About卡片需与项目卡片宽度一致
+- **问题**: PC端About卡片使用 `max-w-2xl mx-auto` 固定672px，与 `grid-responsive` 的项目卡片宽度不一致
+- 实际改动文件：
+  - `modules/zhou/lianxi/views/MainProjectSelection.vue`
+- 改动内容：
+  - 移除 `max-w-2xl mx-auto`
+  - 使用 `grid grid-responsive` 布局，使About卡片自动占用第1列宽度
+- 完成状态：✅ 已完成
+
+#### - [x] 任务C.3：折叠时透明效果 ✅
+- **核心思想**: 未展开时About卡片完全透明，展开后显示玻璃态卡片
+- 实际改动文件：
+  - `modules/zhou/lianxi/components/AboutExpandableCard.vue`
+- 改动内容：
+  - 动态绑定class：`:class="{ 'unified-content-card': isExpanded, 'collapsed-transparent': !isExpanded }"`
+  - 添加 `.collapsed-transparent` 样式：透明背景、无边框、无阴影
+  - 添加 `transition: all 0.3s ease` 过渡动画
+- 完成状态：✅ 已完成
+
+#### - [ ] 任务C.4：A/B测试评估
 - **核心思想**: 收集吴任几反馈，确定保留方案
 - 可能结果：
   - 保留1个最佳方案
@@ -154,7 +174,7 @@ III. 数字存在艺术
 | 弹窗样式不统一 | 低 | 低 | 复用ProductModal模式 |
 
 ## 当前状态
-🟢 **阶段A+B+C.1已完成，待A/B测试评估**
+🟢 **阶段A+B+C.1-C.3已完成，待A/B测试评估**
 
 ### 已完成
 - ✅ A.1 AboutModal通用组件
@@ -162,15 +182,17 @@ III. 数字存在艺术
 - ✅ B.2 图2 about字符弹窗
 - ✅ B.3 图3作者可点击弹窗
 - ✅ C.1 可展开卡片风格统一
+- ✅ C.2 PC端宽度对齐
+- ✅ C.3 折叠时透明效果
 - ✅ type-check 通过
 - ✅ build 通过
 
 ### 待评估
-- ⏳ C.2 A/B测试评估（确定保留方案）
+- ⏳ C.4 A/B测试评估（确定保留方案）
 
 ---
 *基于陆家花园项目TODO模板创建*
 *创建时间：2025-12-02*
 *阶段A+B完成时间：2025-12-03*
-*阶段C.1完成时间：2025-12-03*
+*阶段C.1-C.3完成时间：2025-12-03*
 *关联资源：周与春秋练习 介绍2025.pdf*

@@ -41,7 +41,10 @@ const content = {
 </script>
 
 <template>
-  <div class="unified-content-card rounded-base about-expandable-card">
+  <div 
+    class="about-expandable-card rounded-base"
+    :class="{ 'unified-content-card': isExpanded, 'collapsed-transparent': !isExpanded }"
+  >
     <!-- 可点击的标题区域 -->
     <button 
       class="card-header"
@@ -82,11 +85,20 @@ const content = {
 </template>
 
 <style scoped>
-/* 覆盖unified-content-card的min-height，允许折叠状态 */
+/* 基础样式 */
 .about-expandable-card {
   min-height: auto;
   padding: 0;
   overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* 折叠时完全透明 */
+.collapsed-transparent {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .card-header {

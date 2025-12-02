@@ -41,7 +41,7 @@ const content = {
 </script>
 
 <template>
-  <div class="about-expandable-card">
+  <div class="unified-content-card rounded-base about-expandable-card">
     <!-- 可点击的标题区域 -->
     <button 
       class="card-header"
@@ -82,16 +82,11 @@ const content = {
 </template>
 
 <style scoped>
+/* 覆盖unified-content-card的min-height，允许折叠状态 */
 .about-expandable-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
+  min-height: auto;
+  padding: 0;
   overflow: hidden;
-  transition: box-shadow 0.3s ease;
-}
-
-.about-expandable-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .card-header {
@@ -123,8 +118,7 @@ const content = {
 }
 
 .card-content {
-  border-top: 1px solid #e2e8f0;
-  background: #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .content-inner {

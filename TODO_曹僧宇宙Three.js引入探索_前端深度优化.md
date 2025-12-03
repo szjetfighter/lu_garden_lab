@@ -51,6 +51,70 @@
    - [x] 步骤A.2.1：将MeshBasicMaterial替换为ShaderMaterial
    - [x] 步骤A.2.2：实现网格坐标计算和圆形LED点渲染
    - [x] 步骤A.2.3：添加轻微发光效果增强视觉
+- 对应commit: `c467d24`
+
+#### - [x] 任务A.3：视觉优化 - 机身配色与灯光
+- **核心思想**: 优化售货机整体视觉效果，提升金属质感
+- 交付物：
+  - 枪灰色机身材质（0x53565A）
+  - 中灰色场景背景（0x808080）
+  - SpotLight双光源照明
+  - 展示区与底部边框对齐修复
+- 验收标准：
+  - 机身呈现金属质感
+  - 光照突出边缘高光
+  - 内部展示区对齐正确
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
+- 完成状态：✅ 已完成
+- 对应commit: `fe5f141`
+
+#### - [x] 任务A.4：产品分布优化
+- **核心思想**: 调整内部产品布局，充分利用展示空间
+- 交付物：
+  - 优化cellHeight和startY参数
+- 验收标准：
+  - 产品垂直分布充分利用可用空间
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
+- 完成状态：✅ 已完成
+- 对应commit: `660cf18`
+
+#### - [x] 任务A.5：玻璃面板脏污效果
+- **核心思想**: 为玻璃面板添加动态雨痕和油污纹理，增加真实感
+- 交付物：
+  - ShaderMaterial实现的脏玻璃效果
+  - 世界坐标采样实现跨组件连续纹理
+- 验收标准：
+  - 玻璃显示动态雨痕效果
+  - 纹理在不同组件间连续
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
+- 完成状态：✅ 已完成
+- 对应commit: `6ee604e`
+
+#### - [x] 任务A.6：外框材质系统重构
+- **核心思想**: 实现外部贴图+内部纯色的材质分离，解决贴图拉伸和z-fighting问题
+- 交付物：
+  - 每个边框6面独立材质（内侧纯色，外侧贴图）
+  - 按面尺寸设置repeat实现等比例贴图
+  - 蓝色金属板纹理替代锈蚀纹理
+  - 背板位置修正（z=-0.99）
+  - 上下边框尺寸调整避免角落z-fighting
+- 验收标准：
+  - 外部显示金属纹理，内部干净纯色
+  - 纹理在各个面上比例一致
+  - 无闪烁问题
+- **风险评估**: 中风险（涉及材质系统重构）
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/assets/texture/blue_metal_plate_diff_1k.jpg`（新增）
+  - `.gitignore`（添加.blend/忽略）
+- 完成状态：✅ 已完成
+- 待commit
 
 ---
 

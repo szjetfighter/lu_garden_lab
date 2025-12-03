@@ -48,6 +48,9 @@ lugarden_universal/application/generated/
 # Cursor - 本地AI配置
 .cursor/
 
+# blend等素材库
+*.blend/
+
 # 语料库文件 - 敏感数据，不应被版本控制跟踪
 lugarden_universal/lu_the_poet/corpus/
 

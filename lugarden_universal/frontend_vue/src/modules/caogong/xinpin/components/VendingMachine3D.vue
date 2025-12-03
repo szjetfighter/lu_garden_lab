@@ -12,6 +12,8 @@ import { products } from '../data/products'
 
 // Cyberpunk字体
 import cyberpunkFontUrl from '../assets/fonts/cyberpunk.ttf?url'
+// 金属纹理
+import metalDiffUrl from '../assets/texture/blue_metal_plate_diff_1k.jpg?url'
 import ProductModal from './ProductModal.vue'
 
 // 产品ID到GLB文件的映射
@@ -64,6 +66,8 @@ let textWidth = 0
 
 // 脏玻璃材质
 let grimeGlassMaterial: THREE.ShaderMaterial | null = null
+// 脏污金属材质
+let grimeMetalMaterial: THREE.ShaderMaterial | null = null
 const scrollContent = '新品发布 ◆ 烂西红柿牌内燃机⑴  苍蝇跑车⑵  翻山战舰⑶  白面团脚手架⑷  跨海三明治大桥壹体成型机⑸  时间鸟拆迁臂⑹  牙线蹦极绳⑺  理念磁场器⑻  种植蛋壹号⑼  试管婴儿代孕桶⑽  治胆瓷杯⑾  攀岩蹄⑿  无底镜⒀  蛔虫机械表⒁ __◇ ◇ ◇ ◇__'
 
 function handleProductClick(product: CaogongProduct) {
@@ -128,76 +132,114 @@ function onClick(event: MouseEvent) {
   }
 }
 
-function createVendingMachine(sceneRef: THREE.Scene) {
+async function createVendingMachine(sceneRef: THREE.Scene) {
   const machineGroup = new THREE.Group()
   
-  // 售货机主体 - 只渲染内侧，不遮挡产品
-  const bodyGeometry = new THREE.BoxGeometry(5, 7, 2)
-  const bodyMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1a1a1a,
-    metalness: 0.9,
-    roughness: 0.2,
-    side: THREE.BackSide  // 只渲染内侧
+  // 外框材质 - 外部锈蚀贴图，内部干净纯色
+  const textureLoader = new THREE.TextureLoader()
+  const rustyMetalTexture = await new Promise<THREE.Texture>((resolve) => {
+    textureLoader.load(metalDiffUrl, (texture) => {
+      texture.wrapS = THREE.RepeatWrapping
+      texture.wrapT = THREE.RepeatWrapping
+      texture.repeat.set(1, 1)
+      resolve(texture)
+    })
   })
-  const body = new THREE.Mesh(bodyGeometry, bodyMaterial)
-  body.position.set(0, 0, 0)
-  machineGroup.add(body)
   
-  // 背面遮挡板（防止从背面看穿）
-  const backCoverGeometry = new THREE.PlaneGeometry(5, 7)
-  const backCoverMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1a1a1a,
-    metalness: 0.9,
-    roughness: 0.2
+  // 内部材质（干净纯色）
+  const innerMaterial = new THREE.MeshStandardMaterial({
+    color: 0x1a1a2e,
+    metalness: 0.3,
+    roughness: 0.8
   })
-  const backCover = new THREE.Mesh(backCoverGeometry, backCoverMaterial)
-  backCover.position.set(0, 0, -1)
-  backCover.rotation.y = Math.PI  // 朝向背面
-  machineGroup.add(backCover)
   
-  // 外框边缘（左右上下四条边）- 枪灰色
-  const frameMaterial = new THREE.MeshStandardMaterial({
-    color: 0x53565A,  // 枪灰色
-    metalness: 0.85,
-    roughness: 0.35
-  })
-  // 左边框
-  const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(0.3, 7, 2), frameMaterial)
+  // 创建按比例贴图的材质（根据面的宽高设置repeat）
+  const scale = 0.5  // 每单位重复0.5次纹理
+  function createOuterMat(width: number, height: number) {
+    const tex = rustyMetalTexture.clone()
+    tex.needsUpdate = true
+    tex.repeat.set(width * scale, height * scale)
+    return new THREE.MeshStandardMaterial({
+      map: tex,
+      metalness: 0.7,
+      roughness: 0.6
+    })
+  }
+  
+  // BoxGeometry面顺序: +X, -X, +Y, -Y, +Z, -Z
+  // 左边框 0.3(x) x 7(y) x 2(z)
+  // +X面(内): 2x7, -X面(外): 2x7, +Y面: 0.3x2, -Y面: 0.3x2, +Z面: 0.3x7, -Z面: 0.3x7
+  const leftFrameMats = [
+    innerMaterial,           // +X 内侧
+    createOuterMat(2, 7),    // -X 外侧
+    createOuterMat(0.3, 2),  // +Y
+    createOuterMat(0.3, 2),  // -Y
+    createOuterMat(0.3, 7),  // +Z 前
+    createOuterMat(0.3, 7)   // -Z 后
+  ]
+  const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(0.3, 7, 2), leftFrameMats)
   leftFrame.position.set(-2.35, 0, 0)
   machineGroup.add(leftFrame)
-  // 右边框
-  const rightFrame = new THREE.Mesh(new THREE.BoxGeometry(0.3, 7, 2), frameMaterial)
+  
+  // 右边框 0.3(x) x 7(y) x 2(z)
+  const rightFrameMats = [
+    createOuterMat(2, 7),    // +X 外侧
+    innerMaterial,           // -X 内侧
+    createOuterMat(0.3, 2),  // +Y
+    createOuterMat(0.3, 2),  // -Y
+    createOuterMat(0.3, 7),  // +Z 前
+    createOuterMat(0.3, 7)   // -Z 后
+  ]
+  const rightFrame = new THREE.Mesh(new THREE.BoxGeometry(0.3, 7, 2), rightFrameMats)
   rightFrame.position.set(2.35, 0, 0)
   machineGroup.add(rightFrame)
-  // 上边框
-  const topFrame = new THREE.Mesh(new THREE.BoxGeometry(5, 0.5, 2), frameMaterial)
+  
+  // 上边框 4.4(x) x 0.5(y) x 2(z)
+  const topFrameMats = [
+    createOuterMat(2, 0.5),   // +X
+    createOuterMat(2, 0.5),   // -X
+    createOuterMat(4.4, 2),   // +Y 外侧
+    innerMaterial,            // -Y 内侧
+    createOuterMat(4.4, 0.5), // +Z 前
+    createOuterMat(4.4, 0.5)  // -Z 后
+  ]
+  const topFrame = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.5, 2), topFrameMats)
   topFrame.position.set(0, 3.25, 0)
   machineGroup.add(topFrame)
-  // 下边框
-  const bottomFrame = new THREE.Mesh(new THREE.BoxGeometry(5, 1, 2), frameMaterial)
+  
+  // 下边框 4.4(x) x 1(y) x 2(z)
+  const bottomFrameMats = [
+    createOuterMat(2, 1),    // +X
+    createOuterMat(2, 1),    // -X
+    innerMaterial,           // +Y 内侧
+    createOuterMat(4.4, 2),  // -Y 外侧
+    createOuterMat(4.4, 1),  // +Z 前
+    createOuterMat(4.4, 1)   // -Z 后
+  ]
+  const bottomFrame = new THREE.Mesh(new THREE.BoxGeometry(4.4, 1, 2), bottomFrameMats)
   bottomFrame.position.set(0, -3, 0)
   machineGroup.add(bottomFrame)
   
-  // 内部展示背板（只渲染背面，不遮挡产品）
-  const backPanelGeometry = new THREE.PlaneGeometry(4.4, 5.5)  // 高度增加，底部对齐下边框
+  // 背板 - 封住机身背面
+  const backPanelGeometry = new THREE.PlaneGeometry(4.4, 5.5)
   const backPanelMaterial = new THREE.MeshStandardMaterial({
-    color: 0x0a0a0a,
-    metalness: 0.5,
+    color: 0x1a1a2e,  // 深蓝黑，干净内部
+    metalness: 0.3,
     roughness: 0.8,
-    side: THREE.FrontSide
+    side: THREE.DoubleSide
   })
   const backPanel = new THREE.Mesh(backPanelGeometry, backPanelMaterial)
-  backPanel.position.set(0, 0.25, -0.2)  // 中心y调整，底部到-2.5，顶部到3.0
+  backPanel.position.set(0, 0.25, -0.99)  // 放在机身背面
   machineGroup.add(backPanel)
   
-  // 玻璃面板 - 脏玻璃效果
+  // 玻璃面板 - 脏玻璃效果（使用世界坐标实现全局连续纹理）
   const glassGeometry = new THREE.PlaneGeometry(4.5, 5.5)
   grimeGlassMaterial = new THREE.ShaderMaterial({
     uniforms: {
       uTime: { value: 0 },
       uColor: { value: new THREE.Color('#aaddff') },
       uOpacity: { value: 0.2 },
-      uGrimeScale: { value: 12.0 },  // 更细密的污渍
+      uGrimeScale: { value: 1.5 },  // 世界坐标下的缩放
       uRainSpeed: { value: 0.1 }
     },
     transparent: true,
@@ -205,8 +247,11 @@ function createVendingMachine(sceneRef: THREE.Scene) {
     depthWrite: false,
     vertexShader: `
       varying vec2 vUv;
+      varying vec3 vWorldPosition;
       void main() {
         vUv = uv;
+        vec4 worldPos = modelMatrix * vec4(position, 1.0);
+        vWorldPosition = worldPos.xyz;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
@@ -217,6 +262,7 @@ function createVendingMachine(sceneRef: THREE.Scene) {
       uniform float uGrimeScale;
       uniform float uRainSpeed;
       varying vec2 vUv;
+      varying vec3 vWorldPosition;
 
       float random(vec2 st) {
         return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
@@ -234,10 +280,12 @@ function createVendingMachine(sceneRef: THREE.Scene) {
       }
 
       void main() {
-        float grime = noise(vUv * uGrimeScale);
-        vec2 rainUv = vec2(vUv.x * 60.0, vUv.y * 3.0 + uTime * uRainSpeed);  // 更细的雨痕
+        // 使用世界坐标采样，实现跨组件连续纹理
+        vec2 worldUv = vWorldPosition.xy * uGrimeScale;
+        float grime = noise(worldUv * 3.0);
+        vec2 rainUv = vec2(vWorldPosition.x * 8.0, vWorldPosition.y * 0.5 + uTime * uRainSpeed);
         float rain = noise(rainUv);
-        rain = smoothstep(0.7, 0.85, rain);  // 更细的阈值
+        rain = smoothstep(0.7, 0.85, rain);
         vec3 finalColor = uColor + vec3(0.05) * grime + vec3(0.25) * rain;
         float alpha = uOpacity + (grime * 0.05) + (rain * 0.15);
         gl_FragColor = vec4(finalColor, alpha);
@@ -585,7 +633,7 @@ function animate() {
   animationId = requestAnimationFrame(animate)
   time += 0.01
   
-  // 更新脏玻璃动画
+  // 更新脏污材质动画
   if (grimeGlassMaterial) {
     grimeGlassMaterial.uniforms.uTime.value = time
   }
@@ -727,7 +775,7 @@ async function initThreeJS() {
   scene.value.add(spotLight2.target)
   
   // 创建售货机
-  createVendingMachine(scene.value)
+  await createVendingMachine(scene.value)
   
   // 加载产品模型
   await loadProductModels(scene.value)

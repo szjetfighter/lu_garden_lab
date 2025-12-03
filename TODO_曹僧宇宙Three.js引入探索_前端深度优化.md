@@ -162,6 +162,28 @@
   - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/index.ts`
   - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/views/XinpinView.vue`
 - 完成状态：✅ 已完成
+- 对应commit: `51925f1`
+
+#### - [x] 任务A.9：ProductModal统一风格与3D模型预览
+- **核心思想**: 将ProductModal统一为项目通用Modal风格，并添加3D模型预览功能
+- 交付物：
+  - 统一Modal风格（白色渐变背景、1rem圆角、XMarkIcon关闭按钮）
+  - 统一颜色系（蓝灰色调）
+  - 诗歌正文居中对齐
+  - 移除旧版复古说明书装饰（底部◆◇◆）
+  - 添加水印"曹僧 Ⓒ 陆家花园"
+  - 嵌入3D模型预览（Three.js场景，透明背景）
+  - 模型自动旋转，支持用户拖动交互
+  - 3D预览取代序号位置，紧凑布局（80px高度）
+  - 材质修复逻辑与主体一致
+- 验收标准：
+  - Modal风格与项目其他Modal统一
+  - 3D模型正确加载显示
+  - 模型可交互旋转
+- **风险评估**: 中风险
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/ProductModal.vue`
+- 完成状态：✅ 已完成
 - 待commit
 
 ---

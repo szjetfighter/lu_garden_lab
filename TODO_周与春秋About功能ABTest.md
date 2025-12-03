@@ -204,10 +204,41 @@ III. 数字存在艺术
   - 从store随机获取5首诗，按行歌词式滚动展示
   - 显示3行（前一行淡色、当前行高亮、后一行淡色）
   - 底部固定显示「章节 · 标题  吴任几」
-  - 单行切换3.5秒，TransitionGroup平滑滚动动画
+  - 单行切换3秒，TransitionGroup平滑滚动动画
   - 诗歌切换时完整淡入淡出（800ms淡出 → 100ms停顿 → 800ms淡入）
   - 移除Logo闪烁动画
   - 添加`?debug=loading`调试入口
+- 完成状态：✅ 已完成
+
+#### - [x] 任务C.8：冗余Loading/Empty状态清理与动画统一 ✅
+- **核心思想**: 移除页面切换时的冗余loading/empty状态闪烁，统一卡片动画风格
+- 实际改动文件：
+  - `modules/portal/views/UniversePortal.vue`
+  - `modules/portal/components/UniverseCard.vue`
+  - `modules/zhou/lianxi/views/MainProjectSelection.vue`
+  - `modules/zhou/lianxi/views/SubProjectSelection.vue`
+  - `modules/zhou/lianxi/views/QuizScreen.vue`
+  - `modules/zhou/lianxi/views/ResultScreen.vue`
+  - `modules/zhou/lianxi/views/ClassicalEchoScreen.vue`
+- 改动内容：
+  - 移除Portal和周模块的LoadingSpinner（API响应快，无需显示）
+  - 移除EmptyState（避免数据加载前闪烁）
+  - 统一Portal卡片动画为CSS class方式（animate-fadeInUp）
+  - 移除ClassicalEcho页面1秒延迟和转圈动画
+- 完成状态：✅ 已完成
+
+#### - [x] 任务C.9：状态组件统一化重构 ✅
+- **核心思想**: 统一EmptyState、LoadingSpinner、ErrorState三个状态组件的设计风格
+- 实际改动文件：
+  - `shared/components/EmptyState.vue`
+  - `shared/components/LoadingSpinner.vue`
+  - `shared/components/ErrorState.vue`
+- 改动内容：
+  - **Emoji → SVG**：EmptyState移除emoji icon prop，根据variant自动选择heroicons SVG
+  - **卡片风格统一**：三组件均应用`unified-content-card`设计规范
+  - **图标尺寸统一**：w-12 h-12
+  - **动画统一**：使用animate-fadeInUp
+  - **LoadingSpinner**：当showText时应用卡片样式
 - 完成状态：✅ 已完成
 
 ---
@@ -235,6 +266,8 @@ III. 数字存在艺术
 - ✅ C.5 内容排版与配图
 - ✅ C.6 作者简介弹窗优化
 - ✅ C.7 共笔视图Loading歌词滚动
+- ✅ C.8 冗余Loading/Empty状态清理与动画统一
+- ✅ C.9 状态组件统一化重构
 - ✅ type-check 通过
 - ✅ build 通过
 

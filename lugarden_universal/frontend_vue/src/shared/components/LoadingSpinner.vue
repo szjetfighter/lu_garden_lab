@@ -1,7 +1,7 @@
 <template>
   <div class="loading-spinner-container relative flex flex-col items-center justify-center" :class="containerClass">
-    <!-- 加载动画 -->
-          <div class="loading-content flex flex-col items-center justify-center relative z-2">
+    <!-- 加载动画 - C.9 统一卡片风格 -->
+    <div class="loading-content flex flex-col items-center justify-center relative z-2" :class="contentClass">
       <!-- 主加载动画 -->
       <div class="spinner-wrapper mb-lg">
         <div 
@@ -92,6 +92,13 @@ const containerClass = computed(() => ({
   'loading-with-overlay': props.showOverlay
 }))
 
+// C.9 统一卡片风格 - 当有文字时应用卡片样式
+const contentClass = computed(() => ({
+  'unified-content-card': props.showText,
+  'animate-fadeInUp': props.showText,
+  'p-lg': props.showText
+}))
+
 // 计算动画器类
 const spinnerClass = computed(() => {
   const classes = [`loading-${props.variant}`, `loading-${props.size}`]
@@ -127,9 +134,6 @@ const handleOverlayClick = () => {
 /* 间距迁移: mb-sm, mb-base (文本间距), mb-lg (动画器间距) */
 /* 保留传统CSS: 动画关键帧, 复杂视觉效果, 位置定位, 媒体查询特殊处理 */
 
-/* 基础布局样式已迁移至UnoCSS: relative flex flex-col items-center justify-center */
-.loading-spinner-container {}
-
 .loading-fullscreen {
   position: fixed;
   top: 0;
@@ -144,9 +148,6 @@ const handleOverlayClick = () => {
 .loading-centered {
   min-height: 200px;
 }
-
-/* 基础布局样式已迁移至UnoCSS: flex flex-col items-center justify-center relative z-2 */
-.loading-content {}
 
 /* 动画器包装 */
 .spinner-wrapper {

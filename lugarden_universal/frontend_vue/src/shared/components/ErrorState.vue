@@ -1,10 +1,10 @@
 <template>
   <div class="error-state flex items-center justify-center text-center" :class="containerClass">
-          <div class="error-content animate-fadeIn max-w-lg w-full card-padding-normal content-spacing-normal rounded-lg">
-      <!-- 错误图标 -->
+    <div class="error-content unified-content-card animate-fadeInUp max-w-lg w-full">
+      <!-- 错误图标 - C.9 统一SVG图标 -->
       <div class="mb-lg">
-        <div v-if="!$slots.icon" class="text-5xl mb-base opacity-80">
-          <component :is="errorIconComponent" class="w-6 h-6 mx-auto" aria-hidden="true" />
+        <div v-if="!$slots.icon" class="mb-base">
+          <component :is="errorIconComponent" class="w-12 h-12 mx-auto text-amber-500" aria-hidden="true" />
         </div>
         <slot name="icon"></slot>
       </div>

@@ -72,17 +72,6 @@
         </div>
       </div>
 
-      <!-- 加载状态 -->
-      <div v-else-if="zhouStore.universeData.loading">
-        <LoadingSpinner 
-          size="large"
-          loading-text="正在加载问题..."
-          subtitle="请稍候，正在为你准备题目"
-          :show-progress="false"
-          centered
-        />
-      </div>
-
       <!-- 错误状态 -->
       <div v-else-if="zhouStore.universeData.error">
         <ErrorState 
@@ -97,18 +86,6 @@
           @back="goBack"
         />
       </div>
-
-      <!-- 无问题状态 -->
-      <div v-else>
-        <EmptyState 
-          icon="❓"
-          title="没有找到问题"
-          description="当前章节没有可用的问题"
-          :show-action="true"
-          action-text="返回上一页"
-          @action="goBack"
-        />
-      </div>
     </div>
   </div>
 </template>
@@ -118,10 +95,8 @@ import { onMounted, watch, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useZhouStore } from '@/modules/zhou/lianxi/stores/zhou'
 import QuestionCard from '@/modules/zhou/lianxi/components/QuestionCard.vue'
-import LoadingSpinner from '@/shared/components/LoadingSpinner.vue'
 import { ArrowDownTrayIcon } from '@heroicons/vue/24/outline'
 import ErrorState from '@/shared/components/ErrorState.vue'
-import EmptyState from '@/shared/components/EmptyState.vue'
 import BackButton from '@/shared/components/BackButton.vue'
 import ProgressBar from '@/shared/components/ProgressBar.vue'
 

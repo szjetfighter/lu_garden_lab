@@ -15,29 +15,11 @@
 
     <!-- 宇宙卡片列表区域 -->
     <main class="universes-container">
-      <!-- 加载状态 -->
-      <LoadingSpinner 
-        v-if="loading" 
-        message="正在加载宇宙列表..."
-        size="large"
-      />
-      
       <!-- 错误状态 -->
       <ErrorState 
-        v-else-if="error.hasError"
+        v-if="error.hasError"
         :message="error.message"
         @retry="portalStore.retryLoad"
-      />
-      
-      <!-- 空状态 -->
-      <EmptyState
-        v-else-if="universes.length === 0"
-        title="暂无可用宇宙"
-        description="目前还没有已上线的宇宙项目，请稍后再来探索吧～"
-        icon="🌌"
-        :show-action="true"
-        action-text="刷新列表"
-        @action="portalStore.refreshUniverses"
       />
       
       <!-- 宇宙列表 -->
@@ -88,7 +70,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { LoadingSpinner, ErrorState, EmptyState, NotificationToast, UserNavigation } from '@/shared/components'
+import { ErrorState, NotificationToast, UserNavigation } from '@/shared/components'
 import { UniverseCard } from '@/modules/portal/components'
 import { usePortalStore } from '@/modules/portal/stores'
 import type { Universe } from '@/modules/portal/types'
@@ -108,7 +90,6 @@ const toastType = ref<'success' | 'error' | 'warning' | 'info'>('info')
 const currentYear = computed(() => new Date().getFullYear())
 
 // 计算属性
-const loading = computed(() => portalStore.isLoading)
 const error = computed(() => ({
   hasError: portalStore.hasError,
   message: portalStore.errorMessage

@@ -35,9 +35,9 @@
       />
       
       <!-- 子项目列表 -->
-      <div v-if="zhouStore.navigation.currentMainProject?.subProjects" class="grid grid-responsive">
+      <div class="grid grid-responsive">
         <div 
-          v-for="(subProject, index) in zhouStore.navigation.currentMainProject.subProjects" 
+          v-for="(subProject, index) in zhouStore.navigation.currentMainProject?.subProjects || []" 
           :key="`${subProject.name}-${index}`"
           class="unified-content-card rounded-base animate-fadeInUp cursor-pointer flex flex-col h-full"
           :style="{ animationDelay: `${0.3 + 0.1 * index}s` }"
@@ -54,28 +54,6 @@
           </div>
         </div>
       </div>
-
-      <!-- 空状态 -->
-      <div v-else-if="!zhouStore.universeData.loading">
-        <EmptyState 
-          :icon-component="PencilIcon"
-          title="暂无子项目"
-          description="当前项目没有可用的子项目"
-          size="medium"
-          variant="default"
-        />
-      </div>
-
-      <!-- 加载状态 -->
-      <div v-else>
-        <LoadingSpinner 
-          size="large"
-          loading-text="正在加载项目信息..."
-          subtitle="请稍候，正在为你准备内容"
-          variant="default"
-          centered
-        />
-      </div>
     </div>
   </div>
 </template>
@@ -85,9 +63,6 @@ import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useZhouStore } from '@/modules/zhou/lianxi/stores/zhou'
 import BackButton from '@/shared/components/BackButton.vue'
-import LoadingSpinner from '@/shared/components/LoadingSpinner.vue'
-import { PencilIcon } from '@heroicons/vue/24/outline'
-import EmptyState from '@/shared/components/EmptyState.vue'
 import AboutModal from '@/modules/zhou/lianxi/components/AboutModal.vue'
 
 // 弹窗状态

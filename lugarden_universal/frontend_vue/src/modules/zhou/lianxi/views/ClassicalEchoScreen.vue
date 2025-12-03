@@ -21,11 +21,8 @@
             <button 
               @click="continueToResult"
               class="btn-continue-arrow rounded-full"
-              :class="{ 'animate-pulse': isTransitioning }"
-              :disabled="isTransitioning"
             >
               <svg 
-                v-if="!isTransitioning"
                 class="continue-btn-icon" 
                 fill="none" 
                 stroke="currentColor" 
@@ -38,26 +35,6 @@
                   d="M9 5l7 7-7 7"
                 ></path>
               </svg>
-              <svg 
-                v-else
-                class="animate-spin h-5 w-5" 
-                fill="none" 
-                viewBox="0 0 24 24"
-              >
-                <circle 
-                  class="opacity-25" 
-                  cx="12" 
-                  cy="12" 
-                  r="10" 
-                  stroke="currentColor" 
-                  stroke-width="4"
-                ></circle>
-                <path 
-                  class="opacity-75" 
-                  fill="currentColor" 
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
             </button>
           </div>
         </div>
@@ -67,14 +44,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useZhouStore } from '@/modules/zhou/lianxi/stores/zhou'
 import ClassicalEchoDisplay from '@/modules/zhou/lianxi/components/ClassicalEchoDisplay.vue'
 
 const router = useRouter()
 const zhouStore = useZhouStore()
-const isTransitioning = ref(false)
 
 // 古典回响页面
 // 对应原 zhou.html 中的 #classical-echo-screen
@@ -135,52 +111,38 @@ onMounted(() => {
 })
 
 // 继续到结果页面 - 通过URL参数传递数据，实现无状态架构
-const continueToResult = async () => {
-  if (isTransitioning.value) return
-  
-  isTransitioning.value = true
-  
-  try {
-    // 确保诗歌映射已完成
-    if (!zhouStore.result.selectedPoem) {
-      zhouStore.calculatePoemMapping()
-    }
-    
-    // 短暂延迟以提供更好的用户体验
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // 获取必要数据用于构建URL参数
-    const chapterKey = zhouStore.navigation.currentChapterName
-    const poemTitle = zhouStore.result.poemTitle || zhouStore.result.selectedPoem?.title
-    
-    // 计算answerPattern (A=0, B=1)
-    const answerPattern = zhouStore.quiz.userAnswers
-      .map(answer => answer.selectedOption === 'A' ? '0' : '1')
-      .join('')
-    
-    // 验证数据完整性
-    if (!chapterKey || !poemTitle || !answerPattern) {
-      console.error('[ClassicalEcho] 缺少必要数据，回退到无参数导航')
-      zhouStore.showResult()
-      router.push('/result')
-      return
-    }
-    
-    // 构建URL参数
-    const params = new URLSearchParams({
-      chapter: chapterKey,
-      pattern: answerPattern,
-      poem: poemTitle
-    })
-    
-    zhouStore.showResult()
-    router.push(`/result?${params.toString()}`)
-  } catch (error) {
-    console.error('跳转到结果页面失败:', error)
-    zhouStore.showError('跳转失败，请重试')
-  } finally {
-    isTransitioning.value = false
+const continueToResult = () => {
+  // 确保诗歌映射已完成
+  if (!zhouStore.result.selectedPoem) {
+    zhouStore.calculatePoemMapping()
   }
+  
+  // 获取必要数据用于构建URL参数
+  const chapterKey = zhouStore.navigation.currentChapterName
+  const poemTitle = zhouStore.result.poemTitle || zhouStore.result.selectedPoem?.title
+  
+  // 计算answerPattern (A=0, B=1)
+  const answerPattern = zhouStore.quiz.userAnswers
+    .map(answer => answer.selectedOption === 'A' ? '0' : '1')
+    .join('')
+  
+  // 验证数据完整性
+  if (!chapterKey || !poemTitle || !answerPattern) {
+    console.error('[ClassicalEcho] 缺少必要数据，回退到无参数导航')
+    zhouStore.showResult()
+    router.push('/result')
+    return
+  }
+  
+  // 构建URL参数
+  const params = new URLSearchParams({
+    chapter: chapterKey,
+    pattern: answerPattern,
+    poem: poemTitle
+  })
+  
+  zhouStore.showResult()
+  router.push(`/result?${params.toString()}`)
 }
 </script>
 

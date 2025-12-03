@@ -19,20 +19,8 @@
         <p class="text-gray-600">这里的诗，是你的回答</p>
       </div>
       
-      <!-- 加载状态 -->
-      <div v-if="zhouStore.universeData.loading">
-        <LoadingSpinner 
-          size="large"
-          :loading-text="zhouStore.ui.loadingMessage || '正在加载项目...'"
-          subtitle="为你准备诗歌之旅"
-          variant="default"
-          :show-progress="false"
-          centered
-        />
-      </div>
-      
       <!-- 错误状态 -->
-      <div v-else-if="zhouStore.universeData.error">
+      <div v-if="zhouStore.universeData.error">
         <ErrorState 
           error-type="network"
           error-title="加载失败"
@@ -42,17 +30,6 @@
           retry-text="重试"
           @retry="retryLoad"
           :suggestions="['请检查网络连接', '刷新页面重试', '联系技术支持']"
-        />
-      </div>
-      
-      <!-- 空状态 -->
-      <div v-else-if="zhouStore.universeData.projects.length === 0">
-        <EmptyState 
-          icon="📚"
-          title="暂无项目"
-          description="当前没有可用的项目，请稍后再试"
-          size="large"
-          variant="default"
         />
       </div>
       
@@ -96,9 +73,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useZhouStore } from '@/modules/zhou/lianxi/stores/zhou'
 import type { ZhouProject } from '@/modules/zhou/lianxi/types/zhou'
-import LoadingSpinner from '@/shared/components/LoadingSpinner.vue'
 import ErrorState from '@/shared/components/ErrorState.vue'
-import EmptyState from '@/shared/components/EmptyState.vue'
 import BackButton from '@/shared/components/BackButton.vue'
 import AboutExpandableCard from '@/modules/zhou/lianxi/components/AboutExpandableCard.vue'
 

@@ -1,14 +1,10 @@
 <template>
-  <AnimationWrapper
-    animation-type="fadeInUp"
-    :delay="animationDelay"
-    class="universe-card-wrapper"
+  <div 
+    class="universe-card animate-fadeInUp"
+    :class="{ 'card-disabled': !isActive }"
+    :style="{ animationDelay: `${index * 0.1}s` }"
+    @click="handleCardClick"
   >
-    <div 
-      class="universe-card"
-      :class="{ 'card-disabled': !isActive }"
-      @click="handleCardClick"
-    >
       <!-- 内容区域 - 使用flex-1占据剩余空间 -->
       <div class="flex-1">
         <div class="flex justify-between items-start mb-4">
@@ -31,13 +27,11 @@
           {{ buttonText }}
         </button>
       </div>
-    </div>
-  </AnimationWrapper>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { AnimationWrapper } from '@/shared/components'
 import type { Universe, UniverseCardEvents } from '@/modules/portal/types'
 
 // Props定义
@@ -58,11 +52,6 @@ const emit = defineEmits<UniverseCardEvents>()
 // 计算属性
 const isActive = computed(() => {
   return props.universe.status === 'published' && !props.disabled
-})
-
-const animationDelay = computed(() => {
-  // 为每个卡片提供50ms的交错延迟，最大延迟200ms
-  return Math.min(props.index * 50, 200)
 })
 
 const statusText = computed(() => {

@@ -167,18 +167,6 @@
           </div>
         </div>
 
-        <!-- 加载状态 -->
-        <div v-if="!zhouStore.result.selectedPoem && !zhouStore.universeData.error">
-          <LoadingSpinner 
-            size="large"
-            loading-text="正在准备你的诗歌..."
-            subtitle="诗意正在汇聚，请稍候..."
-            variant="pulse"
-            :show-progress="false"
-            centered
-          />
-        </div>
-
         <!-- 错误状态 -->
         <div v-if="zhouStore.universeData.error">
           <ErrorState 
@@ -204,7 +192,7 @@ import { useZhouStore } from '@/modules/zhou/lianxi/stores/zhou'
 import PoemViewer from '@/modules/zhou/lianxi/components/PoemViewer.vue'
 import ControlButtons from '@/modules/zhou/lianxi/components/ControlButtons.vue'
 import InterpretationDisplay from '@/modules/zhou/lianxi/components/InterpretationDisplay.vue'
-import { LoadingSpinner, ErrorState, UserNavigation } from '@/shared/components'
+import { ErrorState, UserNavigation } from '@/shared/components'
 
 const router = useRouter()
 const route = useRoute()

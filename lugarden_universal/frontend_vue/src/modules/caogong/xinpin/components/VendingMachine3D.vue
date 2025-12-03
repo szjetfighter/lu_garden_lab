@@ -412,9 +412,9 @@ async function loadProductModels(sceneRef: THREE.Scene) {
   const loader = new GLTFLoader()
   const gridCols = 4
   const cellWidth = 1.05
-  const cellHeight = 1.2
+  const cellHeight = 1.35  // 增加行间距，充分利用空间
   const startX = -1.6
-  const startY = 2.4
+  const startY = 2.3  // 调整起始位置，让产品垂直居中
   
   let loadedCount = 0
   const totalProducts = products.length

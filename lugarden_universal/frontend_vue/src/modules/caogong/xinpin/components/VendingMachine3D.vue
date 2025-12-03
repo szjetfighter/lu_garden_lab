@@ -214,15 +214,50 @@ function createVendingMachine(sceneRef: THREE.Scene) {
   screenBack.position.set(0, 4, 0.3)
   machineGroup.add(screenBack)
   
-  // 电子屏发光面板
-  const screenGlowGeometry = new THREE.BoxGeometry(4.8, 0.8, 0.1)
-  const screenGlowMaterial = new THREE.MeshBasicMaterial({
-    color: 0xff6b9d,
+  // 电子屏发光面板 - LED点阵效果
+  const screenGlowGeometry = new THREE.PlaneGeometry(4.8, 0.8)
+  const ledShaderMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: { value: new THREE.Color(0xff6b9d) },
+      uGridSize: { value: 80.0 },  // 网格密度
+      uDotSize: { value: 0.6 }     // 点大小
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uColor;
+      uniform float uGridSize;
+      uniform float uDotSize;
+      varying vec2 vUv;
+      
+      void main() {
+        // 创建网格坐标
+        vec2 grid = fract(vUv * vec2(uGridSize, uGridSize * 0.167));  // 宽高比约6:1
+        
+        // 计算到网格中心的距离
+        vec2 center = grid - 0.5;
+        float dist = length(center);
+        
+        // 圆形LED点
+        float dot = smoothstep(uDotSize * 0.5, uDotSize * 0.3, dist);
+        
+        // 添加轻微发光
+        float glow = exp(-dist * 4.0) * 0.3;
+        
+        float alpha = (dot + glow) * 0.5;
+        gl_FragColor = vec4(uColor, alpha);
+      }
+    `,
     transparent: true,
-    opacity: 0.3
+    side: THREE.FrontSide
   })
-  const screenGlow = new THREE.Mesh(screenGlowGeometry, screenGlowMaterial)
-  screenGlow.position.set(0, 4, 0.55)
+  const screenGlow = new THREE.Mesh(screenGlowGeometry, ledShaderMaterial)
+  screenGlow.position.set(0, 4, 0.56)
   machineGroup.add(screenGlow)
   
   // 电子屏滚动文字 - 两个Text对象首尾相接

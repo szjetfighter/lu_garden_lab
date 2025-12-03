@@ -36,6 +36,22 @@
    - [x] 步骤A.1.4：解决Troika中文字符"一"显示为方框问题（改用"壹"）
    - [x] 步骤A.1.5：启用renderer.localClippingEnabled实现文字裁剪
 
+#### - [x] 任务A.2：电子屏LED点阵效果
+- **核心思想**: 为电子屏发光面板添加颗粒感/晶体管质感，模拟真实LED显示屏
+- 交付物：
+  - ShaderMaterial实现的LED点阵效果
+- 验收标准：
+  - 电子屏显示明显的像素点阵纹理
+  - 保持粉色主色调
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
+- 完成状态：✅ 已完成
+- 执行步骤：
+   - [x] 步骤A.2.1：将MeshBasicMaterial替换为ShaderMaterial
+   - [x] 步骤A.2.2：实现网格坐标计算和圆形LED点渲染
+   - [x] 步骤A.2.3：添加轻微发光效果增强视觉
+
 ---
 
 ## 测试与验收

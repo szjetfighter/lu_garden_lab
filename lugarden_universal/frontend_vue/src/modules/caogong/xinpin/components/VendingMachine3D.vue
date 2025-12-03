@@ -196,31 +196,34 @@ function createVendingMachine(sceneRef: THREE.Scene) {
   glass.position.set(0, 0.4, 1.1)
   machineGroup.add(glass)
   
-  // 顶部招牌背板
-  const signBackGeometry = new THREE.BoxGeometry(5.2, 1.2, 0.5)
-  const signBackMaterial = new THREE.MeshStandardMaterial({
+  // === 电子屏（机器顶部嵌入位置 y=4）===
+  // 电子屏背板
+  const screenBackGeometry = new THREE.BoxGeometry(5.2, 1.2, 0.5)
+  const screenBackMaterial = new THREE.MeshStandardMaterial({
     color: 0x0a0a15,
     metalness: 0.8,
     roughness: 0.3
   })
-  const signBack = new THREE.Mesh(signBackGeometry, signBackMaterial)
-  signBack.position.set(0, 4, 0.3)
-  machineGroup.add(signBack)
+  const screenBack = new THREE.Mesh(screenBackGeometry, screenBackMaterial)
+  screenBack.position.set(0, 4, 0.3)
+  machineGroup.add(screenBack)
   
-  // 霓虹招牌发光板
-  const signGlowGeometry = new THREE.BoxGeometry(4.8, 0.8, 0.1)
-  const signGlowMaterial = new THREE.MeshBasicMaterial({
+  // 电子屏发光面板
+  const screenGlowGeometry = new THREE.BoxGeometry(4.8, 0.8, 0.1)
+  const screenGlowMaterial = new THREE.MeshBasicMaterial({
     color: 0xff6b9d,
     transparent: true,
-    opacity: 0.3  // 降低背景亮度，让文字突出
+    opacity: 0.3
   })
-  const signGlow = new THREE.Mesh(signGlowGeometry, signGlowMaterial)
-  signGlow.position.set(0, 4, 0.55)
-  machineGroup.add(signGlow)
+  const screenGlow = new THREE.Mesh(screenGlowGeometry, screenGlowMaterial)
+  screenGlow.position.set(0, 4, 0.55)
+  machineGroup.add(screenGlow)
   
-  // 3D霓虹灯文字：Troika多层叠加
+  // TODO: 电子屏滚动文字（待实现）
+  
+  // === 霓虹灯招牌（机器上方悬空）===
   const neonTextGroup = new THREE.Group()
-  neonTextGroup.position.set(0, 4, 0.7)
+  neonTextGroup.position.set(0, 5, 0.25)  // z与电子屏对齐
   
   // 底层：白色描边/光晕（稍大）
   const glowText = new Text()
@@ -499,7 +502,8 @@ async function initThreeJS() {
   
   // 创建场景
   scene.value = new THREE.Scene()
-  scene.value.background = new THREE.Color(0xffffff)
+  const bgColor = 0x2B2B2B  // 深水泥灰
+  scene.value.background = new THREE.Color(bgColor)
   
   // 创建相机 - 稍微倾斜的视角
   camera.value = new THREE.PerspectiveCamera(40, width / height, 0.1, 100)
@@ -511,6 +515,7 @@ async function initThreeJS() {
     antialias: true,
     alpha: true
   })
+  renderer.value.localClippingEnabled = true  // 启用clipping
   renderer.value.setSize(width, height)
   renderer.value.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.value.toneMapping = THREE.ACESFilmicToneMapping

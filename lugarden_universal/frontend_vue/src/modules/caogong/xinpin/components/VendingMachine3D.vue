@@ -901,13 +901,76 @@ async function initThreeJS() {
   
   // 创建场景
   scene.value = new THREE.Scene()
-  const bgColor = 0x808080  // 中灰色
-  scene.value.background = new THREE.Color(bgColor)
   
-  // 创建相机 - 稍微倾斜的视角
+  // 创建渐变背景纹理（多层同心矩形，3:4比例，从外到内加深）
+  const bgCanvas = document.createElement('canvas')
+  const canvasWidth = 768   // 3:4比例
+  const canvasHeight = 1024
+  bgCanvas.width = canvasWidth
+  bgCanvas.height = canvasHeight
+  const ctx = bgCanvas.getContext('2d')!
+  
+  // 颜色插值函数
+  function lerpColor(color1: string, color2: string, t: number): string {
+    const c1 = parseInt(color1.slice(1), 16)
+    const c2 = parseInt(color2.slice(1), 16)
+    const r1 = (c1 >> 16) & 0xff, g1 = (c1 >> 8) & 0xff, b1 = c1 & 0xff
+    const r2 = (c2 >> 16) & 0xff, g2 = (c2 >> 8) & 0xff, b2 = c2 & 0xff
+    const r = Math.round(r1 + (r2 - r1) * t)
+    const g = Math.round(g1 + (g2 - g1) * t)
+    const b = Math.round(b1 + (b2 - b1) * t)
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`
+  }
+  
+  // 64层渐变（从外到内，两段渐变）
+  const layers = 64
+  const outerColor = '#f5f1e8'  // 最外层：统一卡片背景色
+  const midColor = '#454442'    // 第8层：深温暖灰
+  const innerColor = '#0a0a0a'  // 最内层：近黑色
+  const breakpoint = 8          // 断点
+  
+  // 先填充底色
+  ctx.fillStyle = outerColor
+  ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+  
+  // 绘制同心矩形（从外到内）
+  const centerX = canvasWidth / 2
+  const centerY = canvasHeight / 2
+  
+  for (let i = 0; i < layers; i++) {
+    const t = i / (layers - 1)  // 0 到 1
+    const scale = 1 - t * 0.75  // 从100%缩小到25%
+    
+    // 两段插值
+    let color: string
+    if (i <= breakpoint) {
+      // 第0~8层: #f5f1e8 → #454442
+      const segT = i / breakpoint
+      color = lerpColor(outerColor, midColor, segT)
+    } else {
+      // 第8~64层: #454442 → #0a0a0a
+      const segT = (i - breakpoint) / (layers - 1 - breakpoint)
+      color = lerpColor(midColor, innerColor, segT)
+    }
+    const rectW = canvasWidth * scale
+    const rectH = canvasHeight * scale
+    const x = centerX - rectW / 2
+    const y = centerY - rectH / 2
+    const radius = 12  // 圆角：与卡片一致（--radius-lg = 12px）
+    
+    ctx.fillStyle = color
+    ctx.beginPath()
+    ctx.roundRect(x, y, rectW, rectH, radius)
+    ctx.fill()
+  }
+  
+  const bgTexture = new THREE.CanvasTexture(bgCanvas)
+  scene.value.background = bgTexture
+  
+  // 创建相机 - 正面水平视角
   camera.value = new THREE.PerspectiveCamera(40, width / height, 0.1, 100)
-  camera.value.position.set(2, 1, 12)
-  camera.value.lookAt(0, 0, 0)
+  camera.value.position.set(0, 0, 18)  // 正面 (0, 0, 18) 最远视角
+  camera.value.lookAt(0, 0, 0)         // 看向原点 (0, 0, 0)
   
   // 创建渲染器
   renderer.value = new THREE.WebGLRenderer({
@@ -936,36 +999,38 @@ async function initThreeJS() {
   const renderPass = new RenderPass(scene.value, camera.value)
   composer.value.addPass(renderPass)
   
-  // Bloom辉光效果（霓虹灯发光）
+  // Bloom辉光效果（淡色背景下降低强度）
   const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(width, height),
-    0.8,   // strength - 辉光强度
-    0.5,   // radius - 辉光半径
-    0.7    // threshold - 亮度阈值（低于此值不发光）
+    0.1,   // strength - 辉光强度
+    0.2,   // radius - 辉光半径（从0.4降到0.2）
+    0.8    // threshold - 亮度阈值（从0.7提到0.8，更少物体发光）
   )
   composer.value.addPass(bloomPass)
   
+  // === 外部光源 ===
+  
   // 环境光
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.4)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
   scene.value.add(ambientLight)
   
   // 主光源
-  const mainLight = new THREE.DirectionalLight(0xffffff, 1.2)
+  const mainLight = new THREE.DirectionalLight(0xffffff, 0.8)
   mainLight.position.set(5, 8, 5)
   scene.value.add(mainLight)
   
   // 填充光
-  const fillLight = new THREE.DirectionalLight(0x00ffff, 0.6)
+  const fillLight = new THREE.DirectionalLight(0x00ffff, 0.3)
   fillLight.position.set(-5, 0, 5)
   scene.value.add(fillLight)
   
   // 背光
-  const backLight = new THREE.DirectionalLight(0xff6b9d, 0.4)
+  const backLight = new THREE.DirectionalLight(0xff6b9d, 0.2)
   backLight.position.set(0, 5, -5)
   scene.value.add(backLight)
   
   // 聚光灯 - 从右上方打光
-  const spotLight = new THREE.SpotLight(0xffffff, 3)
+  const spotLight = new THREE.SpotLight(0xffffff, 1.5)
   spotLight.position.set(6, 8, 8)
   spotLight.target.position.set(0, 0, 0)
   spotLight.angle = Math.PI / 5
@@ -976,7 +1041,7 @@ async function initThreeJS() {
   scene.value.add(spotLight.target)
   
   // 辅助聚光灯 - 从左前方补光
-  const spotLight2 = new THREE.SpotLight(0xaaccff, 1.5)
+  const spotLight2 = new THREE.SpotLight(0xaaccff, 0.8)
   spotLight2.position.set(-5, 6, 8)
   spotLight2.target.position.set(0, 0, 0)
   spotLight2.angle = Math.PI / 6
@@ -1068,12 +1133,27 @@ onUnmounted(() => {
   max-width: 600px;
   margin: 0 auto;
   aspect-ratio: 3 / 4;
-  background: #0a0805;
-  border-radius: 12px;
   overflow: hidden;
+  
+  /* 统一卡片样式 - 参考 unified-content-card */
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 250, 252, 0.6) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-lg);
   box-shadow: 
-    0 0 0 3px #333,
-    0 0 0 6px #1a1a1a;
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.vending-machine-3d:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .canvas-container {

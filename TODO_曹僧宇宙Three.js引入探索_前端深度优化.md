@@ -184,7 +184,28 @@
 - 实际改动文件:
   - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/ProductModal.vue`
 - 完成状态：✅ 已完成
-- 待commit
+- 对应commit: `0d9d8d8`
+
+#### - [x] 任务A.10：VendingMachine3D视觉优化与背景渐变
+- **核心思想**: 统一卡片样式、优化灯光辉光、添加同心矩形渐变背景
+- 交付物：
+  - 应用unified-content-card玻璃态卡片样式
+  - Three.js场景背景改为64层同心矩形渐变（3:4比例）
+    - 外层 #f5f1e8 → 第8层 #454442 → 中心 #0a0a0a
+  - Bloom辉光参数优化（strength=0.1, radius=0.2, threshold=0.8）
+  - 外部光源强度降低（避免过曝）
+  - 相机设置为正面水平视角 (0, 0, 18)
+  - XinpinView添加径向渐变背景
+- 验收标准：
+  - 卡片样式与项目统一
+  - 渐变背景自然过渡
+  - 辉光效果适中不过曝
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/views/XinpinView.vue`
+- 完成状态：✅ 已完成
+- 对应commit: `0d9d8d8`
 
 ---
 

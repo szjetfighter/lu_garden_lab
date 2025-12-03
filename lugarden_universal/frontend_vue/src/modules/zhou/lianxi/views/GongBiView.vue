@@ -337,7 +337,7 @@ function scrollNextLine() {
   if (currentLineIndex.value < currentPoem.lines.length - 1) {
     currentLineIndex.value++
     // 继续计时下一行
-    lyricTimer = setTimeout(scrollNextLine, 3500)
+    lyricTimer = setTimeout(scrollNextLine, 3000)
   } else {
     // 当前诗歌播完，开始切换
     transitionToNextPoem()
@@ -361,7 +361,7 @@ function transitionToNextPoem() {
       
       // 5. 淡入完成后开始计时（800ms后）
       setTimeout(() => {
-        lyricTimer = setTimeout(scrollNextLine, 3500)
+        lyricTimer = setTimeout(scrollNextLine, 3000)
       }, 800)
     }, 100)
   }, 800)
@@ -376,7 +376,7 @@ function startLyricScroll() {
   isPoemTransitioning.value = false
   
   // 开始第一次计时
-  lyricTimer = setTimeout(scrollNextLine, 3500)
+  lyricTimer = setTimeout(scrollNextLine, 3000)
 }
 
 // 停止歌词滚动
@@ -796,7 +796,7 @@ const startOver = () => {
 .lyric-track {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: 16px !important;
   position: relative;
 }
 
@@ -804,6 +804,7 @@ const startOver = () => {
   font-size: var(--font-size-base);
   line-height: 1.8;
   min-height: 1.8em;
+  margin: 0;
 }
 
 .lyric-dim {

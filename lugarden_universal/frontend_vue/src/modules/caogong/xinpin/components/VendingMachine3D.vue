@@ -969,7 +969,7 @@ async function initThreeJS() {
   
   // 创建相机 - 正面水平视角
   camera.value = new THREE.PerspectiveCamera(40, width / height, 0.1, 100)
-  camera.value.position.set(0, 0, 18)  // 正面 (0, 0, 18) 最远视角
+  camera.value.position.set(90, 0, 18)  // 右侧倾斜视角 (90, 0, 18) 约78.7°
   camera.value.lookAt(0, 0, 0)         // 看向原点 (0, 0, 0)
   
   // 创建渲染器
@@ -1002,8 +1002,8 @@ async function initThreeJS() {
   // Bloom辉光效果（淡色背景下降低强度）
   const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(width, height),
-    0.1,   // strength - 辉光强度
-    0.2,   // radius - 辉光半径（从0.4降到0.2）
+    0.45,   // strength - 辉光强度
+    0.8,   // radius - 辉光半径（从0.4降到0.2）
     0.8    // threshold - 亮度阈值（从0.7提到0.8，更少物体发光）
   )
   composer.value.addPass(bloomPass)

@@ -207,6 +207,19 @@
 - 完成状态：✅ 已完成
 - 对应commit: `0d9d8d8`
 
+#### - [x] 任务A.11：辉光与相机视角微调
+- **核心思想**: 微调辉光参数和默认相机视角
+- 交付物：
+  - 辉光参数调整（strength=0.45, radius=0.8, threshold=0.8）
+  - 相机默认视角改为右侧倾斜 (90, 0, 18) 约78.7°
+- 验收标准：
+  - 辉光效果自然
+  - 默认视角展示售货机侧面
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
+- 完成状态：✅ 已完成
+
 ---
 
 ## 测试与验收

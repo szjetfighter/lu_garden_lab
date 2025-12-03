@@ -61,6 +61,9 @@ let time = 0
 let screenText1: any = null
 let screenText2: any = null
 let textWidth = 0
+
+// 脏玻璃材质
+let grimeGlassMaterial: THREE.ShaderMaterial | null = null
 const scrollContent = '新品发布 ◆ 烂西红柿牌内燃机⑴  苍蝇跑车⑵  翻山战舰⑶  白面团脚手架⑷  跨海三明治大桥壹体成型机⑸  时间鸟拆迁臂⑹  牙线蹦极绳⑺  理念磁场器⑻  种植蛋壹号⑼  试管婴儿代孕桶⑽  治胆瓷杯⑾  攀岩蹄⑿  无底镜⒀  蛔虫机械表⒁ __◇ ◇ ◇ ◇__'
 
 function handleProductClick(product: CaogongProduct) {
@@ -187,18 +190,61 @@ function createVendingMachine(sceneRef: THREE.Scene) {
   backPanel.position.set(0, 0.25, -0.2)  // 中心y调整，底部到-2.5，顶部到3.0
   machineGroup.add(backPanel)
   
-  // 玻璃面板
-  const glassGeometry = new THREE.BoxGeometry(4.5, 5.5, 0.05)  // 与背板对齐
-  const glassMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xffffff,
-    metalness: 0,
-    roughness: 0,
-    transmission: 0.95,
-    thickness: 0.1,
+  // 玻璃面板 - 脏玻璃效果
+  const glassGeometry = new THREE.PlaneGeometry(4.5, 5.5)
+  grimeGlassMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      uTime: { value: 0 },
+      uColor: { value: new THREE.Color('#aaddff') },
+      uOpacity: { value: 0.2 },
+      uGrimeScale: { value: 12.0 },  // 更细密的污渍
+      uRainSpeed: { value: 0.1 }
+    },
     transparent: true,
-    opacity: 0.15
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform float uTime;
+      uniform vec3 uColor;
+      uniform float uOpacity;
+      uniform float uGrimeScale;
+      uniform float uRainSpeed;
+      varying vec2 vUv;
+
+      float random(vec2 st) {
+        return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+      }
+
+      float noise(vec2 st) {
+        vec2 i = floor(st);
+        vec2 f = fract(st);
+        float a = random(i);
+        float b = random(i + vec2(1.0, 0.0));
+        float c = random(i + vec2(0.0, 1.0));
+        float d = random(i + vec2(1.0, 1.0));
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+      }
+
+      void main() {
+        float grime = noise(vUv * uGrimeScale);
+        vec2 rainUv = vec2(vUv.x * 60.0, vUv.y * 3.0 + uTime * uRainSpeed);  // 更细的雨痕
+        float rain = noise(rainUv);
+        rain = smoothstep(0.7, 0.85, rain);  // 更细的阈值
+        vec3 finalColor = uColor + vec3(0.05) * grime + vec3(0.25) * rain;
+        float alpha = uOpacity + (grime * 0.05) + (rain * 0.15);
+        gl_FragColor = vec4(finalColor, alpha);
+      }
+    `
   })
-  const glass = new THREE.Mesh(glassGeometry, glassMaterial)
+  const glass = new THREE.Mesh(glassGeometry, grimeGlassMaterial)
   glass.position.set(0, 0.25, 1.1)
   machineGroup.add(glass)
   
@@ -538,6 +584,11 @@ async function loadProductModels(sceneRef: THREE.Scene) {
 function animate() {
   animationId = requestAnimationFrame(animate)
   time += 0.01
+  
+  // 更新脏玻璃动画
+  if (grimeGlassMaterial) {
+    grimeGlassMaterial.uniforms.uTime.value = time
+  }
   
   // 电子屏文字滚动 - 两个Text对象同步移动
   if (screenText1 && screenText2 && textWidth > 0) {

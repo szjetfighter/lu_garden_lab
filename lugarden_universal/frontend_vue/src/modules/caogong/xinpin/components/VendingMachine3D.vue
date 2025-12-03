@@ -1049,7 +1049,7 @@ onUnmounted(() => {
     <!-- 底部信息 -->
     <div class="footer-overlay">
       <span class="footer-date">2015.02.10-17</span>
-      <span class="footer-brand">CAOSENG MFG.</span>
+      <span class="footer-brand">CAOSENG @ LUGARDEN</span>
     </div>
     
     <!-- 产品说明书弹窗 -->
@@ -1073,8 +1073,7 @@ onUnmounted(() => {
   overflow: hidden;
   box-shadow: 
     0 0 0 3px #333,
-    0 0 0 6px #1a1a1a,
-    0 20px 60px rgba(0, 0, 0, 0.5);
+    0 0 0 6px #1a1a1a;
 }
 
 .canvas-container {
@@ -1156,7 +1155,6 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  background: linear-gradient(0deg, rgba(10, 8, 5, 0.9) 0%, transparent 100%);
   pointer-events: none;
 }
 

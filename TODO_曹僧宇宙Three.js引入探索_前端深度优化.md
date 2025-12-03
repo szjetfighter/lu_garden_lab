@@ -138,6 +138,30 @@
 - 实际改动文件:
   - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
 - 完成状态：✅ 已完成
+- 对应commit: `fdf0423`
+
+#### - [x] 任务A.8：代码清理与UI优化
+- **核心思想**: 移除2D降级方案，简化代码结构，优化视觉效果
+- 交付物：
+  - 删除2D组件（VendingMachine.vue, ProductSlot.vue）
+  - 删除2D/3D切换按钮
+  - 简化XinpinView.vue（只保留3D组件）
+  - 更新index.ts导出（移除2D组件）
+  - 移除底部footer渐变阴影效果
+  - 移除外部box-shadow阴影
+  - 品牌文字改为"CAOSENG @ LUGARDEN"
+- 验收标准：
+  - 只有3D模式，无切换按钮
+  - 无多余阴影效果
+  - 构建通过
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine.vue`（删除）
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/ProductSlot.vue`（删除）
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/index.ts`
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/views/XinpinView.vue`
+- 完成状态：✅ 已完成
 - 待commit
 
 ---

@@ -57,6 +57,12 @@ let hoveredGroup: THREE.Group | null = null
 let animationId: number | null = null
 let time = 0
 
+// 电子屏滚动文字 - 用两个Text对象实现无缝循环
+let screenText1: any = null
+let screenText2: any = null
+let textWidth = 0
+const scrollContent = '新品发布 ◆ 烂西红柿牌内燃机⑴  苍蝇跑车⑵  翻山战舰⑶  白面团脚手架⑷  跨海三明治大桥壹体成型机⑸  时间鸟拆迁臂⑹  牙线蹦极绳⑺  理念磁场器⑻  种植蛋壹号⑼  试管婴儿代孕桶⑽  治胆瓷杯⑾  攀岩蹄⑿  无底镜⒀  蛔虫机械表⒁ __◇ ◇ ◇ ◇__'
+
 function handleProductClick(product: CaogongProduct) {
   selectedProduct.value = product
   isModalOpen.value = true
@@ -219,7 +225,40 @@ function createVendingMachine(sceneRef: THREE.Scene) {
   screenGlow.position.set(0, 4, 0.55)
   machineGroup.add(screenGlow)
   
-  // TODO: 电子屏滚动文字（待实现）
+  // 电子屏滚动文字 - 两个Text对象首尾相接
+  const clipLeft = new THREE.Plane(new THREE.Vector3(1, 0, 0), 2.4)
+  const clipRight = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 2.4)
+  
+  // 创建第一个文字
+  screenText1 = new Text()
+  screenText1.text = scrollContent
+  screenText1.fontSize = 0.22
+  screenText1.color = 0x00ffaa
+  screenText1.anchorX = 'left'
+  screenText1.anchorY = 'middle'
+  screenText1.position.set(2.4, 4, 0.6)
+  screenText1.material.clippingPlanes = [clipLeft, clipRight]
+  screenText1.sync(() => {
+    const bounds = screenText1.textRenderInfo?.blockBounds
+    if (bounds) {
+      textWidth = bounds[2] - bounds[0]
+      // 第二个文字紧跟第一个后面
+      screenText2.position.x = 2.4 + textWidth
+    }
+  })
+  sceneRef.add(screenText1)
+  
+  // 创建第二个文字
+  screenText2 = new Text()
+  screenText2.text = scrollContent
+  screenText2.fontSize = 0.22
+  screenText2.color = 0x00ffaa
+  screenText2.anchorX = 'left'
+  screenText2.anchorY = 'middle'
+  screenText2.position.set(2.4 + 30, 4, 0.6)  // 临时位置，sync后更新
+  screenText2.material.clippingPlanes = [clipLeft, clipRight]
+  screenText2.sync()
+  sceneRef.add(screenText2)
   
   // === 霓虹灯招牌（机器上方悬空）===
   const neonTextGroup = new THREE.Group()
@@ -464,6 +503,22 @@ async function loadProductModels(sceneRef: THREE.Scene) {
 function animate() {
   animationId = requestAnimationFrame(animate)
   time += 0.01
+  
+  // 电子屏文字滚动 - 两个Text对象同步移动
+  if (screenText1 && screenText2 && textWidth > 0) {
+    const speed = 0.015
+    screenText1.position.x -= speed
+    screenText2.position.x -= speed
+    
+    // 当第一个文字完全滚出左边，移到第二个后面
+    if (screenText1.position.x < -2.4 - textWidth) {
+      screenText1.position.x = screenText2.position.x + textWidth
+    }
+    // 当第二个文字完全滚出左边，移到第一个后面
+    if (screenText2.position.x < -2.4 - textWidth) {
+      screenText2.position.x = screenText1.position.x + textWidth
+    }
+  }
   
   // 产品持续旋转（统一速度）
   productGroups.forEach((group) => {

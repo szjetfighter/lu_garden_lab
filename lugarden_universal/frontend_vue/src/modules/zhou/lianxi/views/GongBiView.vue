@@ -114,6 +114,35 @@
             />
           </div>
           <p class="loading-text">诗渐浓，君稍待</p>
+          
+          <!-- 歌词式诗歌滚动 -->
+          <div 
+            v-if="currentLyricPoem" 
+            class="lyric-container"
+            :class="{ 'lyric-transitioning': isPoemTransitioning }"
+          >
+            <!-- 3行歌词区域 -->
+            <div class="lyric-lines">
+              <TransitionGroup name="lyric" tag="div" class="lyric-track">
+                <p 
+                  v-for="(line, idx) in visibleLinesArray" 
+                  :key="line.key"
+                  class="lyric-line"
+                  :class="{ 
+                    'lyric-current': idx === 1,
+                    'lyric-dim': idx !== 1 
+                  }"
+                >
+                  {{ line.text }}
+                </p>
+              </TransitionGroup>
+            </div>
+            
+            <!-- 固定底部：章节 · 标题  作者 -->
+            <p class="lyric-meta">
+              {{ currentLyricPoem.chapter }} · {{ currentLyricPoem.title }}  吴任几
+            </p>
+          </div>
         </div>
         
         <!-- 结果展示 - 使用PoemViewer组件 -->
@@ -184,7 +213,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useZhouStore } from '@/modules/zhou/lianxi/stores/zhou'
 import { createGongBi, getGongBiErrorMessage } from '@/modules/zhou/lianxi/services/gongBiApi'
@@ -203,6 +232,18 @@ const userFeeling = ref('')
 const loading = ref(false)
 const error = ref<string | null>(null)
 const showSourcePoem = ref(true)
+
+// 歌词式诗歌滚动状态
+interface LyricPoem {
+  title: string
+  chapter: string
+  lines: string[]
+}
+const lyricPoems = ref<LyricPoem[]>([])
+const currentPoemIndex = ref(0)
+const currentLineIndex = ref(0)
+const isPoemTransitioning = ref(false) // 诗歌切换过渡状态
+let lyricTimer: ReturnType<typeof setInterval> | null = null
 
 // 原诗信息
 const sourcePoem = ref<{
@@ -242,9 +283,156 @@ const urlParams = ref<{
 } | null>(null)
 
 // ================================
+// 歌词式诗歌滚动功能
+// ================================
+
+// 从store获取随机诗歌用于歌词滚动
+function loadLyricPoems() {
+  const poems = zhouStore.universeData.poems
+  const mappings = zhouStore.universeData.mappings
+  const poemTitles = Object.keys(poems)
+  
+  if (poemTitles.length === 0) return
+  
+  // 随机打乱并取前5首
+  const shuffled = [...poemTitles].sort(() => Math.random() - 0.5)
+  const selected = shuffled.slice(0, 5)
+  
+  lyricPoems.value = selected.map(title => {
+    const poem = poems[title]
+    // 获取章节名（从mappings中查找）
+    let chapter = ''
+    if (mappings.units) {
+      for (const [chapterName, unit] of Object.entries(mappings.units)) {
+        if (unit && typeof unit === 'object') {
+          // unit是 Record<pattern, { poemTitle: string }>
+          for (const mapping of Object.values(unit)) {
+            if (mapping && typeof mapping === 'object' && 'poemTitle' in mapping) {
+              if ((mapping as { poemTitle: string }).poemTitle === title) {
+                chapter = chapterName
+                break
+              }
+            }
+          }
+          if (chapter) break
+        }
+      }
+    }
+    // 分割诗歌行
+    const lines = poem.main_text 
+      ? poem.main_text.split('\n').filter((l: string) => l.trim())
+      : []
+    return { title, chapter, lines }
+  })
+}
+
+// 滚动一行
+function scrollNextLine() {
+  if (lyricPoems.value.length === 0) return
+  
+  const currentPoem = lyricPoems.value[currentPoemIndex.value]
+  if (!currentPoem) return
+  
+  // 滚动到下一行
+  if (currentLineIndex.value < currentPoem.lines.length - 1) {
+    currentLineIndex.value++
+    // 继续计时下一行
+    lyricTimer = setTimeout(scrollNextLine, 3500)
+  } else {
+    // 当前诗歌播完，开始切换
+    transitionToNextPoem()
+  }
+}
+
+// 切换到下一首诗（淡出 → 切换内容 → 淡入 → 开始计时）
+function transitionToNextPoem() {
+  // 1. 开始淡出
+  isPoemTransitioning.value = true
+  
+  // 2. 淡出完成后（800ms）
+  setTimeout(() => {
+    // 3. 切换诗歌内容（此时opacity=0，用户看不到）
+    currentPoemIndex.value = (currentPoemIndex.value + 1) % lyricPoems.value.length
+    currentLineIndex.value = 0
+    
+    // 4. 短暂停顿后开始淡入（100ms）
+    setTimeout(() => {
+      isPoemTransitioning.value = false
+      
+      // 5. 淡入完成后开始计时（800ms后）
+      setTimeout(() => {
+        lyricTimer = setTimeout(scrollNextLine, 3500)
+      }, 800)
+    }, 100)
+  }, 800)
+}
+
+// 启动歌词滚动
+function startLyricScroll() {
+  if (lyricTimer) return
+  loadLyricPoems()
+  currentPoemIndex.value = 0
+  currentLineIndex.value = 0
+  isPoemTransitioning.value = false
+  
+  // 开始第一次计时
+  lyricTimer = setTimeout(scrollNextLine, 3500)
+}
+
+// 停止歌词滚动
+function stopLyricScroll() {
+  if (lyricTimer) {
+    clearTimeout(lyricTimer)
+    lyricTimer = null
+  }
+}
+
+// 当前诗歌
+const currentLyricPoem = computed(() => {
+  if (lyricPoems.value.length === 0) return null
+  return lyricPoems.value[currentPoemIndex.value]
+})
+
+// 当前显示的3行（前一行、当前行、后一行）- 用于TransitionGroup
+const visibleLinesArray = computed(() => {
+  if (!currentLyricPoem.value) return []
+  const lines = currentLyricPoem.value.lines
+  const idx = currentLineIndex.value
+  const poemIdx = currentPoemIndex.value
+  
+  return [
+    { key: `${poemIdx}-${idx - 1}`, text: idx > 0 ? lines[idx - 1] : '' },
+    { key: `${poemIdx}-${idx}`, text: lines[idx] || '' },
+    { key: `${poemIdx}-${idx + 1}`, text: idx < lines.length - 1 ? lines[idx + 1] : '' }
+  ]
+})
+
+// 监听loading状态，启动/停止歌词滚动
+watch(loading, (isLoading) => {
+  if (isLoading) {
+    startLyricScroll()
+  } else {
+    stopLyricScroll()
+  }
+})
+
+// 组件卸载时清理
+onUnmounted(() => {
+  stopLyricScroll()
+})
+
+// ================================
 // 生命周期
 // ================================
 onMounted(async () => {
+  // 开发调试：?debug=loading 直接进入loading状态
+  if (route.query.debug === 'loading') {
+    // 先加载宇宙数据以获取诗歌
+    await zhouStore.loadUniverseContent()
+    loading.value = true
+    return
+  }
+  
   // 从URL参数读取数据
   const chapterParam = route.query.chapter as string | undefined
   const patternParam = route.query.pattern as string | undefined
@@ -564,7 +752,6 @@ const startOver = () => {
 .loading-icon {
   width: 80px;
   height: 80px;
-  animation: fadeInOut 2s ease-in-out infinite;
 }
 
 .loading-text {
@@ -583,6 +770,86 @@ const startOver = () => {
     opacity: 1;
   }
 }
+
+/* 歌词式诗歌滚动样式 */
+.lyric-container {
+  margin-top: var(--spacing-3xl);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  transition: opacity 0.8s ease;
+}
+
+/* 诗歌切换过渡效果 - 100%淡出 */
+.lyric-transitioning {
+  opacity: 0;
+}
+
+.lyric-lines {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.lyric-track {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  position: relative;
+}
+
+.lyric-line {
+  font-size: var(--font-size-base);
+  line-height: 1.8;
+  min-height: 1.8em;
+}
+
+.lyric-dim {
+  color: var(--text-tertiary);
+  opacity: 0.4;
+}
+
+.lyric-current {
+  color: var(--text-primary);
+  font-weight: 500;
+  opacity: 1;
+}
+
+/* TransitionGroup 平滑滚动动画 */
+.lyric-move,
+.lyric-enter-active,
+.lyric-leave-active {
+  transition: all 0.5s ease;
+}
+
+.lyric-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.lyric-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* 关键：离开元素保持居中 */
+.lyric-leave-active {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.lyric-meta {
+  margin-top: var(--spacing-xl);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
 
 .char-count:hover {
   opacity: 0.7;

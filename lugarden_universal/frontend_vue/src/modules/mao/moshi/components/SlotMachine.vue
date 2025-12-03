@@ -285,7 +285,7 @@ async function handleSpin() {
 </script>
 
 <template>
-  <div class="slot-machine">
+  <div class="slot-machine animate-fadeInUp" style="animation-delay: 0.3s;">
     <!-- 标题 -->
     <div class="slot-header">
       <h2 class="slot-title">摸诗</h2>

@@ -6,6 +6,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { Text } from 'troika-three-text'
 import type { CaogongProduct } from '../types/xinpin'
 import { products } from '../data/products'
@@ -232,36 +233,29 @@ async function createVendingMachine(sceneRef: THREE.Scene) {
   backPanel.position.set(0, 0.25, -0.99)  // 放在机身背面
   machineGroup.add(backPanel)
   
-  // 玻璃面板 - 脏玻璃效果（使用世界坐标实现全局连续纹理）
+  // 玻璃面板 - 脏玻璃效果（静态，无动画）
   const glassGeometry = new THREE.PlaneGeometry(4.5, 5.5)
-  grimeGlassMaterial = new THREE.ShaderMaterial({
+  const grimeGlassMaterial = new THREE.ShaderMaterial({
     uniforms: {
-      uTime: { value: 0 },
       uColor: { value: new THREE.Color('#aaddff') },
-      uOpacity: { value: 0.2 },
-      uGrimeScale: { value: 1.5 },  // 世界坐标下的缩放
-      uRainSpeed: { value: 0.1 }
+      uOpacity: { value: 0.04 },   // 降低基础不透明度
+      uGrimeScale: { value: 1.5 }
     },
     transparent: true,
     side: THREE.DoubleSide,
     depthWrite: false,
     vertexShader: `
-      varying vec2 vUv;
       varying vec3 vWorldPosition;
       void main() {
-        vUv = uv;
         vec4 worldPos = modelMatrix * vec4(position, 1.0);
         vWorldPosition = worldPos.xyz;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
     fragmentShader: `
-      uniform float uTime;
       uniform vec3 uColor;
       uniform float uOpacity;
       uniform float uGrimeScale;
-      uniform float uRainSpeed;
-      varying vec2 vUv;
       varying vec3 vWorldPosition;
 
       float random(vec2 st) {
@@ -280,14 +274,11 @@ async function createVendingMachine(sceneRef: THREE.Scene) {
       }
 
       void main() {
-        // 使用世界坐标采样，实现跨组件连续纹理
         vec2 worldUv = vWorldPosition.xy * uGrimeScale;
         float grime = noise(worldUv * 3.0);
-        vec2 rainUv = vec2(vWorldPosition.x * 8.0, vWorldPosition.y * 0.5 + uTime * uRainSpeed);
-        float rain = noise(rainUv);
-        rain = smoothstep(0.7, 0.85, rain);
-        vec3 finalColor = uColor + vec3(0.05) * grime + vec3(0.25) * rain;
-        float alpha = uOpacity + (grime * 0.05) + (rain * 0.15);
+        // 仅污渍效果，降低强度
+        vec3 finalColor = uColor + vec3(0.015) * grime;
+        float alpha = uOpacity + (grime * 0.015);
         gl_FragColor = vec4(finalColor, alpha);
       }
     `
@@ -296,20 +287,62 @@ async function createVendingMachine(sceneRef: THREE.Scene) {
   glass.position.set(0, 0.25, 1.1)
   machineGroup.add(glass)
   
+  // 侧面玻璃（连接正面和主体，形成玻璃罩）
+  const sideGlassDepth = 0.19
+  const sideGlassZ = 1.0 + sideGlassDepth / 2
+  const glassInnerWidth = 2.22
+  const glassTop = 2.96
+  const glassBottom = -2.46
+  const glassHeight = glassTop - glassBottom
+  const glassWidth = glassInnerWidth * 2
+  const glassYCenter = (glassTop + glassBottom) / 2
+  
+  // 左侧玻璃
+  const leftGlassGeo = new THREE.PlaneGeometry(sideGlassDepth, glassHeight)
+  const leftGlass = new THREE.Mesh(leftGlassGeo, grimeGlassMaterial)
+  leftGlass.position.set(-glassInnerWidth, glassYCenter, sideGlassZ)
+  leftGlass.rotation.y = Math.PI / 2
+  machineGroup.add(leftGlass)
+  
+  // 右侧玻璃
+  const rightGlass = new THREE.Mesh(leftGlassGeo, grimeGlassMaterial)
+  rightGlass.position.set(glassInnerWidth, glassYCenter, sideGlassZ)
+  rightGlass.rotation.y = -Math.PI / 2
+  machineGroup.add(rightGlass)
+  
+  // 上侧玻璃
+  const topGlassGeo = new THREE.PlaneGeometry(glassWidth, sideGlassDepth)
+  const topGlass = new THREE.Mesh(topGlassGeo, grimeGlassMaterial)
+  topGlass.position.set(0, glassTop, sideGlassZ)
+  topGlass.rotation.x = Math.PI / 2
+  machineGroup.add(topGlass)
+  
+  // 下侧玻璃
+  const bottomGlass = new THREE.Mesh(topGlassGeo, grimeGlassMaterial)
+  bottomGlass.position.set(0, glassBottom, sideGlassZ)
+  bottomGlass.rotation.x = -Math.PI / 2
+  machineGroup.add(bottomGlass)
+  
   // === 电子屏（机器顶部嵌入位置 y=4）===
-  // 电子屏背板
-  const screenBackGeometry = new THREE.BoxGeometry(5.2, 1.2, 0.5)
-  const screenBackMaterial = new THREE.MeshStandardMaterial({
-    color: 0x53565A,  // 枪灰色
-    metalness: 0.85,
-    roughness: 0.35
-  })
-  const screenBack = new THREE.Mesh(screenBackGeometry, screenBackMaterial)
-  screenBack.position.set(0, 4, 0.3)
+  // 电子屏背板（宽度与主体一致5.0，紧贴顶部y=4.1，z前端对齐主体）
+  // BoxGeometry 5.0 x 1.2 x 0.5，使用蓝色金属纹理
+  const screenBackMats = [
+    createOuterMat(0.5, 1.2),   // +X
+    createOuterMat(0.5, 1.2),   // -X
+    createOuterMat(5.0, 0.5),   // +Y
+    createOuterMat(5.0, 0.5),   // -Y
+    createOuterMat(5.0, 1.2),   // +Z 前
+    createOuterMat(5.0, 1.2)    // -Z 后
+  ]
+  const screenBack = new THREE.Mesh(
+    new THREE.BoxGeometry(5.0, 1.2, 0.5),
+    screenBackMats
+  )
+  screenBack.position.set(0, 4.1, 0.75)
   machineGroup.add(screenBack)
   
   // 电子屏发光面板 - LED点阵效果
-  const screenGlowGeometry = new THREE.PlaneGeometry(4.8, 0.8)
+  const screenGlowGeometry = new THREE.PlaneGeometry(4.6, 0.8)
   const ledShaderMaterial = new THREE.ShaderMaterial({
     uniforms: {
       uColor: { value: new THREE.Color(0xff6b9d) },
@@ -350,13 +383,23 @@ async function createVendingMachine(sceneRef: THREE.Scene) {
     transparent: true,
     side: THREE.FrontSide
   })
+  // LED背景黑块（在LED后面，增强对比度）
+  const ledBackGeometry = new THREE.PlaneGeometry(4.6, 0.8)
+  const ledBackMaterial = new THREE.MeshBasicMaterial({
+    color: 0x0a0a0a
+  })
+  const ledBack = new THREE.Mesh(ledBackGeometry, ledBackMaterial)
+  ledBack.position.set(0, 4.1, 1.0)
+  machineGroup.add(ledBack)
+  
+  // LED面板（在黑块前面）
   const screenGlow = new THREE.Mesh(screenGlowGeometry, ledShaderMaterial)
-  screenGlow.position.set(0, 4, 0.56)
+  screenGlow.position.set(0, 4.1, 1.01)
   machineGroup.add(screenGlow)
   
   // 电子屏滚动文字 - 两个Text对象首尾相接
-  const clipLeft = new THREE.Plane(new THREE.Vector3(1, 0, 0), 2.4)
-  const clipRight = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 2.4)
+  const clipLeft = new THREE.Plane(new THREE.Vector3(1, 0, 0), 2.3)
+  const clipRight = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 2.3)
   
   // 创建第一个文字
   screenText1 = new Text()
@@ -365,14 +408,14 @@ async function createVendingMachine(sceneRef: THREE.Scene) {
   screenText1.color = 0x00ffaa
   screenText1.anchorX = 'left'
   screenText1.anchorY = 'middle'
-  screenText1.position.set(2.4, 4, 0.6)
+  screenText1.position.set(2.3, 4.1, 1.02)  // 与LED面板对齐
   screenText1.material.clippingPlanes = [clipLeft, clipRight]
   screenText1.sync(() => {
     const bounds = screenText1.textRenderInfo?.blockBounds
     if (bounds) {
       textWidth = bounds[2] - bounds[0]
       // 第二个文字紧跟第一个后面
-      screenText2.position.x = 2.4 + textWidth
+      screenText2.position.x = 2.3 + textWidth
     }
   })
   sceneRef.add(screenText1)
@@ -384,65 +427,232 @@ async function createVendingMachine(sceneRef: THREE.Scene) {
   screenText2.color = 0x00ffaa
   screenText2.anchorX = 'left'
   screenText2.anchorY = 'middle'
-  screenText2.position.set(2.4 + 30, 4, 0.6)  // 临时位置，sync后更新
+  screenText2.position.set(2.3 + 30, 4.1, 1.02)  // 临时位置，sync后更新
   screenText2.material.clippingPlanes = [clipLeft, clipRight]
   screenText2.sync()
   sceneRef.add(screenText2)
   
-  // === 霓虹灯招牌（机器上方悬空）===
+  // === 霓虹灯招牌支架 ===
+  // 加载锈蚀纹理
+  const rustyTexture = await new Promise<THREE.Texture>((resolve) => {
+    textureLoader.load(
+      new URL('../assets/texture/rusty_metal_04_diff_1k.jpg', import.meta.url).href,
+      (texture) => {
+        texture.wrapS = THREE.RepeatWrapping
+        texture.wrapT = THREE.RepeatWrapping
+        resolve(texture)
+      }
+    )
+  })
+  
+  // 创建锈蚀纹理材质函数
+  function createRustyMat(width: number, height: number) {
+    const tex = rustyTexture.clone()
+    tex.needsUpdate = true
+    tex.repeat.set(width * scale, height * scale)
+    return new THREE.MeshStandardMaterial({
+      map: tex,
+      metalness: 0.7,
+      roughness: 0.6
+    })
+  }
+  
+  // 电子屏顶部 y=4.7，招牌 y=5.15，高度差0.45
+  const poleHeight = 0.45
+  const poleBottom = 4.7  // 电子屏顶部
+  const poleCenter = poleBottom + poleHeight / 2
+  
+  // 立杆材质（立方体：0.05 x 0.45 x 0.05）
+  const poleSize = 0.05
+  const poleMats = [
+    createRustyMat(poleSize, poleHeight),  // +X
+    createRustyMat(poleSize, poleHeight),  // -X
+    createRustyMat(poleSize, poleSize),    // +Y
+    createRustyMat(poleSize, poleSize),    // -Y
+    createRustyMat(poleSize, poleHeight),  // +Z
+    createRustyMat(poleSize, poleHeight)   // -Z
+  ]
+  
+  // 左立杆
+  const leftPole = new THREE.Mesh(
+    new THREE.BoxGeometry(poleSize, poleHeight, poleSize),
+    poleMats
+  )
+  leftPole.position.set(-1.4, poleCenter, 0.95)
+  machineGroup.add(leftPole)
+  
+  // 右立杆
+  const rightPole = new THREE.Mesh(
+    new THREE.BoxGeometry(poleSize, poleHeight, poleSize),
+    poleMats
+  )
+  rightPole.position.set(1.4, poleCenter, 0.95)
+  machineGroup.add(rightPole)
+  
+  // 横梁材质（每面按尺寸设置repeat）
+  // BoxGeometry 2.86 x 0.05 x 0.05
+  const barMats = [
+    createRustyMat(0.05, 0.05),  // +X
+    createRustyMat(0.05, 0.05),  // -X
+    createRustyMat(2.86, 0.05),  // +Y
+    createRustyMat(2.86, 0.05),  // -Y
+    createRustyMat(2.86, 0.05),  // +Z
+    createRustyMat(2.86, 0.05)   // -Z
+  ]
+  const crossBar = new THREE.Mesh(
+    new THREE.BoxGeometry(2.86, 0.05, 0.05),
+    barMats
+  )
+  crossBar.position.set(0, poleBottom + poleHeight, 0.95)
+  machineGroup.add(crossBar)
+  
+  // === 霓虹灯招牌 ===
   const neonTextGroup = new THREE.Group()
-  neonTextGroup.position.set(0, 5, 0.25)  // z与电子屏对齐
+  neonTextGroup.position.set(0, 5.15, 1.0)  // 稍微上移，在横梁上方
   
-  // 底层：白色描边/光晕（稍大）
-  const glowText = new Text()
-  glowText.text = 'NEW ARRIVAL'
-  glowText.font = cyberpunkFontUrl
-  glowText.fontSize = 0.4
-  glowText.color = 0xffffff
-  glowText.anchorX = 'center'
-  glowText.anchorY = 'middle'
-  glowText.outlineWidth = 0.025
-  glowText.outlineColor = 0xffffff
-  glowText.outlineOpacity = 0.6
-  glowText.position.z = -0.01  // 稍微靠后
-  glowText.sync()
-  neonTextGroup.add(glowText)
+  // 多层堆叠模拟厚度（共6层，厚度约0.05）
+  const textDepth = 0.05
+  const layers = 6
   
-  // 顶层：粉色主体
-  const mainText = new Text()
-  mainText.text = 'NEW ARRIVAL'
-  mainText.font = cyberpunkFontUrl
-  mainText.fontSize = 0.4
-  mainText.color = 0xff6b9d
-  mainText.anchorX = 'center'
-  mainText.anchorY = 'middle'
-  mainText.outlineWidth = 0.012
-  mainText.outlineColor = 0xffb6c1
-  mainText.sync()
-  neonTextGroup.add(mainText)
+  for (let i = 0; i < layers; i++) {
+    const zPos = (i / (layers - 1) - 0.5) * textDepth  // -0.025 到 +0.025
+    const isEdge = i === 0 || i === layers - 1  // 首尾层
+    
+    // 光晕层（只在边缘）
+    if (isEdge) {
+      const glowLayer = new Text()
+      glowLayer.text = 'NEW ARRIVAL'
+      glowLayer.font = cyberpunkFontUrl
+      glowLayer.fontSize = 0.4
+      glowLayer.color = 0xffffff
+      glowLayer.anchorX = 'center'
+      glowLayer.anchorY = 'middle'
+      glowLayer.outlineWidth = 0.025
+      glowLayer.outlineColor = 0xffffff
+      glowLayer.outlineOpacity = 0.6
+      glowLayer.position.z = zPos - 0.005
+      glowLayer.sync(() => {
+        if (glowLayer.material) glowLayer.material.side = THREE.DoubleSide
+      })
+      neonTextGroup.add(glowLayer)
+    }
+    
+    // 主体层（带渐变：因Troika按字符UV映射，实际效果为字符级微渐变，产生霓虹质感）
+    const mainLayer = new Text()
+    mainLayer.text = 'NEW ARRIVAL'
+    mainLayer.font = cyberpunkFontUrl
+    mainLayer.fontSize = 0.4
+    mainLayer.anchorX = 'center'
+    mainLayer.anchorY = 'middle'
+    mainLayer.position.z = zPos
+    
+    if (isEdge) {
+      // 边缘层使用渐变材质（按字符UV产生微渐变效果）
+      const gradientMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          uTopColor: { value: new THREE.Color(0xff6b9d) },     // 粉色
+          uBottomColor: { value: new THREE.Color(0x8b0000) }   // 深红
+        },
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 uTopColor;
+          uniform vec3 uBottomColor;
+          varying vec2 vUv;
+          void main() {
+            vec3 color = mix(uBottomColor, uTopColor, vUv.y);
+            gl_FragColor = vec4(color, 1.0);
+          }
+        `,
+        side: THREE.DoubleSide,
+        transparent: true
+      })
+      mainLayer.material = gradientMaterial
+    } else {
+      mainLayer.color = 0x8b3a5a  // 中间层暗色
+    }
+    
+    mainLayer.sync(() => {
+      if (mainLayer.material && !isEdge) {
+        mainLayer.material.side = THREE.DoubleSide
+      }
+    })
+    neonTextGroup.add(mainLayer)
+  }
   
   sceneRef.add(neonTextGroup)
   
-  // 霓虹边框 - 更粗更亮
+  // 霓虹边框 - 一体式（Shape + ExtrudeGeometry）
   const neonMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffff })
   const neonThickness = 0.08
   
-  // 展示区边框
-  const framePositions = [
-    { geo: [4.6, neonThickness, neonThickness], pos: [0, 3, 1.15] },  // 顶，保持不变
-    { geo: [4.6, neonThickness, neonThickness], pos: [0, -2.5, 1.15] }, // 底，对齐下边框顶部
-    { geo: [neonThickness, 5.5, neonThickness], pos: [-2.25, 0.25, 1.15] }, // 左，高度增加
-    { geo: [neonThickness, 5.5, neonThickness], pos: [2.25, 0.25, 1.15] }  // 右
+  // 创建框形Shape
+  const outerWidth = 4.6 / 2
+  const outerTop = 3 + neonThickness / 2
+  const outerBottom = -2.5 - neonThickness / 2
+  const innerWidth = outerWidth - neonThickness
+  const innerTop = outerTop - neonThickness
+  const innerBottom = outerBottom + neonThickness
+  
+  const frameShape = new THREE.Shape()
+  // 外框（顺时针）
+  frameShape.moveTo(-outerWidth, outerBottom)
+  frameShape.lineTo(outerWidth, outerBottom)
+  frameShape.lineTo(outerWidth, outerTop)
+  frameShape.lineTo(-outerWidth, outerTop)
+  frameShape.closePath()
+  
+  // 内框挖洞（逆时针）
+  const hole = new THREE.Path()
+  hole.moveTo(-innerWidth, innerBottom)
+  hole.lineTo(-innerWidth, innerTop)
+  hole.lineTo(innerWidth, innerTop)
+  hole.lineTo(innerWidth, innerBottom)
+  hole.closePath()
+  frameShape.holes.push(hole)
+  
+  // 合并框体和支架为一体式组件
+  const bracketLength = 0.19
+  const frameZ = 1.15 - neonThickness / 2
+  const bracketZ = 1.15 + neonThickness / 2 - bracketLength / 2
+  const cornerX = outerWidth - neonThickness / 2
+  const cornerTopY = outerTop - neonThickness / 2
+  const cornerBottomY = outerBottom + neonThickness / 2
+  
+  // 框体几何体（平移到正确位置）
+  const frameGeometry = new THREE.ExtrudeGeometry(frameShape, {
+    depth: neonThickness,
+    bevelEnabled: false
+  })
+  frameGeometry.translate(0, 0, frameZ)
+  
+  // 四角支架几何体
+  const cornerPositions = [
+    [-cornerX, cornerTopY],
+    [cornerX, cornerTopY],
+    [-cornerX, cornerBottomY],
+    [cornerX, cornerBottomY]
   ]
   
-  framePositions.forEach(({ geo, pos }) => {
-    const neon = new THREE.Mesh(
-      new THREE.BoxGeometry(geo[0], geo[1], geo[2]),
-      neonMaterial
-    )
-    neon.position.set(pos[0], pos[1], pos[2])
-    machineGroup.add(neon)
+  const bracketGeometries = cornerPositions.map(([x, y]) => {
+    const geo = new THREE.BoxGeometry(neonThickness, neonThickness, bracketLength)
+    geo.translate(x, y, bracketZ)
+    return geo
   })
+  
+  // 合并所有几何体（转换为非索引几何体确保兼容）
+  const mergedGeometry = BufferGeometryUtils.mergeGeometries([
+    frameGeometry.toNonIndexed(),
+    ...bracketGeometries.map(g => g.toNonIndexed())
+  ])
+  
+  const neonFrameComplete = new THREE.Mesh(mergedGeometry, neonMaterial)
+  machineGroup.add(neonFrameComplete)
   
   // 出货口
   const dispenserGeometry = new THREE.BoxGeometry(4, 0.8, 0.6)
@@ -726,14 +936,14 @@ async function initThreeJS() {
   const renderPass = new RenderPass(scene.value, camera.value)
   composer.value.addPass(renderPass)
   
-  // 白色背景下关闭Bloom
-  // const bloomPass = new UnrealBloomPass(
-  //   new THREE.Vector2(width, height),
-  //   1.0,   // strength
-  //   0.4,   // radius
-  //   0.8    // threshold
-  // )
-  // composer.value.addPass(bloomPass)
+  // Bloom辉光效果（霓虹灯发光）
+  const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(width, height),
+    0.8,   // strength - 辉光强度
+    0.5,   // radius - 辉光半径
+    0.7    // threshold - 亮度阈值（低于此值不发光）
+  )
+  composer.value.addPass(bloomPass)
   
   // 环境光
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.4)

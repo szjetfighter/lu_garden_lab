@@ -114,6 +114,30 @@
   - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/assets/texture/blue_metal_plate_diff_1k.jpg`（新增）
   - `.gitignore`（添加.blend/忽略）
 - 完成状态：✅ 已完成
+- 对应commit: `894012d`
+
+#### - [x] 任务A.7：3D场景结构优化与视觉增强
+- **核心思想**: 优化售货机各组件的位置对齐、添加支架结构、增强霓虹灯效果
+- 交付物：
+  - 电子屏位置调整（宽度5.0与主体一致，y=4.1紧贴顶部，z=0.75前端对齐）
+  - LED背景黑块增强对比度
+  - LED/文字宽度4.6（与上下边距等宽0.2）
+  - 霓虹灯招牌支架（立杆+横梁，锈蚀纹理，BoxGeometry）
+  - 霓虹灯文字厚度（6层堆叠模拟，DoubleSide双面渲染）
+  - 霓虹灯文字渐变（ShaderMaterial，因Troika UV映射产生字符级微渐变效果）
+  - 霓虹边框一体式重构（Shape+ExtrudeGeometry+四角支架，BufferGeometryUtils合并）
+  - 侧面玻璃罩（左右上下四面，与支架深度一致）
+  - 脏玻璃效果优化（移除动画，降低强度：opacity=0.04, grime=0.015）
+  - Bloom辉光效果启用（UnrealBloomPass）
+- 验收标准：
+  - 电子屏与主体对齐
+  - 霓虹灯有厚度感和辉光效果
+  - 霓虹边框一体式无接缝
+  - 玻璃罩完整包裹展示区
+- **风险评估**: 中风险
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
+- 完成状态：✅ 已完成
 - 待commit
 
 ---

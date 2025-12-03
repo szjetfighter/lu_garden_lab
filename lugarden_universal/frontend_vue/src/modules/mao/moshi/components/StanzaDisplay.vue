@@ -11,7 +11,8 @@ import { FontSizeCalculator } from '@/shared/services/FontSizeCalculator'
 import { 
   DocumentDuplicateIcon, 
   ArrowDownTrayIcon,
-  CheckIcon
+  CheckIcon,
+  DocumentTextIcon
 } from '@heroicons/vue/24/outline'
 
 const store = useMoshiStore()
@@ -186,7 +187,7 @@ const actionButtons = computed(() => [
   <Transition name="fade-slide">
     <div v-if="stanza" class="stanza-display">
       <div class="stanza-header">
-        <span class="stanza-icon">📜</span>
+        <DocumentTextIcon class="stanza-icon" />
         <span class="stanza-label">你摸到了一节诗</span>
       </div>
       
@@ -240,7 +241,9 @@ const actionButtons = computed(() => [
 }
 
 .stanza-icon {
-  font-size: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #6b7280;
 }
 
 .stanza-label {

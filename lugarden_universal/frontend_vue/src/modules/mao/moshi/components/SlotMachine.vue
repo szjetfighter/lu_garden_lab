@@ -8,6 +8,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useMoshiStore } from '../stores/moshiStore'
 import { moshiApi } from '../services/moshiApi'
 import type { MoshiSymbol } from '../types/moshi'
+import { EyeIcon } from '@heroicons/vue/24/outline'
 
 /**
  * 根据符号ID获取图片URL
@@ -289,7 +290,7 @@ async function handleSpin() {
     <!-- 标题 -->
     <div class="slot-header">
       <h2 class="slot-title">摸诗</h2>
-      <p class="slot-subtitle">COME ON！让我康康你的手气 👀</p>
+      <p class="slot-subtitle">COME ON！让我康康你的手气 <EyeIcon class="subtitle-icon" /></p>
     </div>
     
     <!-- 矩阵区域 -->
@@ -384,6 +385,16 @@ async function handleSpin() {
   color: #666;
   font-size: 0.9rem;
   margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.subtitle-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #666;
 }
 
 .slot-matrix {

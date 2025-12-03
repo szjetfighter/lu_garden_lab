@@ -152,11 +152,11 @@ function createVendingMachine(sceneRef: THREE.Scene) {
   backCover.rotation.y = Math.PI  // 朝向背面
   machineGroup.add(backCover)
   
-  // 外框边缘（左右上下四条边）
+  // 外框边缘（左右上下四条边）- 枪灰色
   const frameMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1a1a1a,
-    metalness: 0.9,
-    roughness: 0.2
+    color: 0x53565A,  // 枪灰色
+    metalness: 0.85,
+    roughness: 0.35
   })
   // 左边框
   const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(0.3, 7, 2), frameMaterial)
@@ -176,7 +176,7 @@ function createVendingMachine(sceneRef: THREE.Scene) {
   machineGroup.add(bottomFrame)
   
   // 内部展示背板（只渲染背面，不遮挡产品）
-  const backPanelGeometry = new THREE.PlaneGeometry(4.4, 5.2)
+  const backPanelGeometry = new THREE.PlaneGeometry(4.4, 5.5)  // 高度增加，底部对齐下边框
   const backPanelMaterial = new THREE.MeshStandardMaterial({
     color: 0x0a0a0a,
     metalness: 0.5,
@@ -184,11 +184,11 @@ function createVendingMachine(sceneRef: THREE.Scene) {
     side: THREE.FrontSide
   })
   const backPanel = new THREE.Mesh(backPanelGeometry, backPanelMaterial)
-  backPanel.position.set(0, 0.4, -0.2)
+  backPanel.position.set(0, 0.25, -0.2)  // 中心y调整，底部到-2.5，顶部到3.0
   machineGroup.add(backPanel)
   
   // 玻璃面板
-  const glassGeometry = new THREE.BoxGeometry(4.5, 5.3, 0.05)
+  const glassGeometry = new THREE.BoxGeometry(4.5, 5.5, 0.05)  // 与背板对齐
   const glassMaterial = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     metalness: 0,
@@ -199,16 +199,16 @@ function createVendingMachine(sceneRef: THREE.Scene) {
     opacity: 0.15
   })
   const glass = new THREE.Mesh(glassGeometry, glassMaterial)
-  glass.position.set(0, 0.4, 1.1)
+  glass.position.set(0, 0.25, 1.1)
   machineGroup.add(glass)
   
   // === 电子屏（机器顶部嵌入位置 y=4）===
   // 电子屏背板
   const screenBackGeometry = new THREE.BoxGeometry(5.2, 1.2, 0.5)
   const screenBackMaterial = new THREE.MeshStandardMaterial({
-    color: 0x0a0a15,
-    metalness: 0.8,
-    roughness: 0.3
+    color: 0x53565A,  // 枪灰色
+    metalness: 0.85,
+    roughness: 0.35
   })
   const screenBack = new THREE.Mesh(screenBackGeometry, screenBackMaterial)
   screenBack.position.set(0, 4, 0.3)
@@ -335,10 +335,10 @@ function createVendingMachine(sceneRef: THREE.Scene) {
   
   // 展示区边框
   const framePositions = [
-    { geo: [4.6, neonThickness, neonThickness], pos: [0, 3, 1.15] },  // 顶
-    { geo: [4.6, neonThickness, neonThickness], pos: [0, -2.2, 1.15] }, // 底
-    { geo: [neonThickness, 5.2, neonThickness], pos: [-2.25, 0.4, 1.15] }, // 左
-    { geo: [neonThickness, 5.2, neonThickness], pos: [2.25, 0.4, 1.15] }  // 右
+    { geo: [4.6, neonThickness, neonThickness], pos: [0, 3, 1.15] },  // 顶，保持不变
+    { geo: [4.6, neonThickness, neonThickness], pos: [0, -2.5, 1.15] }, // 底，对齐下边框顶部
+    { geo: [neonThickness, 5.5, neonThickness], pos: [-2.25, 0.25, 1.15] }, // 左，高度增加
+    { geo: [neonThickness, 5.5, neonThickness], pos: [2.25, 0.25, 1.15] }  // 右
   ]
   
   framePositions.forEach(({ geo, pos }) => {
@@ -592,7 +592,7 @@ async function initThreeJS() {
   
   // 创建场景
   scene.value = new THREE.Scene()
-  const bgColor = 0x2B2B2B  // 深水泥灰
+  const bgColor = 0x808080  // 中灰色
   scene.value.background = new THREE.Color(bgColor)
   
   // 创建相机 - 稍微倾斜的视角
@@ -654,6 +654,26 @@ async function initThreeJS() {
   const backLight = new THREE.DirectionalLight(0xff6b9d, 0.4)
   backLight.position.set(0, 5, -5)
   scene.value.add(backLight)
+  
+  // 聚光灯 - 从右上方打光
+  const spotLight = new THREE.SpotLight(0xffffff, 3)
+  spotLight.position.set(6, 8, 8)
+  spotLight.target.position.set(0, 0, 0)
+  spotLight.angle = Math.PI / 5
+  spotLight.penumbra = 0.5
+  spotLight.decay = 1
+  spotLight.distance = 40
+  scene.value.add(spotLight)
+  scene.value.add(spotLight.target)
+  
+  // 辅助聚光灯 - 从左前方补光
+  const spotLight2 = new THREE.SpotLight(0xaaccff, 1.5)
+  spotLight2.position.set(-5, 6, 8)
+  spotLight2.target.position.set(0, 0, 0)
+  spotLight2.angle = Math.PI / 6
+  spotLight2.penumbra = 0.5
+  scene.value.add(spotLight2)
+  scene.value.add(spotLight2.target)
   
   // 创建售货机
   createVendingMachine(scene.value)

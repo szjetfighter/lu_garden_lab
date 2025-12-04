@@ -87,9 +87,8 @@ onUnmounted(() => {
     <!-- 第一层声明 -->
     <div v-else-if="phase === 'disclaimer'" class="min-h-screen flex items-center justify-center">
       <div class="text-center max-w-lg px-6">
-        <h1 class="text-2xl mb-8 text-amber-400">⚠️ 先锋实验模块</h1>
-        <p class="text-gray-300 mb-4">本模块是一个先锋性艺术实验。</p>
-        <p class="text-gray-300 mb-4">其内容可能具有冒犯性。</p>
+        <h1 class="text-2xl mb-8 text-amber-400">⚠️</h1>
+        <p class="text-gray-300 mb-4">本模块内容可能具有冒犯性。</p>
         <p class="text-gray-300 mb-8">
           如果您选择继续，即表示您同意<br/>承担被冒犯的可能。
         </p>

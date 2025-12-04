@@ -28,7 +28,7 @@
           @click="enterMoshi"
         >
           <div class="flex-1">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">摸诗</h2>
+            <h2 class="text-2xl font-bold mb-2 text-gray-800">摸诗</h2>
             <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">
               棒子老虎鸡？不如老虎机！
             </div>

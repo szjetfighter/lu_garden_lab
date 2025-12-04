@@ -147,10 +147,10 @@ const routes: Array<RouteRecordRaw> = [
   // Pending（先锋实验）宇宙入口
   {
     path: '/pending',
-    name: 'PendingSelection',
-    component: () => import('@/modules/pending/views/PendingSelection.vue'),
+    name: 'PendingMainProjectSelection',
+    component: () => import('@/modules/pending/views/MainProjectSelection.vue'),
     meta: {
-      title: '先锋实验 - 陆家花园',
+      title: '匿，腻，溺 - 陆家花园',
       requiresAuth: false
     }
   },

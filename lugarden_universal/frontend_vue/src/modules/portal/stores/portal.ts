@@ -62,7 +62,7 @@ export const usePortalStore = defineStore('portal', () => {
   const navigationConfig: UniverseNavigation = {
     zhou: '/zhou',
     maoxiaodou: '/maoxiaodou',  // 毛小豆宇宙入口
-    // 可扩展其他宇宙
+    pending: '/pending',  // 先锋实验宇宙入口
   }
 
   // ================================
@@ -147,6 +147,23 @@ export const usePortalStore = defineStore('portal', () => {
         
         if (response.status === 'success' && response.universes) {
           state.universes = response.universes
+          
+          // pending宇宙特殊处理：
+          // pending宇宙的内容具有先锋性、实验性，可能涉及敏感内容或授权待定的素材，
+          // 因此不宜写入生产数据库，以保持其灵活性和可随时调整的特性。
+          // 这里通过前端硬编码方式补充，便于快速迭代和风险隔离。
+          const hasPending = state.universes.some(u => u.id === 'pending')
+          if (!hasPending) {
+            state.universes.push({
+              id: 'pending',
+              name: '匿，腻，溺',
+              description: '实验，以及冒犯。谁？当然是你',
+              status: 'published',
+              meta: '隐匿 · 油腻 · 宠溺',
+              version: '0.1.0',
+              lastUpdated: '2025-12-05'
+            })
+          }
         } else {
           throw new Error(response.message || '获取宇宙列表失败')
         }
@@ -176,6 +193,15 @@ export const usePortalStore = defineStore('portal', () => {
             meta: '角色 · 场景 · 故事 · 诗',
             version: '1.0.0',
             lastUpdated: '2025-11-27'
+          },
+          {
+            id: 'pending',
+            name: '匿，腻，溺',
+            description: '实验，以及冒犯。谁？当然是你',
+            status: 'published',
+            meta: '隐匿 · 油腻 · 宠溺',
+            version: '0.1.0',
+            lastUpdated: '2025-12-05'
           }
         ]
       }

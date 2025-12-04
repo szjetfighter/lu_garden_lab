@@ -540,6 +540,79 @@ modules/pending/whoiszd/
 
 ---
 
+### **阶段12-05_B：pending宇宙整合与UI规范化**
+
+#### - [x] 任务B.1：pending宇宙L0/L1入口配置与文案调整
+
+- **核心思想**: 将whoiszd模块正式整合到pending宇宙的导航体系中，配置L0门户入口和L1宇宙选择页面，并调整各入口的文案风格。
+- 交付物：
+  - `portal/stores/portal.ts` 添加pending宇宙到L0门户
+  - `pending/views/MainProjectSelection.vue` L1入口页面（统一命名）
+  - `pending/views/index.ts` 更新导出
+  - `router/index.ts` 更新pending路由
+  - `pending/001_newarrival/views/XinpinView.vue` 添加返回按钮
+  - `pending/002_whoiszd/views/EntryGuard.vue` 简化警告文本
+- 验收标准：
+  - L0门户显示pending宇宙卡片（匿，腻，溺）
+  - 点击可进入L1入口页面，显示两个子模块
+  - 各子模块入口文案符合实验性定位
+  - 返回按钮可正常导航
+  - TypeScript类型检查通过
+- **风险评估**: 低风险。
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/portal/stores/portal.ts`
+  - `lugarden_universal/frontend_vue/src/modules/pending/views/MainProjectSelection.vue` (新建)
+  - `lugarden_universal/frontend_vue/src/modules/pending/views/index.ts`
+  - `lugarden_universal/frontend_vue/src/router/index.ts`
+  - `lugarden_universal/frontend_vue/src/modules/pending/001_newarrival/views/XinpinView.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/EntryGuard.vue`
+  - `lugarden_universal/frontend_vue/src/modules/mao/views/MainProjectSelection.vue` (统一mb-2)
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤B.1.1：在portal.ts添加pending宇宙导航配置和硬编码数据
+  - [x] 步骤B.1.2：创建pending/views/MainProjectSelection.vue（L1入口）
+  - [x] 步骤B.1.3：更新路由配置（/pending指向MainProjectSelection）
+  - [x] 步骤B.1.4：更新L1入口文案（匿，腻，溺 / 可能是实验，更可能是冒犯）
+  - [x] 步骤B.1.5：更新子模块入口文案（NEW ARRIVAL: 贩卖机，卖空气 / 谁是ZD: 炎石做得，陆家明做不得？）
+  - [x] 步骤B.1.6：为XinpinView添加返回按钮
+  - [x] 步骤B.1.7：简化EntryGuard警告文本（删除"先锋实验模块"，保留⚠️）
+  - [x] 步骤B.1.8：统一三个宇宙MainProjectSelection的h2 margin为mb-2
+
+#### - [ ] 任务B.2：whoiszd模块UI设计系统统一化
+
+- **核心思想**: whoiszd模块可保持深色配色以形成反差，但必须复用全局设计系统（统一卡片、按钮、动画、字体），而非完全自定义样式。
+- 交付物：
+  - 深色主题CSS变量（scoped或全局）
+  - 使用unified-content-card的深色变体
+  - 使用btn-primary的深色变体
+  - 使用animate-fadeInUp动画
+  - 使用全局字体系统
+- 验收标准：
+  - 视觉上保持深色反差风格
+  - 但卡片、按钮、动画、字体与主站统一
+  - TypeScript类型检查通过
+  - 构建无报错
+- **风险评估**: 中风险。需要平衡设计统一性与风格差异。
+- 预期改动文件（预判）：
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/EntryGuard.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/ConfirmView.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/GameView.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/TerminatedView.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/ResultView.vue`
+  - 可能需要新增：`assets/styles/theme-dark.css` 或 scoped变量
+- 完成状态：⏳ 待执行
+- 执行步骤：
+  - [ ] 步骤B.2.1：分析当前whoiszd模块的自定义样式
+  - [ ] 步骤B.2.2：设计深色主题CSS变量方案
+  - [ ] 步骤B.2.3：重构EntryGuard.vue使用设计系统
+  - [ ] 步骤B.2.4：重构ConfirmView.vue使用设计系统
+  - [ ] 步骤B.2.5：重构GameView.vue使用设计系统
+  - [ ] 步骤B.2.6：重构TerminatedView.vue使用设计系统
+  - [ ] 步骤B.2.7：重构ResultView.vue使用设计系统
+  - [ ] 步骤B.2.8：验证视觉效果和功能完整性
+
+---
+
 ## 测试与验收
 
 - 待定
@@ -558,7 +631,7 @@ modules/pending/whoiszd/
 
 ## 当前状态
 
-🔄 进行中 - 阶段A（模块基础架构）已完成，待阶段B规划（诗歌内容生成、UI优化等）
+🔄 进行中 - 阶段A已完成，阶段B任务B.1（pending宇宙整合）已完成，任务B.2（UI设计系统统一化）待执行
 
 ---
 *本模板基于陆家花园项目Git开发指南创建（增强版）*

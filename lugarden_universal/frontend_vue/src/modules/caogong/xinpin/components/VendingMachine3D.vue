@@ -993,6 +993,11 @@ async function initThreeJS() {
   controls.value.maxPolarAngle = Math.PI / 1.8
   controls.value.minPolarAngle = Math.PI / 4
   controls.value.enablePan = false
+  // 触摸设备设置：单指旋转，双指也旋转（避免dolly触摸事件bug）
+  controls.value.touches = {
+    ONE: THREE.TOUCH.ROTATE,
+    TWO: THREE.TOUCH.DOLLY_ROTATE
+  }
   
   // 后处理 - Bloom效果
   composer.value = new EffectComposer(renderer.value)
@@ -1079,8 +1084,35 @@ onUnmounted(() => {
     controls.value.dispose()
   }
   
+  // 清理EffectComposer
+  if (composer.value) {
+    composer.value.dispose()
+  }
+  
+  // 深度清理场景中的所有对象
+  if (scene.value) {
+    scene.value.traverse((object: THREE.Object3D) => {
+      if (object instanceof THREE.Mesh) {
+        object.geometry?.dispose()
+        if (object.material) {
+          if (Array.isArray(object.material)) {
+            object.material.forEach(mat => mat.dispose())
+          } else {
+            object.material.dispose()
+          }
+        }
+      }
+    })
+    // 清理背景纹理
+    if (scene.value.background instanceof THREE.Texture) {
+      scene.value.background.dispose()
+    }
+    scene.value.clear()
+  }
+  
   if (renderer.value) {
     renderer.value.dispose()
+    renderer.value.forceContextLoss()  // 强制释放WebGL上下文
     if (containerRef.value && renderer.value.domElement) {
       containerRef.value.removeChild(renderer.value.domElement)
     }

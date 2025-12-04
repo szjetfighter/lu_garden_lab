@@ -176,9 +176,39 @@ function cleanup() {
     animationId = null
   }
   
+  // 深度清理模型
   if (currentModel.value && scene.value) {
+    currentModel.value.traverse((object: THREE.Object3D) => {
+      if (object instanceof THREE.Mesh) {
+        object.geometry?.dispose()
+        if (object.material) {
+          if (Array.isArray(object.material)) {
+            object.material.forEach(mat => mat.dispose())
+          } else {
+            object.material.dispose()
+          }
+        }
+      }
+    })
     scene.value.remove(currentModel.value)
     currentModel.value = null
+  }
+  
+  // 清理场景中所有对象
+  if (scene.value) {
+    scene.value.traverse((object: THREE.Object3D) => {
+      if (object instanceof THREE.Mesh) {
+        object.geometry?.dispose()
+        if (object.material) {
+          if (Array.isArray(object.material)) {
+            object.material.forEach(mat => mat.dispose())
+          } else {
+            object.material.dispose()
+          }
+        }
+      }
+    })
+    scene.value.clear()
   }
   
   if (controls.value) {
@@ -188,6 +218,7 @@ function cleanup() {
   
   if (renderer.value) {
     renderer.value.dispose()
+    renderer.value.forceContextLoss()  // 强制释放WebGL上下文
     if (modelContainerRef.value && renderer.value.domElement.parentNode) {
       modelContainerRef.value.removeChild(renderer.value.domElement)
     }

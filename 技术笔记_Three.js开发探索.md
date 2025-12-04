@@ -1,11 +1,13 @@
-# Three.js 材质与贴图经验总结
+# Three.js 开发探索手册
 
-> 来源：曹僧宇宙3D售货机开发（2025-12-03）
-> 这是一份"踩坑记录"，记录了实际开发中遇到的问题和解决方案。
+> 来源：曹僧宇宙3D售货机开发（2025-12-03 ~ 至今）
+> 这是一份"踩坑记录"，分门别类记录实际开发中遇到的问题和解决方案。
 
 ---
 
-## 1. BoxGeometry 多材质系统
+# 一、材质与贴图
+
+## 1.1 BoxGeometry 多材质系统
 
 ### 问题
 BoxGeometry默认所有6个面使用同一材质，无法区分内外侧。
@@ -33,7 +35,7 @@ const mesh = new THREE.Mesh(geometry, materials)
 
 ---
 
-## 2. 纹理贴图等比例问题
+## 1.2 纹理贴图等比例问题
 
 ### 问题
 不同尺寸的面使用同一纹理时，会产生拉伸。例如0.3x7的窄长面 vs 4.4x0.5的宽扁面。
@@ -78,7 +80,7 @@ vec4 color = texX * blending.x + texY * blending.y + texZ * blending.z;
 
 ---
 
-## 3. Z-Fighting 闪烁问题
+## 1.3 Z-Fighting 闪烁问题
 
 ### 问题
 两个几何体在同一位置或非常接近时，渲染会闪烁。
@@ -105,7 +107,7 @@ const material = new THREE.MeshStandardMaterial({
 
 ---
 
-## 4. gl_FrontFacing 的局限性
+## 1.4 gl_FrontFacing 的局限性
 
 ### 问题
 尝试用`gl_FrontFacing`区分边框的"机身内侧"和"机身外侧"，失败。
@@ -120,7 +122,7 @@ BoxGeometry的每个面法线都朝外，从任何角度看，可见面的`gl_Fr
 
 ---
 
-## 5. 纹理选择建议
+## 1.5 纹理选择建议
 
 | 纹理类型 | 适用场景 | 注意事项 |
 |----------|----------|----------|
@@ -132,7 +134,7 @@ BoxGeometry的每个面法线都朝外，从任何角度看，可见面的`gl_Fr
 
 ---
 
-## 6. 异步纹理加载
+## 1.6 异步纹理加载
 
 ### 问题
 纹理未加载完就渲染会导致闪烁或空白。
@@ -152,9 +154,9 @@ const texture = await new Promise<THREE.Texture>((resolve) => {
 
 ---
 
-## 总结
+## 1.7 材质与贴图小结
 
-这次开发的核心教训：**"头疼医头"有时是对的**。
+核心教训：**"头疼医头"有时是对的**。
 
 Three.js材质系统提供了多种方案，但没有银弹：
 - 需要内外区分 → 材质数组
@@ -162,3 +164,154 @@ Three.js材质系统提供了多种方案，但没有银弹：
 - 需要避免闪烁 → 调整几何体或polygonOffset
 
 关键是理解每种方案的适用边界，根据实际需求组合使用。
+
+---
+
+# 二、资源管理与生命周期
+
+## 2.1 WebGL上下文限制与释放
+
+### 问题
+浏览器对WebGL上下文数量有**硬性限制**（通常8-16个）。当上下文耗尽时：
+```
+WARNING: Too many active WebGL contexts. Oldest context will be lost.
+THREE.WebGLRenderer: Context Lost.
+```
+然后页面白屏。
+
+### 根本原因
+- 每次 `new THREE.WebGLRenderer()` 占用一个上下文
+- `renderer.dispose()` **不会自动释放上下文**
+- Vue组件卸载时，上下文累积到达限制后被强制丢弃
+
+### 解决方案
+```typescript
+// 在组件卸载时调用
+renderer.dispose()
+renderer.forceContextLoss()  // 关键：强制释放WebGL上下文
+```
+
+`forceContextLoss()` 会：
+1. 触发 `webglcontextlost` 事件
+2. 强制浏览器立即回收该WebGL上下文
+3. 使上下文槽位可被后续使用
+
+---
+
+## 2.2 深度资源清理
+
+### 问题
+仅调用 `renderer.dispose()` 不会释放GPU内存中的几何体、材质、纹理。
+
+### 解决方案
+遍历场景，逐一释放：
+
+```typescript
+scene.traverse((object: THREE.Object3D) => {
+  if (object instanceof THREE.Mesh) {
+    object.geometry?.dispose()
+    if (object.material) {
+      if (Array.isArray(object.material)) {
+        object.material.forEach(mat => mat.dispose())
+      } else {
+        object.material.dispose()
+      }
+    }
+  }
+})
+
+// 清理背景纹理
+if (scene.background instanceof THREE.Texture) {
+  scene.background.dispose()
+}
+
+scene.clear()
+```
+
+---
+
+## 2.3 Vue组件完整清理流程
+
+### 推荐模式
+```typescript
+onUnmounted(() => {
+  // 1. 停止动画循环
+  if (animationId) cancelAnimationFrame(animationId)
+  
+  // 2. 移除事件监听
+  window.removeEventListener('resize', handleResize)
+  
+  // 3. 清理控制器
+  controls?.dispose()
+  
+  // 4. 清理后处理
+  composer?.dispose()
+  
+  // 5. 深度清理场景（见2.2）
+  
+  // 6. 清理渲染器并释放上下文
+  renderer.dispose()
+  renderer.forceContextLoss()
+  container.removeChild(renderer.domElement)
+})
+```
+
+---
+
+# 三、交互控制
+
+## 3.1 OrbitControls触摸配置
+
+### 默认行为
+| 触摸方式 | 默认操作 |
+|----------|----------|
+| 单指 | ROTATE（旋转） |
+| 双指 | DOLLY_PAN（缩放+平移） |
+
+### 自定义配置
+```typescript
+controls.touches = {
+  ONE: THREE.TOUCH.ROTATE,       // 单指：旋转
+  TWO: THREE.TOUCH.DOLLY_ROTATE  // 双指：缩放+旋转
+}
+```
+
+可选值：
+- `THREE.TOUCH.ROTATE` - 旋转
+- `THREE.TOUCH.PAN` - 平移
+- `THREE.TOUCH.DOLLY_PAN` - 缩放+平移
+- `THREE.TOUCH.DOLLY_ROTATE` - 缩放+旋转
+
+---
+
+## 3.2 触摸事件边缘情况
+
+### 问题
+```
+Uncaught TypeError: Cannot read properties of undefined (reading 'x')
+at OrbitControls._handleTouchStartDolly
+```
+
+### 原因
+OrbitControls处理双指缩放时，期望 `pointers` 数组有2个触摸点，但在某些边缘情况下（DevTools模拟触摸、快速触摸切换），`pointers[1]` 可能是 `undefined`。
+
+### 解决方案
+将双指操作从 `DOLLY_PAN` 改为 `DOLLY_ROTATE`，避开有bug的代码路径：
+```typescript
+controls.touches = {
+  ONE: THREE.TOUCH.ROTATE,
+  TWO: THREE.TOUCH.DOLLY_ROTATE
+}
+```
+
+---
+
+# 四、后处理与效果
+
+> 占位：后续补充Bloom辉光、色调映射等内容
+
+---
+
+# 五、性能优化
+
+> 占位：后续补充模型缓存、懒加载、LOD等内容

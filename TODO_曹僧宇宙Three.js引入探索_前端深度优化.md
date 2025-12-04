@@ -220,6 +220,22 @@
   - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
 - 完成状态：✅ 已完成
 
+#### - [x] 任务A.12：WebGL上下文泄漏修复与触摸事件优化
+- **核心思想**: 修复页面切换/弹窗多次打开导致的WebGL上下文耗尽问题
+- 交付物：
+  - VendingMachine3D: 添加深度资源清理 + forceContextLoss()
+  - ProductModal: 添加深度资源清理 + forceContextLoss()
+  - OrbitControls触摸配置优化（避免模拟触摸时的边缘情况bug）
+- 验收标准：
+  - 多次进出页面不出现"Too many active WebGL contexts"警告
+  - 多次打开/关闭弹窗不导致Context Lost
+  - 触摸交互无报错
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/VendingMachine3D.vue`
+  - `lugarden_universal/frontend_vue/src/modules/caogong/xinpin/components/ProductModal.vue`
+- 完成状态：✅ 已完成
+
 ---
 
 ## 测试与验收

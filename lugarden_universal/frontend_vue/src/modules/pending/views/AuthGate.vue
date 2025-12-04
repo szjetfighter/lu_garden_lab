@@ -66,7 +66,7 @@
             <div class="modal-body">
               <h2 class="modal-title">陆家明</h2>
               <p class="modal-text">
-                授权码由 © 陆家花园团队管理员发放<br />
+                授权码由 © 陆家花园 管理团队发放<br />
                 请<a 
                   href="#" 
                   class="auth-link"

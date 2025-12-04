@@ -264,9 +264,9 @@ onUnmounted(() => {
           <!-- 3D模型预览（取代序号） -->
           <div ref="modelContainerRef" class="model-preview"></div>
           
-          <!-- 产品标题 -->
+          <!-- 产品标题（使用catalogName与滚动条对应） -->
           <div class="product-title">
-            <h2>{{ product.sectionTitle }}</h2>
+            <h2>{{ product.catalogName }}</h2>
             <p v-if="product.subtitle" class="subtitle">{{ product.subtitle }}</p>
           </div>
           

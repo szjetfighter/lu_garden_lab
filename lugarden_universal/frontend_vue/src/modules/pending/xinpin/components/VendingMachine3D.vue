@@ -9,7 +9,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { Text } from 'troika-three-text'
 import type { CaogongProduct } from '../types/xinpin'
-import { products } from '../data/products'
+import { products, generateScrollContent } from '../data/products'
 
 // Cyberpunk字体
 import cyberpunkFontUrl from '../assets/fonts/cyberpunk.ttf?url'
@@ -69,7 +69,8 @@ let textWidth = 0
 let grimeGlassMaterial: THREE.ShaderMaterial | null = null
 // 脏污金属材质
 let grimeMetalMaterial: THREE.ShaderMaterial | null = null
-const scrollContent = '新品发布 ◆ 烂西红柿牌内燃机⑴  苍蝇跑车⑵  翻山战舰⑶  白面团脚手架⑷  跨海三明治大桥壹体成型机⑸  时间鸟拆迁臂⑹  牙线蹦极绳⑺  理念磁场器⑻  种植蛋壹号⑼  试管婴儿代孕桶⑽  治胆瓷杯⑾  攀岩蹄⑿  无底镜⒀  蛔虫机械表⒁ __◇ ◇ ◇ ◇__'
+// 滚动文字（匿名化：基于产品catalogName生成）
+const scrollContent = generateScrollContent(products)
 
 function handleProductClick(product: CaogongProduct) {
   selectedProduct.value = product

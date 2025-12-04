@@ -144,13 +144,13 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false
     }
   },
-  // 曹僧宇宙
+  // Pending（待授权）
   {
-    path: '/caogong/xinpin',
+    path: '/pending/xinpin',
     name: 'XinpinView',
-    component: () => import('@/modules/caogong/xinpin/views/XinpinView.vue'),
+    component: () => import('@/modules/pending/xinpin/views/XinpinView.vue'),
     meta: {
-      title: '新品发布 - 曹僧宇宙',
+      title: '新品发布 - 待授权',
       requiresAuth: false
     }
   },

@@ -14,7 +14,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/zhou',
     name: 'MainProjectSelection',
-    component: () => import('@/modules/zhou/lianxi/views/MainProjectSelection.vue'),
+    component: () => import('@/modules/zhou/views/MainProjectSelection.vue'),
     meta: {
       title: '周与春秋 - 主项目选择',
       requiresAuth: false,
@@ -24,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/project/:projectId?',
     name: 'SubProjectSelection',
-    component: () => import('@/modules/zhou/lianxi/views/SubProjectSelection.vue'),
+    component: () => import('@/modules/zhou/001_lianxi/views/SubProjectSelection.vue'),
     meta: {
       title: '子项目选择',
       requiresAuth: false,
@@ -35,12 +35,12 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/quiz/:chapter?',
     name: 'QuizScreen',
-    component: () => import('@/modules/zhou/lianxi/views/QuizScreen.vue'),
+    component: () => import('@/modules/zhou/001_lianxi/views/QuizScreen.vue'),
     beforeEnter: (to, from, next) => {
       // 检测从echo页面返回，重置问答状态避免状态不一致
       if (from.path === '/classical-echo') {
         // 动态导入store并重置状态
-        import('@/modules/zhou/lianxi/stores/zhou').then(({ useZhouStore }) => {
+        import('@/modules/zhou/stores/zhou').then(({ useZhouStore }) => {
           const zhouStore = useZhouStore()
           zhouStore.resetQuiz()
           console.log('Route guard: 检测到从echo页面返回，已重置问答状态')
@@ -58,7 +58,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/classical-echo',
     name: 'ClassicalEchoScreen',
-    component: () => import('@/modules/zhou/lianxi/views/ClassicalEchoScreen.vue'),
+    component: () => import('@/modules/zhou/001_lianxi/views/ClassicalEchoScreen.vue'),
     meta: {
       title: '古典回响',
       requiresAuth: false,
@@ -69,7 +69,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/result',
     name: 'ResultScreen',
-    component: () => import('@/modules/zhou/lianxi/views/ResultScreen.vue'),
+    component: () => import('@/modules/zhou/001_lianxi/views/ResultScreen.vue'),
     meta: {
       title: '您的诗歌',
       requiresAuth: false,
@@ -80,7 +80,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/gongbi',
     name: 'GongBiView',
-    component: () => import('@/modules/zhou/lianxi/views/GongBiView.vue'),
+    component: () => import('@/modules/zhou/001_lianxi/views/GongBiView.vue'),
     meta: {
       title: '共笔 - 与陆家明一起创作',
       requiresAuth: false,
@@ -129,7 +129,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/maoxiaodou',
     name: 'MaoxiaodouSelection',
-    component: () => import('@/modules/mao/moshi/views/MainProjectSelection.vue'),
+    component: () => import('@/modules/mao/views/MainProjectSelection.vue'),
     meta: {
       title: '毛小豆宇宙 - 陆家花园',
       requiresAuth: false
@@ -138,17 +138,27 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/maoxiaodou/moshi',
     name: 'MoshiView',
-    component: () => import('@/modules/mao/moshi/views/MoshiView.vue'),
+    component: () => import('@/modules/mao/001_moshi/views/MoshiView.vue'),
     meta: {
       title: '摸诗 - 毛小豆宇宙',
       requiresAuth: false
     }
   },
-  // Pending（匿名化）
+  // Pending（先锋实验）宇宙入口
   {
-    path: '/pending/newarrival',
+    path: '/pending',
+    name: 'PendingSelection',
+    component: () => import('@/modules/pending/views/PendingSelection.vue'),
+    meta: {
+      title: '先锋实验 - 陆家花园',
+      requiresAuth: false
+    }
+  },
+  // Pending - NEW ARRIVAL
+  {
+    path: '/pending/001_newarrival',
     name: 'XinpinView',
-    component: () => import('@/modules/pending/newarrival/views/XinpinView.vue'),
+    component: () => import('@/modules/pending/001_newarrival/views/XinpinView.vue'),
     meta: {
       title: 'NEW ARRIVAL - ANONYMIZATION',
       requiresAuth: false
@@ -156,9 +166,9 @@ const routes: Array<RouteRecordRaw> = [
   },
   // Pending - 谁是臧棣实验
   {
-    path: '/pending/whoiszd',
+    path: '/pending/002_whoiszd',
     name: 'WhoIsZD',
-    component: () => import('@/modules/pending/whoiszd/views/EntryGuard.vue'),
+    component: () => import('@/modules/pending/002_whoiszd/views/EntryGuard.vue'),
     meta: {
       title: '谁是臧棣 - 先锋实验',
       requiresAuth: false

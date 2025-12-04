@@ -154,6 +154,16 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false
     }
   },
+  // Pending - 谁是臧棣实验
+  {
+    path: '/pending/whoiszd',
+    name: 'WhoIsZD',
+    component: () => import('@/modules/pending/whoiszd/views/EntryGuard.vue'),
+    meta: {
+      title: '谁是臧棣 - 先锋实验',
+      requiresAuth: false
+    }
+  },
   // 404 重定向
   {
     path: '/:pathMatch(.*)*',

@@ -21,10 +21,6 @@
             授权验证
           </h1>
           
-          <p class="text-gray-600 mb-6">
-            此区域需要授权码访问
-          </p>
-          
           <div class="mb-6">
             <input 
               v-model="authCode"
@@ -46,9 +42,66 @@
           >
             验证
           </button>
+          
+          <p class="text-xs text-gray-500 mt-6">
+            <a 
+              href="#" 
+              class="auth-link"
+              @click.prevent="showModal1 = true"
+            >此处获取授权码</a>
+          </p>
         </div>
       </div>
     </div>
+    
+    <!-- 第一层弹窗 -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div 
+          v-if="showModal1" 
+          class="modal-overlay"
+          @click.self="showModal1 = false"
+        >
+          <div class="modal-content">
+            <div class="modal-body">
+              <h2 class="modal-title">陆家明</h2>
+              <p class="modal-text">
+                授权码由 © 陆家花园团队管理员发放<br />
+                请<a 
+                  href="#" 
+                  class="auth-link"
+                  @click.prevent="showModal2 = true; showModal1 = false"
+                >联系西尔/吴任几/阿栋</a>获取
+              </p>
+              <button class="modal-button" @click="showModal1 = false">
+                知道了
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+    
+    <!-- 第二层弹窗 -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div 
+          v-if="showModal2" 
+          class="modal-overlay"
+          @click.self="showModal2 = false"
+        >
+          <div class="modal-content">
+            <div class="modal-body">
+              <h2 class="modal-title">陆家明</h2>
+              <p class="modal-text">我也不知道他们的联系方式<br />要么你自己想想办法？</p>
+              <button class="modal-button" @click="showModal2 = false">
+                好吧
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -66,6 +119,8 @@ const STORAGE_KEY = 'pending_authorized'
 
 const authCode = ref('')
 const showError = ref(false)
+const showModal1 = ref(false)
+const showModal2 = ref(false)
 
 // SHA-256哈希函数
 async function hashCode(str: string): Promise<string> {
@@ -103,3 +158,96 @@ const verify = async () => {
   }
 }
 </script>
+
+<style scoped>
+/* 授权码链接样式 */
+.auth-link {
+  font-weight: 600;
+  text-decoration: underline;
+  color: inherit;
+  transition: color 0.2s;
+}
+
+.auth-link:hover {
+  color: #374151;
+}
+
+/* 弹窗样式 - 参考AboutModal.vue */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+.modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 24rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 1rem;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-body {
+  text-align: center;
+}
+
+.modal-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 2rem;
+}
+
+.modal-text {
+  font-size: 1.125rem;
+  color: #4b5563;
+  line-height: 2;
+  margin-bottom: 2.5rem;
+}
+
+.modal-button {
+  padding: 0.75rem 2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  background: #1f2937;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-button:hover {
+  background: #374151;
+}
+
+/* 过渡动画 */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-active .modal-content,
+.modal-leave-active .modal-content {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-content,
+.modal-leave-to .modal-content {
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+}
+</style>

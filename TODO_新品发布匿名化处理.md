@@ -1,8 +1,8 @@
 # TODO：新品发布匿名化处理
 
-> **背景**：曹僧撤回了对新品发布功能的授权，需要对该模块进行匿名化处理和隐藏
+> **背景**：原授权已撤回，需要对该模块进行匿名化处理
 > **创建时间**：2025-12-04
-> **关联模块**：xinpin（3D售货机）
+> **关联模块**：newarrival（原xinpin，3D售货机）
 
 ---
 
@@ -47,13 +47,33 @@
   - `lugarden_universal/frontend_vue/src/modules/pending/xinpin/components/ProductModal.vue`
 - 完成状态：✅ 已完成
 
+#### - [x] 任务A.3：品牌标识匿名化与目录重命名
+- **核心思想**: 将所有品牌标识改为INCOGNITO，目录从xinpin重命名为newarrival
+- 交付物：
+  - 目录重命名：`modules/pending/xinpin` → `modules/pending/newarrival`
+  - 路由路径：`/pending/xinpin` → `/pending/newarrival`
+  - 页面标题：`NEW ARRIVAL - ANONYMIZATION`
+  - 品牌标识：`CAOSENG` → `INCOGNITO`
+  - 底部显示实时时间戳（YYYY-MM-DD HH:MM）
+  - 水印：`INCOGNITO Ⓒ LUGARDEN`
+- 验收标准：
+  - 所有用户可见文字不含原作者信息
+  - 时间戳实时更新
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/pending/newarrival/` (目录重命名)
+  - `lugarden_universal/frontend_vue/src/router/index.ts`
+  - `lugarden_universal/frontend_vue/src/modules/pending/newarrival/components/VendingMachine3D.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/newarrival/components/ProductModal.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/newarrival/index.ts`
+  - `lugarden_universal/frontend_vue/src/modules/pending/newarrival/types/xinpin.ts`
+- 完成状态：✅ 已完成
+
 ---
 
 ## 后续任务（待规划）
 
-- [ ] 移除导航入口
 - [ ] 类型名匿名化（CaogongProduct → ?）
-- [ ] 评估是否保留路由或完全隐藏
 
 ---
 

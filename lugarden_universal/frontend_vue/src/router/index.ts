@@ -144,13 +144,13 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false
     }
   },
-  // Pending（待授权）
+  // Pending（匿名化）
   {
-    path: '/pending/xinpin',
+    path: '/pending/newarrival',
     name: 'XinpinView',
-    component: () => import('@/modules/pending/xinpin/views/XinpinView.vue'),
+    component: () => import('@/modules/pending/newarrival/views/XinpinView.vue'),
     meta: {
-      title: '新品发布 - 待授权',
+      title: 'NEW ARRIVAL - ANONYMIZATION',
       requiresAuth: false
     }
   },

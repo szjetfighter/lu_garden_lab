@@ -1,8 +1,9 @@
 /**
- * 曹僧宇宙 - 新品发布模块类型定义
+ * [INCOGNITO] - 新品发布模块类型定义
+ * 内容已匿名化
  */
 
-/** 单个产品（对应组诗中的一个小节） */
+/** 单个产品（匿名化后的数据结构） */
 export interface CaogongProduct {
   /** 产品ID */
   id: string

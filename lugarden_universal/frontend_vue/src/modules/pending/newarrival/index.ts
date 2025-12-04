@@ -1,5 +1,6 @@
 /**
- * 曹僧宇宙 - 新品发布模块导出
+ * [INCOGNITO] - 新品发布模块导出
+ * 内容已匿名化
  */
 
 // Types
@@ -17,9 +18,9 @@ export { default as XinpinView } from './views/XinpinView.vue'
 
 // 模块信息
 export default {
-  name: '新品发布',
-  description: '曹僧宇宙 - 基于《新品发布》组诗的自动售货机交互体验',
+  name: 'NEW ARRIVAL',
+  description: '[ANONYMIZATION] - 3D自动售货机交互体验',
   version: '1.0.0',
-  author: '曹僧',
-  creationDate: '2015.02.10-17'
+  author: 'INCOGNITO',
+  creationDate: 'INCOGNITO'
 }

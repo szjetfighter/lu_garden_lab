@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, shallowRef } from 'vue'
+import { ref, onMounted, onUnmounted, shallowRef, computed } from 'vue'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
@@ -41,6 +41,13 @@ const selectedProduct = ref<CaogongProduct | null>(null)
 const isModalOpen = ref(false)
 const isLoading = ref(true)
 const loadingProgress = ref(0)
+
+// 实时时间戳（YYYY-MM-DD HH:MM格式）
+const currentTimestamp = computed(() => {
+  const now = new Date()
+  const pad = (n: number) => n.toString().padStart(2, '0')
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
+})
 
 // Three.js对象
 const scene = shallowRef<THREE.Scene | null>(null)
@@ -1146,8 +1153,8 @@ onUnmounted(() => {
     
     <!-- 底部信息 -->
     <div class="footer-overlay">
-      <span class="footer-date">2015.02.10-17</span>
-      <span class="footer-brand">CAOSENG @ LUGARDEN</span>
+      <span class="footer-date">{{ currentTimestamp }}</span>
+      <span class="footer-brand">INCOGNITO @ LUGARDEN</span>
     </div>
     
     <!-- 产品说明书弹窗 -->

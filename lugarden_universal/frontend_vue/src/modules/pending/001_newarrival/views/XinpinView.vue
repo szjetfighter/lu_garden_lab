@@ -6,7 +6,7 @@ import BackButton from '@/shared/components/BackButton.vue'
 const router = useRouter()
 
 const goBack = () => {
-  router.push('/pending')
+  router.push('/pending/home')
 }
 </script>
 

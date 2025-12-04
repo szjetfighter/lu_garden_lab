@@ -24,7 +24,7 @@
         <!-- 摸诗入口 -->
         <div 
           class="unified-content-card rounded-base animate-fadeInUp cursor-pointer flex flex-col h-full"
-          style="animation-delay: 0.3s"
+          style="animation-delay: 0.1s"
           @click="enterMoshi"
         >
           <div class="flex-1">

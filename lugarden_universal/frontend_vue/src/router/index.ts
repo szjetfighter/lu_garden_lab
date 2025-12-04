@@ -144,9 +144,19 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false
     }
   },
-  // Pending（先锋实验）宇宙入口
+  // Pending（先锋实验）宇宙 - 授权码门禁
   {
     path: '/pending',
+    name: 'PendingAuthGate',
+    component: () => import('@/modules/pending/views/AuthGate.vue'),
+    meta: {
+      title: '授权验证 - 陆家花园',
+      requiresAuth: false
+    }
+  },
+  // Pending - L1入口（授权后）
+  {
+    path: '/pending/home',
     name: 'PendingMainProjectSelection',
     component: () => import('@/modules/pending/views/MainProjectSelection.vue'),
     meta: {
@@ -241,6 +251,18 @@ router.beforeEach((to, from, next) => {
     // 允许直接访问结果页面，由组件内部处理数据获取和验证
     // 这样用户可以直接访问结果页面URL分享
     console.log('Route guard: 允许访问结果页面，由组件处理数据验证')
+  }
+
+  // ================================
+  // Pending宇宙授权守卫
+  // ================================
+  // 访问/pending子路由（非授权页本身）需要验证授权码
+  if (to.path.startsWith('/pending/') && to.path !== '/pending') {
+    const pendingAuthorized = localStorage.getItem('pending_authorized')
+    if (pendingAuthorized !== 'true') {
+      console.warn('Route guard: 未授权访问pending子模块，重定向到授权页')
+      return next('/pending')
+    }
   }
 
   next()

@@ -578,7 +578,39 @@ modules/pending/whoiszd/
   - [x] 步骤B.1.7：简化EntryGuard警告文本（删除"先锋实验模块"，保留⚠️）
   - [x] 步骤B.1.8：统一三个宇宙MainProjectSelection的h2 margin为mb-2
 
-#### - [ ] 任务B.2：whoiszd模块UI设计系统统一化
+#### - [x] 任务B.2：pending宇宙授权码门禁
+
+- **核心思想**: 为pending宇宙添加访问控制，用户首次进入时需输入授权码验证，验证通过后记录到localStorage，后续访问无需重复验证。
+- 交付物：
+  - `pending/views/AuthGate.vue` 授权码输入页面（SHA-256哈希验证）
+  - 路由守卫防止直接访问子路由绕过授权
+  - localStorage验证状态管理
+- 验收标准：
+  - 首次访问/pending时显示授权码输入页面
+  - 输入正确授权码后进入L1入口
+  - 验证状态持久化到localStorage
+  - 已验证用户直接进入L1入口
+  - 直接访问/pending/*子路由会被路由守卫拦截重定向到授权页
+  - TypeScript类型检查通过
+- **风险评估**: 低风险。
+- 授权码：`niduoniyema@Lugarden.space`（SHA-256哈希存储，源码不暴露明文）
+- 完成状态：✅ 已完成
+- 实际改动文件：
+  - `lugarden_universal/frontend_vue/src/modules/pending/views/AuthGate.vue` (新建)
+  - `lugarden_universal/frontend_vue/src/modules/pending/views/index.ts`
+  - `lugarden_universal/frontend_vue/src/router/index.ts` (路由+守卫)
+  - `lugarden_universal/frontend_vue/src/modules/pending/001_newarrival/views/XinpinView.vue`
+- 执行步骤：
+  - [x] 步骤B.2.1：创建AuthGate.vue授权码输入页面
+  - [x] 步骤B.2.2：实现授权码验证逻辑和localStorage持久化
+  - [x] 步骤B.2.3：更新路由配置，/pending指向AuthGate，/pending/home指向MainProjectSelection
+  - [x] 步骤B.2.4：更新子模块返回路径到/pending/home
+  - [x] 步骤B.2.5：添加路由守卫，防止直接访问子路由绕过授权
+  - [x] 步骤B.2.6：实现SHA-256哈希验证，源码不暴露明文授权码
+  - [x] 步骤B.2.7：使用SVG图标替换emoji
+  - [x] 步骤B.2.8：验证TypeScript类型检查通过
+
+#### - [ ] 任务B.3：whoiszd模块UI设计系统统一化
 
 - **核心思想**: whoiszd模块可保持深色配色以形成反差，但必须复用全局设计系统（统一卡片、按钮、动画、字体），而非完全自定义样式。
 - 交付物：
@@ -602,14 +634,14 @@ modules/pending/whoiszd/
   - 可能需要新增：`assets/styles/theme-dark.css` 或 scoped变量
 - 完成状态：⏳ 待执行
 - 执行步骤：
-  - [ ] 步骤B.2.1：分析当前whoiszd模块的自定义样式
-  - [ ] 步骤B.2.2：设计深色主题CSS变量方案
-  - [ ] 步骤B.2.3：重构EntryGuard.vue使用设计系统
-  - [ ] 步骤B.2.4：重构ConfirmView.vue使用设计系统
-  - [ ] 步骤B.2.5：重构GameView.vue使用设计系统
-  - [ ] 步骤B.2.6：重构TerminatedView.vue使用设计系统
-  - [ ] 步骤B.2.7：重构ResultView.vue使用设计系统
-  - [ ] 步骤B.2.8：验证视觉效果和功能完整性
+  - [ ] 步骤B.3.1：分析当前whoiszd模块的自定义样式
+  - [ ] 步骤B.3.2：设计深色主题CSS变量方案
+  - [ ] 步骤B.3.3：重构EntryGuard.vue使用设计系统
+  - [ ] 步骤B.3.4：重构ConfirmView.vue使用设计系统
+  - [ ] 步骤B.3.5：重构GameView.vue使用设计系统
+  - [ ] 步骤B.3.6：重构TerminatedView.vue使用设计系统
+  - [ ] 步骤B.3.7：重构ResultView.vue使用设计系统
+  - [ ] 步骤B.3.8：验证视觉效果和功能完整性
 
 ---
 

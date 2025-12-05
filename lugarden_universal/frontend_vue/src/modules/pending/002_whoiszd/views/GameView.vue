@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /**
  * 游戏主界面 - 诗歌展示与选择
+ * 继承whoiszd-theme深色主题样式
  */
 
 import { ref, onMounted } from 'vue'
@@ -8,7 +9,7 @@ import { useGameState } from '../composables/useGameState'
 
 const emit = defineEmits<{
   (e: 'terminated'): void
-  (e: 'completed'): void
+  (e: 'completed', stats: { yesCount: number; noCount: number; total: number }): void
 }>()
 
 const {
@@ -16,6 +17,7 @@ const {
   progress,
   terminated,
   completed,
+  answers,
   initGame,
   submitAnswer,
   nextPoem
@@ -35,9 +37,9 @@ function handleChoice(answer: 'yes' | 'no') {
   const result = submitAnswer(answer)
   
   if (result.isCorrect) {
-    feedbackMessage.value = '正确。这首诗由AI生成。'
+    feedbackMessage.value = '嘿嘿，被你发现是我写的了'
   } else {
-    feedbackMessage.value = '不是。这首诗由AI生成。'
+    feedbackMessage.value = '不是，这首诗是我写的'
   }
   
   showFeedback.value = true
@@ -58,29 +60,33 @@ function handleNext() {
   nextPoem()
   
   if (completed.value) {
-    emit('completed')
+    emit('completed', {
+      yesCount: answers.value.filter(a => a === 'yes').length,
+      noCount: answers.value.filter(a => a === 'no').length,
+      total: answers.value.length
+    })
   }
 }
 </script>
 
 <template>
-  <div class="game-view min-h-screen bg-black text-white flex flex-col">
+  <div class="min-h-screen flex flex-col">
     <!-- 头部：标题和进度 -->
-    <header class="text-center py-8">
-      <h1 class="text-3xl mb-2 tracking-wider">谁 是 臧 棣 ？</h1>
-      <p class="text-gray-500">({{ progress.current }}/{{ progress.total }})</p>
+    <header class="text-center py-8 animate-fadeInUp">
+      <h1 class="text-3xl mb-2 tracking-wider text-zd-light">是 臧 棣 写 的 么</h1>
+      <p class="text-zd-muted">({{ progress.current }}/{{ progress.total }})</p>
     </header>
 
     <!-- 诗歌展示区 -->
-    <main class="flex-1 flex items-center justify-center px-6 pb-8">
-      <div v-if="currentPoem" class="max-w-2xl w-full">
+    <main class="flex justify-center px-6 pb-8">
+      <div v-if="currentPoem" class="zd-card max-w-2xl w-full px-8 py-10 animate-fadeInUp animate-delay-100">
         <!-- 诗歌标题 -->
-        <h2 class="text-xl text-amber-400 text-center mb-8">
-          《{{ currentPoem.title }}》
+        <h2 class="text-xl text-zd-light text-center mb-8">
+          {{ currentPoem.title }}
         </h2>
         
         <!-- 诗歌正文 -->
-        <div class="space-y-2 text-center text-gray-300 leading-relaxed mb-12">
+        <div class="space-y-2 text-center text-zd-text leading-relaxed mb-12">
           <p 
             v-for="(line, index) in currentPoem.body" 
             :key="index"
@@ -93,16 +99,16 @@ function handleNext() {
         <!-- 选择按钮 -->
         <div 
           v-if="!showFeedback" 
-          class="flex justify-center gap-8"
+          class="flex justify-center gap-6"
         >
           <button
-            class="px-12 py-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-lg transition-colors"
+            class="zd-btn-choice"
             @click="handleChoice('yes')"
           >
             是
           </button>
           <button
-            class="px-12 py-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-lg transition-colors"
+            class="zd-btn-choice"
             @click="handleChoice('no')"
           >
             不是
@@ -112,20 +118,18 @@ function handleNext() {
         <!-- 反馈区域 -->
         <div 
           v-else 
-          class="text-center"
+          class="text-center animate-fadeInUp"
         >
-          <p 
-            :class="[
-              'text-xl mb-8',
-              lastAnswer === 'no' ? 'text-green-400' : 'text-red-400'
-            ]"
-          >
-            「{{ feedbackMessage }}」
-          </p>
+          <div class="mb-8">
+            <p class="text-zd-light font-bold text-lg mb-2">陆家明</p>
+            <p class="text-zd-text">
+              {{ feedbackMessage }}
+            </p>
+          </div>
           
           <button
             v-if="!terminated"
-            class="px-8 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded transition-colors"
+            class="zd-btn-primary"
             @click="handleNext"
           >
             下一首
@@ -137,7 +141,33 @@ function handleNext() {
 </template>
 
 <style scoped>
-.game-view {
-  font-family: 'Noto Serif SC', serif;
+/* 继承whoiszd-theme的CSS变量 */
+
+.zd-btn-choice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  min-width: 140px;
+  padding: 1rem 3rem;
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--zd-text-light, #ffffff);
+  background: rgba(55, 65, 81, 0.6);
+  border: 1px solid var(--zd-border, rgba(55, 65, 81, 0.5));
+  border-radius: var(--radius-lg, 12px);
+  cursor: pointer;
+  transition: all var(--duration-normal, 0.3s) var(--ease-out);
+}
+
+.zd-btn-choice:hover {
+  background: rgba(75, 85, 99, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.zd-btn-choice:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 </style>

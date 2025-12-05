@@ -612,38 +612,42 @@ modules/pending/whoiszd/
   - [x] 步骤B.2.9：优化弹窗视觉（间距、字体大小）
   - [x] 步骤B.2.10：验证TypeScript类型检查通过
 
-#### - [ ] 任务B.3：whoiszd模块UI设计系统统一化
+#### - [x] 任务B.3：whoiszd模块UI设计系统统一化与交互优化
 
-- **核心思想**: whoiszd模块可保持深色配色以形成反差，但必须复用全局设计系统（统一卡片、按钮、动画、字体），而非完全自定义样式。
+- **核心思想**: whoiszd模块保持深色配色形成反差，复用全局设计系统（统一卡片、按钮、动画、字体），并进行全面的交互体验优化。
 - 交付物：
-  - 深色主题CSS变量（scoped或全局）
-  - 使用unified-content-card的深色变体
-  - 使用btn-primary的深色变体
-  - 使用animate-fadeInUp动画
-  - 使用全局字体系统
+  - 深色主题CSS变量（容器级注入，:deep()穿透子组件）
+  - zd-card/zd-btn-primary/zd-btn-secondary等深色主题组件类
+  - reveal-line逐行显示动画系统
+  - 确认状态localStorage记忆
+  - 分场景结果文案
 - 验收标准：
   - 视觉上保持深色反差风格
-  - 但卡片、按钮、动画、字体与主站统一
+  - 卡片、按钮、动画、字体与主站统一
+  - 逐行显示动画（结果页、ban页、冷却页）
+  - 已确认用户跳过disclaimer直接进游戏
   - TypeScript类型检查通过
   - 构建无报错
 - **风险评估**: 中风险。需要平衡设计统一性与风格差异。
-- 预期改动文件（预判）：
+- 完成状态：✅ 已完成
+- 实际改动文件：
   - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/EntryGuard.vue`
   - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/ConfirmView.vue`
   - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/GameView.vue`
   - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/TerminatedView.vue`
   - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/ResultView.vue`
-  - 可能需要新增：`assets/styles/theme-dark.css` 或 scoped变量
-- 完成状态：⏳ 待执行
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/types/whoiszd.ts`
 - 执行步骤：
-  - [ ] 步骤B.3.1：分析当前whoiszd模块的自定义样式
-  - [ ] 步骤B.3.2：设计深色主题CSS变量方案
-  - [ ] 步骤B.3.3：重构EntryGuard.vue使用设计系统
-  - [ ] 步骤B.3.4：重构ConfirmView.vue使用设计系统
-  - [ ] 步骤B.3.5：重构GameView.vue使用设计系统
-  - [ ] 步骤B.3.6：重构TerminatedView.vue使用设计系统
-  - [ ] 步骤B.3.7：重构ResultView.vue使用设计系统
-  - [ ] 步骤B.3.8：验证视觉效果和功能完整性
+  - [x] 步骤B.3.1：分析当前whoiszd模块的自定义样式
+  - [x] 步骤B.3.2：设计深色主题CSS变量方案（容器级注入）
+  - [x] 步骤B.3.3：重构EntryGuard.vue（深色主题容器、:deep()样式穿透、冷却页逐行动画）
+  - [x] 步骤B.3.4：重构ConfirmView.vue（居中布局、去除图标、统一间距）
+  - [x] 步骤B.3.5：重构GameView.vue（标题改"是臧棣写的么"、去书名号、陆家明风格反馈）
+  - [x] 步骤B.3.6：重构TerminatedView.vue（逐行动画、6秒停留、😏表情）
+  - [x] 步骤B.3.7：重构ResultView.vue（分场景文案、逐行动画）
+  - [x] 步骤B.3.8：调整连错阈值（5→3）、添加确认状态localStorage记忆
+  - [x] 步骤B.3.9：已确认用户跳过disclaimer直接进游戏
+  - [x] 步骤B.3.10：验证视觉效果和功能完整性
 
 ---
 
@@ -665,7 +669,7 @@ modules/pending/whoiszd/
 
 ## 当前状态
 
-🔄 进行中 - 阶段A已完成，阶段B任务B.1（pending宇宙整合）已完成，任务B.2（UI设计系统统一化）待执行
+✅ 阶段B已完成 - 阶段A（核心功能）已完成，阶段B（pending宇宙整合B.1、授权码门禁B.2、UI设计系统统一化B.3）已全部完成
 
 ---
 *本模板基于陆家花园项目Git开发指南创建（增强版）*

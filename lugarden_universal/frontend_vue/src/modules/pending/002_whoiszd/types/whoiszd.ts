@@ -44,8 +44,9 @@ export type GamePhase =
 
 /** 冷却配置常量 */
 export const COOLDOWN_DURATION_MS = 60 * 1000  // 60秒冷却
-export const CONSECUTIVE_LIMIT = 5              // 连续错误阈值
+export const CONSECUTIVE_LIMIT = 3              // 连续错误阈值
 export const TOTAL_POEMS = 20                   // 诗歌总数
 
 /** localStorage键名 */
 export const STORAGE_KEY_COOLDOWN = 'whoiszd_cooldown'
+export const STORAGE_KEY_CONFIRMED = 'whoiszd_confirmed'  // 记住用户已确认声明

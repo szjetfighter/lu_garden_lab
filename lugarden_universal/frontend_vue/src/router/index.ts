@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'MainProjectSelection',
     component: () => import('@/modules/zhou/views/MainProjectSelection.vue'),
     meta: {
-      title: '周与春秋 - 主项目选择',
+      title: '周与春秋 - 陆家花园',
       requiresAuth: false,
       step: 1
     }
@@ -26,7 +26,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'SubProjectSelection',
     component: () => import('@/modules/zhou/001_lianxi/views/SubProjectSelection.vue'),
     meta: {
-      title: '子项目选择',
+      title: '篇章选择 - 周与春秋',
       requiresAuth: false,
       step: 2,
       requiresProject: true
@@ -49,7 +49,7 @@ const routes: Array<RouteRecordRaw> = [
       next()
     },
     meta: {
-      title: '问答测试',
+      title: '你的问答 - 周与春秋',
       requiresAuth: false,
       step: 3,
       requiresChapter: true
@@ -60,7 +60,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ClassicalEchoScreen',
     component: () => import('@/modules/zhou/001_lianxi/views/ClassicalEchoScreen.vue'),
     meta: {
-      title: '古典回响',
+      title: '古典回响 - 周与春秋',
       requiresAuth: false,
       step: 4,
       requiresQuizComplete: true
@@ -71,7 +71,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ResultScreen',
     component: () => import('@/modules/zhou/001_lianxi/views/ResultScreen.vue'),
     meta: {
-      title: '您的诗歌',
+      title: '你读到的诗 - 周与春秋',
       requiresAuth: false,
       step: 5,
       requiresQuizComplete: true
@@ -82,7 +82,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'GongBiView',
     component: () => import('@/modules/zhou/001_lianxi/views/GongBiView.vue'),
     meta: {
-      title: '共笔 - 与陆家明一起创作',
+      title: '共笔 - 周与春秋',
       requiresAuth: false,
       step: 6
     }
@@ -140,7 +140,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'MoshiView',
     component: () => import('@/modules/mao/001_moshi/views/MoshiView.vue'),
     meta: {
-      title: '摸诗 - 毛小豆宇宙',
+      title: '摸诗 - 陆家花园',
       requiresAuth: false
     }
   },
@@ -150,7 +150,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'PendingAuthGate',
     component: () => import('@/modules/pending/views/AuthGate.vue'),
     meta: {
-      title: '授权验证 - 陆家花园',
+      title: '匿，腻，溺 - 陆家花园',
       requiresAuth: false
     }
   },
@@ -170,7 +170,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'XinpinView',
     component: () => import('@/modules/pending/001_newarrival/views/XinpinView.vue'),
     meta: {
-      title: 'NEW ARRIVAL - ANONYMIZATION',
+      title: 'NEW ARRIVAL - 陆家花园',
       requiresAuth: false
     }
   },
@@ -180,7 +180,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'WhoIsZD',
     component: () => import('@/modules/pending/002_whoiszd/views/EntryGuard.vue'),
     meta: {
-      title: '谁是臧棣 - 先锋实验',
+      title: '谁是ZD - 陆家花园',
       requiresAuth: false
     }
   },

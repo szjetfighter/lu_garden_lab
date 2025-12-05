@@ -5,7 +5,6 @@
  */
 
 import { computed, ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 
 const props = defineProps<{
   yesCount: number
@@ -16,8 +15,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'restart'): void
 }>()
-
-const router = useRouter()
 
 // 演出效果：逐行显示
 const showLine1 = ref(false) // 标题
@@ -95,10 +92,6 @@ const easterEggPoem = {
 
 function handleRestart() {
   emit('restart')
-}
-
-function handleReturn() {
-  router.push('/')
 }
 </script>
 
@@ -232,20 +225,14 @@ function handleReturn() {
 
       <!-- 操作按钮 -->
       <div 
-        class="flex justify-center gap-4 reveal-line"
+        class="flex justify-center reveal-line"
         :class="{ 'revealed': showButtons }"
       >
         <button
-          class="zd-btn-secondary"
+          class="zd-btn-primary"
           @click="handleRestart"
         >
           再来一次
-        </button>
-        <button
-          class="zd-btn-primary"
-          @click="handleReturn"
-        >
-          返回陆家花园
         </button>
       </div>
     </div>

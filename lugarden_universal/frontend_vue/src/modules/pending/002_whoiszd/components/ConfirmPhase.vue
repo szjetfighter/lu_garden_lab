@@ -114,15 +114,16 @@ function handleConfirm() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  min-width: 120px;
-  padding: 0.75rem 2rem;
-  font-size: var(--font-size-base);
+  min-height: 36px;
+  min-width: 100px;
+  padding: 0.5rem 1rem;
+  font-size: var(--font-size-sm);
+  line-height: 1.25;
   font-weight: 500;
   color: var(--zd-text-muted, #6b7280);
   background: rgba(55, 65, 81, 0.4);
   border: 1px solid var(--zd-border, rgba(55, 65, 81, 0.5));
-  border-radius: var(--radius-base, 8px);
+  border-radius: var(--radius-lg, 12px);
   cursor: not-allowed;
   opacity: 0.6;
 }

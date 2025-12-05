@@ -169,10 +169,11 @@ function handleNext() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 56px;
-  min-width: 140px;
-  padding: 1rem 3rem;
-  font-size: var(--font-size-lg);
+  min-height: 36px;
+  min-width: 100px;
+  padding: 0.5rem 1rem;
+  font-size: var(--font-size-sm);
+  line-height: 1.25;
   font-weight: 500;
   color: var(--zd-text-light, #ffffff);
   background: rgba(55, 65, 81, 0.6);

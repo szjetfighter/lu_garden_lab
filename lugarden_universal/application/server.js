@@ -16,6 +16,7 @@ import checkUsernameRouter from './src/routes/checkUsername.js';
 import moshiRouter from './src/routes/moshi.js';
 import { errorHandler } from './src/middlewares/errorHandler.js';
 import { fileURLToPath } from 'url';
+import { getShareConfig, isCrawler, injectShareMeta } from './src/config/shareConfig.js';
 import dotenv from 'dotenv';
 import { getPrismaClient } from './src/persistence/prismaClient.js';
 
@@ -687,6 +688,7 @@ app.get('/api/health', async (_req, res) => {
 
 // SPA路由支持：所有非API路由返回index.html
 // [2025-11-27] Vue迁移已完成，强制Vue模式
+// [2025-12-05] 添加爬虫检测，动态返回og:meta
 app.get('*', (req, res) => {
   // 排除API路由、静态资源和特定文件
   if (req.path.startsWith('/api') || 
@@ -694,6 +696,29 @@ app.get('*', (req, res) => {
       req.path.startsWith('/admin')) {
     return res.status(404).send('Not Found');
   }
+  
+  // 检测是否为爬虫（微信、Twitter等）
+  const userAgent = req.headers['user-agent'] || '';
+  if (isCrawler(userAgent)) {
+    try {
+      // 读取原始index.html
+      const originalHtml = fs.readFileSync(VUE_INDEX_PATH, 'utf8');
+      // 获取该路由的分享配置
+      const shareConf = getShareConfig(req.path);
+      // 构建完整URL
+      const fullUrl = `https://lugarden.space${req.path}`;
+      // 注入动态meta
+      const modifiedHtml = injectShareMeta(originalHtml, shareConf, fullUrl);
+      
+      console.log(`[Share] 爬虫访问: ${req.path} -> ${shareConf.title}`);
+      return res.send(modifiedHtml);
+    } catch (e) {
+      console.error('[Share] 动态meta注入失败:', e.message);
+      // 降级：返回原始HTML
+      return res.sendFile(VUE_INDEX_PATH);
+    }
+  }
+  
   return res.sendFile(VUE_INDEX_PATH);
 });
 

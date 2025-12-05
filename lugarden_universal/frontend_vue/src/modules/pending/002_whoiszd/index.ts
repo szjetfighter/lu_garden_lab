@@ -4,16 +4,11 @@
  * 一个关于AI诗歌模仿与"光晕消逝"的社会学实验游戏
  */
 
-// 类型导出
+// 类型导出（公共接口）
 export * from './types/whoiszd'
 
-// Composables导出
-export { useCooldown } from './composables/useCooldown'
-export { useGameState } from './composables/useGameState'
-
-// 视图组件导出
+// 视图组件导出（公共接口 - 仅路由入口）
 export { default as EntryGuard } from './views/EntryGuard.vue'
-export { default as ConfirmView } from './views/ConfirmView.vue'
-export { default as GameView } from './views/GameView.vue'
-export { default as TerminatedView } from './views/TerminatedView.vue'
-export { default as ResultView } from './views/ResultView.vue'
+
+// 注意：ConfirmPhase, GamePhase, TerminatedPhase, ResultPhase 
+// 是 EntryGuard 的内部组件，不对外导出（Modular Monolith 封装原则）

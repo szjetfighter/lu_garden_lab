@@ -9,12 +9,20 @@
  */
 
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCooldown } from '../composables/useCooldown'
 import { STORAGE_KEY_CONFIRMED } from '../types/whoiszd'
-import ConfirmView from './ConfirmView.vue'
-import GameView from './GameView.vue'
-import TerminatedView from './TerminatedView.vue'
-import ResultView from './ResultView.vue'
+import BackButton from '@/shared/components/BackButton.vue'
+import ConfirmPhase from '../components/ConfirmPhase.vue'
+import GamePhase from '../components/GamePhase.vue'
+import TerminatedPhase from '../components/TerminatedPhase.vue'
+import ResultPhase from '../components/ResultPhase.vue'
+
+const router = useRouter()
+
+const goBack = () => {
+  router.push('/pending/home')
+}
 
 // 游戏阶段
 type Phase = 'loading' | 'cooldown' | 'disclaimer' | 'confirm' | 'playing' | 'terminated' | 'result'
@@ -129,6 +137,19 @@ onUnmounted(() => {
 
 <template>
   <div class="whoiszd-theme min-h-screen">
+    <!-- 返回按钮 - 固定在顶部 -->
+    <div v-if="phase !== 'loading'" class="container mx-auto px-4 pt-8">
+      <BackButton 
+        text="返回"
+        variant="ghost"
+        size="medium"
+        color="custom"
+        custom-color="#d97706"
+        :hover-animation="true"
+        @click="goBack"
+      />
+    </div>
+
     <!-- 加载中 -->
     <div v-if="phase === 'loading'" class="min-h-screen flex items-center justify-center">
       <p class="text-zd-muted">...</p>
@@ -171,26 +192,26 @@ onUnmounted(() => {
     </div>
 
     <!-- 第二层确认 -->
-    <ConfirmView 
+    <ConfirmPhase 
       v-else-if="phase === 'confirm'" 
       @confirmed="goToGame" 
     />
 
     <!-- 游戏主界面 -->
-    <GameView 
+    <GamePhase 
       v-else-if="phase === 'playing'"
       @terminated="handleTerminated"
       @completed="handleCompleted"
     />
 
     <!-- 惩罚/终止页 -->
-    <TerminatedView 
+    <TerminatedPhase 
       v-else-if="phase === 'terminated'" 
       :reason="terminatedReason"
     />
 
     <!-- 结算揭示页 -->
-    <ResultView 
+    <ResultPhase 
       v-else-if="phase === 'result'"
       :yes-count="gameStats.yesCount"
       :no-count="gameStats.noCount"

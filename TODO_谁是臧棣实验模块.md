@@ -649,6 +649,38 @@ modules/pending/whoiszd/
   - [x] 步骤B.3.9：已确认用户跳过disclaimer直接进游戏
   - [x] 步骤B.3.10：验证视觉效果和功能完整性
 
+#### - [x] 任务B.4：pending宇宙UI统一与Modular Monolith重构
+
+- **核心思想**: 统一pending宇宙子模块的UI规范（顶部padding、返回按钮），并按Modular Monolith原则重构whoiszd模块目录结构。
+- 交付物：
+  - XinpinView去掉多余pt-16
+  - whoiszd EntryGuard添加返回按钮（琥珀色配色）
+  - whoiszd内部组件从views/移到components/，重命名为Phase后缀
+  - index.ts只导出公共接口（EntryGuard）
+- 验收标准：
+  - XinpinView和whoiszd顶部padding统一
+  - whoiszd所有phase都有返回按钮（Shell Component Pattern）
+  - 目录结构符合Modular Monolith规范
+  - TypeScript类型检查通过
+- **风险评估**: 低风险。
+- 完成状态：✅ 已完成
+- 实际改动文件：
+  - `lugarden_universal/frontend_vue/src/modules/pending/001_newarrival/views/XinpinView.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/views/EntryGuard.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/components/ConfirmPhase.vue` (从views/移动并重命名)
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/components/GamePhase.vue` (从views/移动并重命名)
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/components/TerminatedPhase.vue` (从views/移动并重命名)
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/components/ResultPhase.vue` (从views/移动并重命名)
+  - `lugarden_universal/frontend_vue/src/modules/pending/002_whoiszd/index.ts`
+- 执行步骤：
+  - [x] 步骤B.4.1：XinpinView去掉pt-16统一顶部padding
+  - [x] 步骤B.4.2：whoiszd EntryGuard添加返回按钮（琥珀色#d97706配色）
+  - [x] 步骤B.4.3：创建components/目录
+  - [x] 步骤B.4.4：移动并重命名4个内部组件（ConfirmView→ConfirmPhase等）
+  - [x] 步骤B.4.5：更新EntryGuard的import路径和组件名
+  - [x] 步骤B.4.6：更新index.ts只导出公共接口
+  - [x] 步骤B.4.7：验证TypeScript类型检查通过
+
 ---
 
 ## 测试与验收
@@ -669,7 +701,7 @@ modules/pending/whoiszd/
 
 ## 当前状态
 
-✅ 阶段B已完成 - 阶段A（核心功能）已完成，阶段B（pending宇宙整合B.1、授权码门禁B.2、UI设计系统统一化B.3）已全部完成
+✅ 阶段B已完成 - 阶段A（核心功能）+ 阶段B（B.1 pending宇宙整合、B.2 授权码门禁、B.3 UI设计系统统一化、B.4 Modular Monolith重构）已全部完成
 
 ---
 *本模板基于陆家花园项目Git开发指南创建（增强版）*

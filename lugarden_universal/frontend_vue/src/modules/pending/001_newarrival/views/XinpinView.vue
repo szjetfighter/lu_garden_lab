@@ -12,7 +12,7 @@ const goBack = () => {
 
 <template>
   <div class="xinpin-view">
-    <div class="container mx-auto px-4 py-8 pt-16 md:pt-8">
+    <div class="container mx-auto px-4 py-8">
       <!-- 返回按钮 -->
       <div class="mb-6">
         <BackButton 

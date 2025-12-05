@@ -45,6 +45,7 @@ const gameStats = ref({ yesCount: 0, noCount: 0, total: 0 })
 const terminatedReason = ref<'consecutive' | 'rushed'>('consecutive')
 
 // 冷却页面逐行显示
+const cooldownName = ref(false)
 const cooldownLine1 = ref(false)
 const cooldownLine2 = ref(false)
 const cooldownLine3 = ref(false)
@@ -53,24 +54,26 @@ const cooldownLine3 = ref(false)
 const cooldownMessages = computed(() => {
   if (cooldownReason.value === 'rushed') {
     return {
-      line1: '朋友，还急么',
+      line1: '「 朋友，还急么 」',
       line2: '急先去找猴耍会儿'
     }
   }
   // consecutive
   return {
-    line1: '朋友，审美的事，急不来',
+    line1: '「 朋友，审美的事，急不来 」',
     line2: '嘻嘻，你说呢？'
   }
 })
 
 function startCooldownAnimation() {
+  cooldownName.value = false
   cooldownLine1.value = false
   cooldownLine2.value = false
   cooldownLine3.value = false
-  setTimeout(() => cooldownLine1.value = true, 100)
-  setTimeout(() => cooldownLine2.value = true, 1100)
-  setTimeout(() => cooldownLine3.value = true, 2100)
+  setTimeout(() => cooldownName.value = true, 100)
+  setTimeout(() => cooldownLine1.value = true, 1100)
+  setTimeout(() => cooldownLine2.value = true, 2100)
+  setTimeout(() => cooldownLine3.value = true, 3100)
 }
 
 // 检查是否已确认过声明
@@ -158,6 +161,10 @@ onUnmounted(() => {
     <!-- 冷却期 -->
     <div v-else-if="phase === 'cooldown'" class="min-h-screen flex items-center justify-center">
       <div class="text-center max-w-md px-6">
+        <p 
+          class="text-zd-light font-bold text-xl mb-6 reveal-line"
+          :class="{ 'revealed': cooldownName }"
+        >陆家明</p>
         <p 
           class="text-xl mb-4 text-zd-light reveal-line"
           :class="{ 'revealed': cooldownLine1 }"

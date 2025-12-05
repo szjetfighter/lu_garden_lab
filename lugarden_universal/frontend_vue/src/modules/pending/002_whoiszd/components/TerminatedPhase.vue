@@ -20,7 +20,7 @@ const { setCooldown } = useCooldown()
 const messages = computed(() => {
   if (props.reason === 'rushed') {
     return {
-      line1: '朋友，这么猴急啊',
+      line1: '「 朋友，这么猴急啊 」',
       line2: '',
       line3: '呵呵',
       emoji: '🙂'
@@ -28,14 +28,15 @@ const messages = computed(() => {
   }
   // consecutive
   return {
-    line1: '朋友，你似乎不具备',
-    line2: '鉴别诗人和机器的能力',
+    line1: '「 朋友，你似乎不具备',
+    line2: '鉴别诗人和机器的能力 」',
     line3: '呼，真遗憾呢',
     emoji: '😏'
   }
 })
 
 // 逐行显示
+const showName = ref(false)
 const showLine1 = ref(false)
 const showLine2 = ref(false)
 const showLine3 = ref(false)
@@ -45,28 +46,33 @@ onMounted(() => {
   // 设置冷却状态（传递原因）
   setCooldown(props.reason)
   
-  // 逐行显示动画
-  setTimeout(() => showLine1.value = true, 100)
+  // 逐行显示动画：陆家明先出现
+  setTimeout(() => showName.value = true, 100)
+  setTimeout(() => showLine1.value = true, 1100)
   if (messages.value.line2) {
-    setTimeout(() => showLine2.value = true, 1100)
-    setTimeout(() => showLine3.value = true, 2100)
-    setTimeout(() => showSmirk.value = true, 4100)
+    setTimeout(() => showLine2.value = true, 2100)
+    setTimeout(() => showLine3.value = true, 3100)
+    setTimeout(() => showSmirk.value = true, 5100)
   } else {
     // 猴急模式：跳过line2
-    setTimeout(() => showLine3.value = true, 1100)
-    setTimeout(() => showSmirk.value = true, 3100)
+    setTimeout(() => showLine3.value = true, 2100)
+    setTimeout(() => showSmirk.value = true, 4100)
   }
   
-  // 6秒后强制跳转到pending入口
+  // 7秒后强制跳转到pending入口
   setTimeout(() => {
     router.push('/pending/home')
-  }, 6000)
+  }, 7000)
 })
 </script>
 
 <template>
   <div class="min-h-screen flex items-center justify-center px-6">
     <div class="text-center max-w-md">
+      <p 
+        class="text-zd-light font-bold text-xl mb-6 reveal-line"
+        :class="{ 'revealed': showName }"
+      >陆家明</p>
       <p 
         class="text-xl text-zd-light mb-4 reveal-line"
         :class="{ 'revealed': showLine1 }"

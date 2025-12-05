@@ -7,6 +7,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/modules/portal/views/UniversePortal.vue'),
     meta: {
       title: '陆家花园 - 宇宙门户',
+      description: '一个诗歌元宇宙项目，旨在通过数字技术重新诠释和体验诗歌',
       requiresAuth: false,
       step: 0
     }
@@ -17,6 +18,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/modules/zhou/views/MainProjectSelection.vue'),
     meta: {
       title: '周与春秋 - 陆家花园',
+      description: '这里的诗，是你的回答',
       requiresAuth: false,
       step: 1
     }
@@ -132,6 +134,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/modules/mao/views/MainProjectSelection.vue'),
     meta: {
       title: '毛小豆宇宙 - 陆家花园',
+      description: '毛小豆故事演绎，演绎了你的故事么？',
       requiresAuth: false
     }
   },
@@ -141,6 +144,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/modules/mao/001_moshi/views/MoshiView.vue'),
     meta: {
       title: '摸诗 - 陆家花园',
+      description: '棒子老虎鸡？不如老虎机！',
       requiresAuth: false
     }
   },
@@ -151,6 +155,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/modules/pending/views/AuthGate.vue'),
     meta: {
       title: '匿，腻，溺 - 陆家花园',
+      description: '实验，以及冒犯。谁？当然是你',
       requiresAuth: false
     }
   },
@@ -171,6 +176,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/modules/pending/001_newarrival/views/XinpinView.vue'),
     meta: {
       title: 'NEW ARRIVAL - 陆家花园',
+      description: '贩卖机，卖空气',
       requiresAuth: false
     }
   },
@@ -181,6 +187,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/modules/pending/002_whoiszd/views/EntryGuard.vue'),
     meta: {
       title: '谁是ZD - 陆家花园',
+      description: '炎石做得，陆家明做不得？',
       requiresAuth: false
     }
   },
@@ -210,6 +217,13 @@ router.beforeEach((to, from, next) => {
   // 设置页面标题
   if (to.meta.title) {
     document.title = to.meta.title as string
+  }
+
+  // 设置分享描述（微信内导航后分享时使用）
+  if (to.meta.description) {
+    const desc = to.meta.description as string
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', desc)
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', desc)
   }
 
   // ================================

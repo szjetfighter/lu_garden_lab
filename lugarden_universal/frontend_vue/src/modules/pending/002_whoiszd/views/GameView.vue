@@ -8,7 +8,7 @@ import { ref, onMounted } from 'vue'
 import { useGameState } from '../composables/useGameState'
 
 const emit = defineEmits<{
-  (e: 'terminated'): void
+  (e: 'terminated', reason: 'consecutive' | 'rushed'): void
   (e: 'completed', stats: { yesCount: number; noCount: number; total: number }): void
 }>()
 
@@ -28,6 +28,11 @@ const showFeedback = ref(false)
 const lastAnswer = ref<'yes' | 'no' | null>(null)
 const feedbackMessage = ref('')
 
+// 猜急检测：记录最近点击「下一首」的时间戳
+const nextClickTimestamps = ref<number[]>([])
+const RUSHED_THRESHOLD = 4  // 4次点击（看了3首诗）
+const RUSHED_WINDOW_MS = 6000  // 6秒窗口
+
 onMounted(() => {
   initGame()
 })
@@ -45,14 +50,31 @@ function handleChoice(answer: 'yes' | 'no') {
   showFeedback.value = true
   
   if (result.shouldTerminate) {
-    // 延迟触发终止
+    // 延迟触发终止（连错惩罚）
     setTimeout(() => {
-      emit('terminated')
+      emit('terminated', 'consecutive')
     }, 1500)
   }
 }
 
 function handleNext() {
+  // 猜急检测
+  const now = Date.now()
+  nextClickTimestamps.value.push(now)
+  // 只保留最近3次
+  if (nextClickTimestamps.value.length > RUSHED_THRESHOLD) {
+    nextClickTimestamps.value.shift()
+  }
+  // 检查最近3次是否在10秒内
+  if (nextClickTimestamps.value.length >= RUSHED_THRESHOLD) {
+    const oldest = nextClickTimestamps.value[0]
+    if (now - oldest < RUSHED_WINDOW_MS) {
+      // 猜急惩罚
+      emit('terminated', 'rushed')
+      return
+    }
+  }
+
   showFeedback.value = false
   lastAnswer.value = null
   feedbackMessage.value = ''

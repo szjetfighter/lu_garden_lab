@@ -8,7 +8,7 @@
  * 3. 作为深色主题容器，注入CSS变量覆盖
  */
 
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useCooldown } from '../composables/useCooldown'
 import { STORAGE_KEY_CONFIRMED } from '../types/whoiszd'
 import ConfirmView from './ConfirmView.vue'
@@ -24,6 +24,7 @@ const phase = ref<Phase>('loading')
 // 冷却状态管理
 const { 
   remainingSeconds, 
+  cooldownReason,
   checkCooldown, 
   startCountdown, 
   stopCountdown 
@@ -32,10 +33,28 @@ const {
 // 游戏统计数据（从 GameView 接收）
 const gameStats = ref({ yesCount: 0, noCount: 0, total: 0 })
 
+// 终止原因
+const terminatedReason = ref<'consecutive' | 'rushed'>('consecutive')
+
 // 冷却页面逐行显示
 const cooldownLine1 = ref(false)
 const cooldownLine2 = ref(false)
 const cooldownLine3 = ref(false)
+
+// 根据冷却原因决定文案
+const cooldownMessages = computed(() => {
+  if (cooldownReason.value === 'rushed') {
+    return {
+      line1: '朋友，还急么',
+      line2: '急先去找猴耍会儿'
+    }
+  }
+  // consecutive
+  return {
+    line1: '朋友，审美的事，急不来',
+    line2: '嘻嘻，你说呢？'
+  }
+})
 
 function startCooldownAnimation() {
   cooldownLine1.value = false
@@ -72,7 +91,8 @@ function goToGame() {
   phase.value = 'playing'
 }
 
-function handleTerminated() {
+function handleTerminated(reason: 'consecutive' | 'rushed') {
+  terminatedReason.value = reason
   phase.value = 'terminated'
 }
 
@@ -120,11 +140,11 @@ onUnmounted(() => {
         <p 
           class="text-xl mb-4 text-zd-light reveal-line"
           :class="{ 'revealed': cooldownLine1 }"
-        >朋友，审美的事，急不来</p>
+        >{{ cooldownMessages.line1 }}</p>
         <p 
           class="text-lg mb-8 text-zd-muted reveal-line"
           :class="{ 'revealed': cooldownLine2 }"
-        >嘻嘻，你说呢？</p>
+        >{{ cooldownMessages.line2 }}</p>
         <p 
           class="text-6xl font-mono text-zd-light reveal-line"
           :class="{ 'revealed': cooldownLine3 }"
@@ -164,7 +184,10 @@ onUnmounted(() => {
     />
 
     <!-- 惩罚/终止页 -->
-    <TerminatedView v-else-if="phase === 'terminated'" />
+    <TerminatedView 
+      v-else-if="phase === 'terminated'" 
+      :reason="terminatedReason"
+    />
 
     <!-- 结算揭示页 -->
     <ResultView 

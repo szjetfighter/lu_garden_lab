@@ -29,8 +29,8 @@ export interface UserGameState {
 
 /** 冷却状态（localStorage持久化） */
 export interface CooldownState {
-  kickedAt: number       // 被踢出的时间戳（Date.now()）
-  reason: 'consecutive'  // 踢出原因
+  kickedAt: number                      // 被踢出的时间戳（Date.now()）
+  reason: 'consecutive' | 'rushed'      // 踢出原因
 }
 
 /** 游戏阶段枚举 */
@@ -45,7 +45,7 @@ export type GamePhase =
 /** 冷却配置常量 */
 export const COOLDOWN_DURATION_MS = 60 * 1000  // 60秒冷却
 export const CONSECUTIVE_LIMIT = 3              // 连续错误阈值
-export const TOTAL_POEMS = 20                   // 诗歌总数
+export const TOTAL_POEMS = 10                   // 每局显示诗歌数
 
 /** localStorage键名 */
 export const STORAGE_KEY_COOLDOWN = 'whoiszd_cooldown'

@@ -12,6 +12,7 @@ import {
 export function useCooldown() {
   const kickedAt = ref<number | null>(null)
   const remainingSeconds = ref(0)
+  const cooldownReason = ref<'consecutive' | 'rushed'>('consecutive')
   let timer: ReturnType<typeof setInterval> | null = null
 
   /** 检查是否在冷却期 */
@@ -34,6 +35,7 @@ export function useCooldown() {
       
       kickedAt.value = state.kickedAt
       remainingSeconds.value = remaining
+      cooldownReason.value = state.reason || 'consecutive'
       return true
     } catch {
       clearCooldown()
@@ -42,14 +44,15 @@ export function useCooldown() {
   }
 
   /** 设置冷却（被踢出时调用） */
-  function setCooldown() {
+  function setCooldown(reason: 'consecutive' | 'rushed' = 'consecutive') {
     const state: CooldownState = {
       kickedAt: Date.now(),
-      reason: 'consecutive'
+      reason
     }
     localStorage.setItem(STORAGE_KEY_COOLDOWN, JSON.stringify(state))
     kickedAt.value = state.kickedAt
     remainingSeconds.value = Math.ceil(COOLDOWN_DURATION_MS / 1000)
+    cooldownReason.value = reason
   }
 
   /** 清除冷却 */
@@ -88,6 +91,7 @@ export function useCooldown() {
   return {
     kickedAt,
     remainingSeconds,
+    cooldownReason,
     isInCooldown,
     checkCooldown,
     setCooldown,

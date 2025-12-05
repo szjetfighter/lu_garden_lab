@@ -32,9 +32,10 @@ export function useGameState() {
     terminated.value = false
     completed.value = false
     
-    // 生成随机顺序
-    const indices = Array.from({ length: totalPoems.value }, (_, i) => i)
-    shuffleOrder.value = shuffleArray(indices)
+    // 从所有诗中随机抽取TOTAL_POEMS首
+    const allIndices = Array.from({ length: poems.value.length }, (_, i) => i)
+    const shuffled = shuffleArray(allIndices)
+    shuffleOrder.value = shuffled.slice(0, totalPoems.value)
   }
 
   /** Fisher-Yates 洗牌算法 */

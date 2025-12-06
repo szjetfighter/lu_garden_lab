@@ -191,6 +191,17 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false
     }
   },
+  // Pending - 四气（四季诗歌交互）
+  {
+    path: '/pending/003_fourseasons',
+    name: 'FourSeasons',
+    component: () => import('@/modules/pending/003_fourseasons/views/FourSeasonsView.vue'),
+    meta: {
+      title: '四气 - 陆家花园',
+      description: '春生、夏蒸、秋落、冬冻',
+      requiresAuth: false
+    }
+  },
   // 404 重定向
   {
     path: '/:pathMatch(.*)*',

@@ -62,6 +62,28 @@
             </button>
           </div>
         </div>
+
+        <!-- 四气 入口 -->
+        <div 
+          class="unified-content-card rounded-base animate-fadeInUp cursor-pointer flex flex-col h-full"
+          style="animation-delay: 0.3s"
+          @click="enterFourSeasons"
+        >
+          <div class="flex-1">
+            <h2 class="text-2xl font-bold mb-2 text-gray-800">四气</h2>
+            <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">
+              春生、夏蒸、秋落、冬冻
+              <br />
+              <span class="text-xs text-gray-400">施岳宏 · 节气诗选</span>
+            </div>
+          </div>
+          <div class="flex justify-between items-center mt-4">
+            <p class="text-xs text-gray-500 m-0">状态: 测不准</p>
+            <button class="btn-primary">
+              进入
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -89,5 +111,10 @@ const enterNewArrival = () => {
 // 进入谁是臧棣
 const enterWhoIsZD = () => {
   router.push('/pending/002_whoiszd')
+}
+
+// 进入四气
+const enterFourSeasons = () => {
+  router.push('/pending/003_fourseasons')
 }
 </script>

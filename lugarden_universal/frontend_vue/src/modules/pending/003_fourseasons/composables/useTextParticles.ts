@@ -2,6 +2,9 @@ import { ref } from 'vue'
 import * as THREE from 'three'
 import { Text } from 'troika-three-text'
 
+// 思源宋体 - 子集化字体（仅包含诗歌用到的706个字符，210KB）
+import sourceHanSerifUrl from '../assets/fonts/思源宋体-subset.ttf?url'
+
 export interface CharParticle {
   char: string
   mesh: any // Troika Text instance
@@ -207,6 +210,7 @@ export function useTextParticles(scene: THREE.Scene) {
         // 创建Troika文字
         const textMesh = new Text()
         textMesh.text = char
+        textMesh.font = sourceHanSerifUrl  // 使用本地思源宋体
         textMesh.fontSize = charSize
         textMesh.color = 0xffffff
         textMesh.anchorX = 'center'

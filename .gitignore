@@ -51,6 +51,9 @@ lugarden_universal/application/generated/
 # blend等素材库
 *.blend/
 
+# 本地assets
+.assets-local
+
 # 语料库文件 - 敏感数据，不应被版本控制跟踪
 lugarden_universal/lu_the_poet/corpus/
 

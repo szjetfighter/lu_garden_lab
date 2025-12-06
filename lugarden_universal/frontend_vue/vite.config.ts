@@ -5,6 +5,7 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import UnoCSS from 'unocss/vite'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -12,6 +13,7 @@ export default defineConfig({
     vue(),
     vueJsx(),
     vueDevTools(),
+    basicSsl(), // 开发环境HTTPS（移动端传感器API需要安全上下文）
     UnoCSS({
       // UnoCSS插件性能优化配置
       hmrTopLevelAwait: false, // 提升HMR性能

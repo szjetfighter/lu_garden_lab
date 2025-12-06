@@ -83,6 +83,35 @@
 - 完成状态：✅ 已完成
 - Git Commit: `cf7b0de` - feat: 四季模块UI完善 - About作者弹窗、四季纹理、按钮等宽、动画统一
 
+#### - [x] 任务A.3：秋季效果重构与触摸检测修复
+- **核心思想**: 重新设计秋季交互效果，修复全局触摸检测坐标不准确问题
+- 交付物：
+  - 秋季效果：手指扫过→字符渐隐+飘散消失（类似夏季）
+  - 秋季效果：倾斜手机→未消失文字抖动
+  - 触摸检测：使用Canvas相对坐标替代窗口坐标
+  - 触摸检测：使用卡片Raycaster+最近字符算法
+- 验收标准：
+  - 秋季手指扫过时，最近的字符渐隐飘散消失
+  - 秋季倾斜手机时，未消失文字原地抖动
+  - 消失的字符从任何角度都不可见
+  - 触摸检测准确定位到Canvas区域
+- **风险评估**: 中风险 - 涉及核心交互逻辑重构
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/pending/003_fourseasons/composables/effects/autumn.ts` (重写)
+  - `lugarden_universal/frontend_vue/src/modules/pending/003_fourseasons/composables/useSensors.ts`
+  - `lugarden_universal/frontend_vue/src/modules/pending/003_fourseasons/composables/useSeasonEffects.ts`
+  - `lugarden_universal/frontend_vue/src/modules/pending/003_fourseasons/components/PoemScene.vue`
+- 完成状态：✅ 已完成
+- Git Commits:
+  - `a3904cc` - feat: 秋季效果重构 + 触摸检测修复
+  - `5a8ae16` - refactor: 秋季检测改用卡片Raycaster + 最近字符算法
+  - (待提交) - feat: 秋季渐隐飘散效果完善
+- 技术要点:
+  - Troika Text不支持Raycaster检测（SDF渲染，无独立几何体）
+  - 改用卡片Raycaster获取触碰点世界坐标，再计算最近字符
+  - useSensors接收容器ref，计算Canvas相对坐标
+  - 消失动画：渐隐+飘散+缩小+旋转，完成后从场景移除mesh
+
 ---
 
 ## 测试与验收

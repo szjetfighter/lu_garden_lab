@@ -209,7 +209,8 @@ onUpdate((delta) => {
         particles.value,
         hitParticles,
         tilt.value.x,
-        tilt.value.y
+        tilt.value.y,
+        scene
       )
       break
       

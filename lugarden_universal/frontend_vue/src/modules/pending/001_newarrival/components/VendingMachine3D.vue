@@ -11,8 +11,10 @@ import { Text } from 'troika-three-text'
 import type { CaogongProduct } from '../types/xinpin'
 import { products, generateScrollContent } from '../data/products'
 
-// Cyberpunk字体
+// Cyberpunk字体（英文霓虹招牌）
 import cyberpunkFontUrl from '../assets/fonts/cyberpunk.ttf?url'
+// 思源宋体子集（中文滚动屏幕，仅含charPool字符，208KB）
+import sourceHanSerifUrl from '../assets/fonts/思源宋体-subset.ttf?url'
 // 金属纹理
 import metalDiffUrl from '../assets/texture/blue_metal_plate_diff_1k.jpg?url'
 import ProductModal from './ProductModal.vue'
@@ -412,6 +414,7 @@ async function createVendingMachine(sceneRef: THREE.Scene) {
   // 创建第一个文字
   screenText1 = new Text()
   screenText1.text = scrollContent
+  screenText1.font = sourceHanSerifUrl  // 使用本地思源宋体子集
   screenText1.fontSize = 0.22
   screenText1.color = 0x00ffaa
   screenText1.anchorX = 'left'
@@ -431,6 +434,7 @@ async function createVendingMachine(sceneRef: THREE.Scene) {
   // 创建第二个文字
   screenText2 = new Text()
   screenText2.text = scrollContent
+  screenText2.font = sourceHanSerifUrl  // 使用本地思源宋体子集
   screenText2.fontSize = 0.22
   screenText2.color = 0x00ffaa
   screenText2.anchorX = 'left'

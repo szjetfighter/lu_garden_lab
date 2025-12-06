@@ -9,7 +9,6 @@
       @click="emit('update:modelValue', s.key)"
     >
       <span class="season-name">{{ s.name }}</span>
-      <span class="season-effect">{{ s.effect }}</span>
     </button>
   </div>
 </template>
@@ -26,59 +25,53 @@ const emit = defineEmits<{
 }>()
 
 const seasons = [
-  { key: 'spring' as Season, name: '春', effect: '生长', color: '#4ade80' },
-  { key: 'summer' as Season, name: '夏', effect: '蒸发', color: '#f97316' },
-  { key: 'autumn' as Season, name: '秋', effect: '飘落', color: '#eab308' },
-  { key: 'winter' as Season, name: '冬', effect: '冰封', color: '#60a5fa' },
+  { key: 'spring' as Season, name: '烟絮', color: '#4ade80' },
+  { key: 'summer' as Season, name: '动身', color: '#f97316' },
+  { key: 'autumn' as Season, name: '解离', color: '#eab308' },
+  { key: 'winter' as Season, name: '坐定', color: '#60a5fa' },
 ]
 </script>
 
 <style scoped>
 .season-selector {
   display: flex;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
-  border-radius: 1rem;
+  gap: 0.75rem;
 }
 
 .season-btn {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
-  padding: 0.75rem 1rem;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
+  justify-content: center;
+  min-height: 36px;
+  min-width: 100px;
+  padding: 0.5rem 1rem;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 600;
+  background: var(--bg-secondary, #ffffff);
+  border: 1px solid var(--color-primary-200, #d1d5db);
+  border-radius: var(--radius-lg, 12px);
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 4rem;
+  transition: all 0.2s ease-out;
+  box-shadow: var(--shadow-sm);
 }
 
 .season-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: var(--season-color);
+  border-color: var(--color-brand-primary, #bca09e);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-base);
 }
 
 .season-btn.active {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--season-color);
+  background: linear-gradient(145deg, var(--color-primary-600, #1f2937), var(--color-primary-700, #111827));
+  border-color: var(--color-primary-700, #111827);
+  box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
 }
 
 .season-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--season-color);
-  margin-bottom: 0.25rem;
+  color: var(--text-primary, #1f2937);
 }
 
-.season-effect {
-  font-size: 0.625rem;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.season-btn.active .season-effect {
-  color: var(--season-color);
+.season-btn.active .season-name {
+  color: var(--text-light, #f0e8d9);
 }
 </style>

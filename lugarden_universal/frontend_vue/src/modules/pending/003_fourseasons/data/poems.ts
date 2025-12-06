@@ -131,25 +131,25 @@ export const poems: SeasonPoem[] = [
 export const seasonMeta = {
   spring: {
     name: '春',
-    effect: '生长',
+    effect: '烟絮',
     description: '文字是种子，触摸让它们发芽',
     color: '#4ade80',
   },
   summer: {
     name: '夏',
-    effect: '蒸发',
+    effect: '动身',
     description: '触摸即灼烧，文字颤抖后蒸发',
     color: '#f97316',
   },
   autumn: {
     name: '秋',
-    effect: '飘落',
+    effect: '解离',
     description: '倾斜手机，文字如落叶飘散',
     color: '#eab308',
   },
   winter: {
     name: '冬',
-    effect: '冰封',
+    effect: '坐定',
     description: '摇晃手机，融化冰霜见文字',
     color: '#60a5fa',
   },

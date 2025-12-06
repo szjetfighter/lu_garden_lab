@@ -208,6 +208,7 @@ onUpdate((delta) => {
 .poem-scene {
   width: 100%;
   height: 100%;
-  background: #0a0a0a;
+  background: var(--color-brand-dark, #2d4a4a);
+  border-radius: inherit;
 }
 </style>

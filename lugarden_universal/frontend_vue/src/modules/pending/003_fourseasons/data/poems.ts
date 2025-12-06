@@ -131,7 +131,7 @@ export const poems: SeasonPoem[] = [
 export const seasonMeta = {
   spring: {
     name: '春',
-    effect: '烟絮',
+    effect: '脱囊',
     description: '文字是种子，触摸让它们发芽',
     color: '#4ade80',
   },

@@ -25,7 +25,7 @@ const emit = defineEmits<{
 }>()
 
 const seasons = [
-  { key: 'spring' as Season, name: '烟絮', color: '#4ade80' },
+  { key: 'spring' as Season, name: '脱囊', color: '#4ade80' },
   { key: 'summer' as Season, name: '动身', color: '#f97316' },
   { key: 'autumn' as Season, name: '解离', color: '#eab308' },
   { key: 'winter' as Season, name: '坐定', color: '#60a5fa' },
@@ -42,8 +42,8 @@ const seasons = [
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 1;
   min-height: 36px;
-  min-width: 100px;
   padding: 0.5rem 1rem;
   font-size: var(--font-size-sm, 0.875rem);
   font-weight: 600;

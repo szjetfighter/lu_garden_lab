@@ -4,8 +4,21 @@ import { Text } from 'troika-three-text'
 
 // 思源宋体 - 子集化字体（仅包含诗歌用到的706个字符，210KB）
 import sourceHanSerifUrl from '../assets/fonts/思源宋体-subset.ttf?url'
-// 卡片背景纹理
-import cardTextureUrl from '../assets/textures/leather-texture.jpg?url'
+// 卡片背景纹理 - 四季
+import springTextureUrl from '../assets/textures/spring-texture.jpg?url'
+import summerTextureUrl from '../assets/textures/summer-texture.jpg?url'
+import autumnTextureUrl from '../assets/textures/autumn-texture.jpg?url'
+import winterTextureUrl from '../assets/textures/winter-texture.jpg?url'
+
+import type { Season } from './useSeasonEffects'
+
+// 季节纹理映射
+const seasonTextures: Record<Season, string> = {
+  spring: springTextureUrl,
+  summer: summerTextureUrl,
+  autumn: autumnTextureUrl,
+  winter: winterTextureUrl,
+}
 
 export interface CharParticle {
   char: string
@@ -39,7 +52,7 @@ export function useTextParticles(scene: THREE.Scene) {
   }
 
   // 创建文字粒子
-  const createParticles = async (lines: string[]) => {
+  const createParticles = async (lines: string[], season: Season = 'summer') => {
     // 先清理旧的粒子
     clearParticles()
 
@@ -75,9 +88,9 @@ export function useTextParticles(scene: THREE.Scene) {
     
     const cardGeometry = new THREE.ShapeGeometry(shape)
     
-    // 加载纹理
+    // 加载当前季节的纹理
     const textureLoader = new THREE.TextureLoader()
-    const cardTexture = textureLoader.load(cardTextureUrl)
+    const cardTexture = textureLoader.load(seasonTextures[season])
     cardTexture.wrapS = THREE.RepeatWrapping
     cardTexture.wrapT = THREE.RepeatWrapping
     

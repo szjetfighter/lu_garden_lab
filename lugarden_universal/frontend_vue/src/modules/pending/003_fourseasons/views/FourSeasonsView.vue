@@ -13,28 +13,22 @@
       </div>
 
       <!-- 标题区 -->
-      <div class="header-section text-center mb-6">
-        <h1 class="text-3xl font-light tracking-widest text-gray-800 mb-2">四气</h1>
-        <p class="text-sm text-gray-500">{{ currentPoem?.title }} · {{ currentPoem?.subtitle }}</p>
+      <div class="header-section text-center mb-6 animate-fadeInUp">
+        <h1 class="text-3xl font-bold tracking-widest text-gray-800 mb-2">四气</h1>
+        <button class="author-link" @click="isAboutOpen = true">About 施岳宏</button>
+        <p class="poem-title text-base text-gray-500">{{ currentPoem?.title }} · {{ currentPoem?.subtitle }}</p>
       </div>
 
+      <!-- 作者简介弹窗 -->
+      <AboutAuthor :is-open="isAboutOpen" @close="isAboutOpen = false" />
+
       <!-- 3D场景容器 -->
-      <div class="scene-container">
+      <div class="scene-container animate-fadeInUp" style="animation-delay: 0.1s;">
         <PoemScene :season="currentSeason" />
       </div>
 
-      <!-- 提示文字 -->
-      <div class="hint-section text-center mt-4 mb-4">
-        <span class="text-sm text-gray-400">
-          <template v-if="currentSeason === 'spring'">静待生长</template>
-          <template v-else-if="currentSeason === 'summer'">触摸文字，感受灼热</template>
-          <template v-else-if="currentSeason === 'autumn'">滑动屏幕，吹散落叶</template>
-          <template v-else-if="currentSeason === 'winter'">摇晃手机，融化冰封</template>
-        </span>
-      </div>
-
       <!-- 季节选择器 -->
-      <div class="selector-section flex justify-center">
+      <div class="selector-section animate-fadeInUp" style="animation-delay: 0.2s;">
         <SeasonSelector v-model="currentSeason" />
       </div>
     </div>
@@ -47,11 +41,13 @@ import { useRouter } from 'vue-router'
 import PoemScene from '../components/PoemScene.vue'
 import SeasonSelector from '../components/SeasonSelector.vue'
 import BackButton from '@/shared/components/BackButton.vue'
+import AboutAuthor from '../components/AboutAuthor.vue'
 import { poems } from '../data/poems'
 import type { Season } from '../composables/useSeasonEffects'
 
 const router = useRouter()
 const currentSeason = ref<Season>('summer')
+const isAboutOpen = ref(false)
 
 const currentPoem = computed(() => {
   return poems.find(p => p.season === currentSeason.value)
@@ -96,6 +92,30 @@ const goBack = () => {
     0 12px 40px rgba(0, 0, 0, 0.15),
     0 4px 12px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.selector-section {
+  max-width: 600px;
+  margin: var(--spacing-lg, 1.5rem) auto 0;
+}
+
+.author-link {
+  display: inline-block;
+  margin-top: var(--spacing-sm, 0.5rem);
+  font-size: 0.75rem;
+  color: var(--text-tertiary, #9ca3af);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.author-link:hover {
+  color: var(--color-brand-primary, #bca09e);
+}
+
+.poem-title {
+  margin-top: var(--spacing-lg, 1.5rem);
 }
 </style>
 

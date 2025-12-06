@@ -23,7 +23,9 @@ const goBack = () => {
           @click="goBack"
         />
       </div>
-      <VendingMachine3D />
+      <div class="animate-fadeInUp">
+        <VendingMachine3D />
+      </div>
     </div>
   </div>
 </template>

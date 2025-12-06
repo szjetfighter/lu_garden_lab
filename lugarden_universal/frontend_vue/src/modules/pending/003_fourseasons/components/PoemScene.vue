@@ -95,7 +95,7 @@ const loadPoem = async (season: Season) => {
   // 首次加载：无过渡，直接创建
   if (isFirstLoad) {
     isFirstLoad = false
-    await createParticles(poem.content)
+    await createParticles(poem.content, season)
     
     // 聚合动画
     assembleParticles(particles.value, 800, () => {
@@ -114,7 +114,7 @@ const loadPoem = async (season: Season) => {
   dissolveCard(oldCard, 600, async () => {
     // 崩解完成后，清理并创建新内容
     clearParticles()
-    await createParticles(poem.content)
+    await createParticles(poem.content, season)
     
     // 聚合动画
     assembleParticles(particles.value, 800, () => {

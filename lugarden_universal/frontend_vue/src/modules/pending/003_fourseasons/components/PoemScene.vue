@@ -174,20 +174,36 @@ onUpdate((delta) => {
       break
       
     case 'autumn':
-      // 把NDC坐标转换到世界坐标，用距离检测
+      // 用Raycaster检测卡片，获取触碰点，找最近的字符
       let hitParticles: typeof particles.value = []
       if (pointer.value.active) {
-        // NDC -> 世界坐标
-        const worldPos = new THREE.Vector3(pointer.value.x, pointer.value.y, 0)
-        worldPos.unproject(camera)
-        
-        // 检测距离小于阈值的粒子
-        const hitRadius = 0.3
-        hitParticles = particles.value.filter(p => {
-          const dx = p.position.x - worldPos.x
-          const dy = p.position.y - worldPos.y
-          return dx * dx + dy * dy < hitRadius * hitRadius
-        })
+        pointerVec.set(pointer.value.x, pointer.value.y)
+        raycaster.setFromCamera(pointerVec, camera)
+        const cardMesh = getCardMesh()
+        if (cardMesh) {
+          const intersects = raycaster.intersectObject(cardMesh)
+          if (intersects.length > 0) {
+            const hitPoint = intersects[0].point
+            
+            // 计算所有粒子到触碰点的距离
+            const distances = particles.value.map(p => ({
+              particle: p,
+              dist: Math.sqrt(
+                (p.position.x - hitPoint.x) ** 2 +
+                (p.position.y - hitPoint.y) ** 2
+              )
+            }))
+            
+            // 找最小距离
+            const minDist = Math.min(...distances.map(d => d.dist))
+            
+            // 容差：距离在最小距离+0.05内的都算"同等近"
+            const tolerance = 0.05
+            hitParticles = distances
+              .filter(d => d.dist <= minDist + tolerance)
+              .map(d => d.particle)
+          }
+        }
       }
       applyAutumnWind(
         particles.value,

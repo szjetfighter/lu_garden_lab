@@ -55,8 +55,9 @@ export function applySummerHeat(
   // 未触发时不处理
   if (!evaporateTriggered) return
   
-  // 推进蒸发进度（放慢速度，更有仪式感）
-  evaporateProgress += 0.002
+  // 推进蒸发进度（30秒完成整体动画）
+  // 计算：30s * 60fps = 1800帧，progress需达1.25，每帧 ≈ 0.0007
+  evaporateProgress += 0.0007
   
   const diagonalLength = Math.sqrt((maxX - minX) ** 2 + (maxY - minY) ** 2)
   

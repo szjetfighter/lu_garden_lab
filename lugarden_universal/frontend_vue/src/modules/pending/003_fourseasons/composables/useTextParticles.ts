@@ -123,10 +123,8 @@ export function useTextParticles(scene: THREE.Scene) {
           float projDist = dot(toPoint, diagDir);
           float dist = projDist / length(uCardSize);
           
-          // 分区延迟：对角线上方 vs 下方
-          float diagSlope = uCardSize.y / uCardSize.x;
-          float pointSlope = (vPosition.y + uCardSize.y / 2.0) / (vPosition.x + uCardSize.x / 2.0 + 0.001);
-          float regionDelay = pointSlope > diagSlope ? 0.08 : 0.0;
+          // 方案2：去掉分区，只用噪声
+          float regionDelay = 0.0;  // 无分区延迟
           
           // 添加噪声让边缘不规则
           float n = noise(vPosition * 8.0) * 0.06;

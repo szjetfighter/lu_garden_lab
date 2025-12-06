@@ -71,12 +71,10 @@ export function applySummerHeat(
     const projDist = dx * diagDirX + dy * diagDirY  // 点积
     const normalizedDist = projDist / diagonalLength
     
-    // 判断在对角线的上方还是下方（用于分区delay）
-    // 对角线上方: dx/dy 比值小于对角线斜率
-    const diagSlope = (maxY - minY) / (minX - maxX)
-    const pointSlope = dy / (dx || 0.001)
-    const isAboveDiag = pointSlope > diagSlope
-    const regionDelay = isAboveDiag ? 0.1 : 0  // 上区延迟
+    // 方案2：去掉分区延迟，只用噪声产生不规则边缘
+    // 每个字有独立的随机偏移（基于位置的伪随机）
+    const noise = Math.sin(p.home.x * 10 + p.home.y * 7) * 0.05
+    const regionDelay = noise  // 纯噪声，无分区
     
     // 蒸发阈值：进度越大，能蒸发的距离越远
     const evaporateThreshold = evaporateProgress * 1.1

@@ -81,14 +81,16 @@ export function useTextParticles(scene: THREE.Scene) {
     cardTexture.wrapS = THREE.RepeatWrapping
     cardTexture.wrapT = THREE.RepeatWrapping
     
-    // 使用自定义ShaderMaterial实现从右下角开始的燃烧消失效果
+    // 使用自定义ShaderMaterial实现燃烧消失和光晕过渡效果
     const cardMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        uProgress: { value: 0.0 },  // 消失进度
+        uProgress: { value: 0.0 },  // 燃烧消失进度（夏天专用）
         uTime: { value: 0.0 },  // 时间，用于火焰闪烁
         uTexture: { value: cardTexture },  // 纹理贴图
         uBurnColor: { value: new THREE.Color(0xff6622) },
         uCardSize: { value: new THREE.Vector2(cardWidth, cardHeight) },
+        uGlowProgress: { value: 0.0 },  // 光晕过渡进度（切换季节用）
+        uGlowIn: { value: false },  // true=聚合淡入, false=崩解淡出
       },
       vertexShader: `
         varying vec2 vUv;
@@ -105,6 +107,8 @@ export function useTextParticles(scene: THREE.Scene) {
         uniform sampler2D uTexture;
         uniform vec3 uBurnColor;
         uniform vec2 uCardSize;
+        uniform float uGlowProgress;
+        uniform bool uGlowIn;
         varying vec2 vUv;
         varying vec2 vPosition;
         
@@ -124,7 +128,8 @@ export function useTextParticles(scene: THREE.Scene) {
           return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
         }
         
-        void main() {
+        // 燃烧效果函数（夏天专用）
+        void burnEffect(vec3 texColor) {
           // 对角线方向（从右下角到左上角）
           vec2 cornerBR = vec2(uCardSize.x / 2.0, -uCardSize.y / 2.0);
           vec2 cornerTL = vec2(-uCardSize.x / 2.0, uCardSize.y / 2.0);
@@ -145,10 +150,6 @@ export function useTextParticles(scene: THREE.Scene) {
           // 燃烧边界（从右下角向左上角推进）
           float burnEdge = uProgress * 1.2;
           float burnWidth = 0.08;
-          
-          // 根据位置计算正确的UV（ShapeGeometry的UV不是0-1范围）
-          vec2 uv = (vPosition / uCardSize) + 0.5;  // 转换到0-1范围
-          vec3 texColor = texture2D(uTexture, uv).rgb;
           
           // 初始状态：全部显示纹理
           if (uProgress < 0.01) {
@@ -189,6 +190,46 @@ export function useTextParticles(scene: THREE.Scene) {
           
           // 未燃烧区域：纹理
           gl_FragColor = vec4(texColor, 0.85);
+        }
+        
+        // 光晕过渡效果（优先级高于燃烧）
+        void glowTransition(vec3 texColor) {
+          float progress = uGlowProgress;
+          
+          if (uGlowIn) {
+            // 聚合淡入：从白光中显现
+            float alpha = progress;  // 0->1
+            float glowIntensity = (1.0 - progress) * 1.5;  // 光晕从强到弱
+            vec3 glowColor = vec3(1.0, 0.95, 0.9);  // 暖白色光晕
+            vec3 finalColor = mix(glowColor, texColor, progress);
+            finalColor += glowColor * glowIntensity * 0.3;  // 添加光晕
+            gl_FragColor = vec4(finalColor, alpha * 0.85);
+          } else {
+            // 崩解淡出：变亮然后消失
+            float alpha = 1.0 - progress;  // 1->0
+            // 前半段变亮，后半段淡出
+            float brightPhase = smoothstep(0.0, 0.4, progress);
+            float fadePhase = smoothstep(0.3, 1.0, progress);
+            
+            vec3 glowColor = vec3(1.0, 0.95, 0.9);
+            float glowIntensity = brightPhase * (1.0 - fadePhase) * 2.0;
+            vec3 finalColor = texColor + glowColor * glowIntensity;
+            gl_FragColor = vec4(finalColor, alpha * 0.85);
+          }
+        }
+        
+        void main() {
+          vec2 uv = (vPosition / uCardSize) + 0.5;
+          vec3 texColor = texture2D(uTexture, uv).rgb;
+          
+          // 光晕过渡优先
+          if (uGlowProgress > 0.001) {
+            glowTransition(texColor);
+            return;
+          }
+          
+          // 燃烧效果
+          burnEffect(texColor);
         }
       `,
       transparent: true,

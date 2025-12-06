@@ -9,6 +9,7 @@ import { useThreeScene } from '../composables/useThreeScene'
 import { useTextParticles } from '../composables/useTextParticles'
 import { useSensors } from '../composables/useSensors'
 import { useSeasonEffects, type Season } from '../composables/useSeasonEffects'
+import { useTransition } from '../composables/useTransition'
 import { poems } from '../data/poems'
 
 const props = defineProps<{
@@ -54,35 +55,73 @@ const {
   initWinter,
 } = useSeasonEffects()
 
-// 加载诗歌并初始化季节效果
-const loadPoem = async (season: Season) => {
-  // 先清理旧粒子
-  clearParticles()
+// 过渡动画
+const {
+  isTransitioning,
+  dissolveParticles,
+  dissolveCard,
+  assembleParticles,
+  assembleCard,
+} = useTransition()
+
+// 是否首次加载
+let isFirstLoad = true
+
+// 初始化季节效果
+const initSeasonEffect = (season: Season) => {
+  if (particles.value.length === 0) return
   
+  if (season === 'spring') {
+    initSpring(particles.value)
+  } else if (season === 'summer') {
+    initSummer(particles.value)
+  } else if (season === 'winter') {
+    initWinter(particles.value)
+  } else {
+    // 秋天：恢复正常显示
+    particles.value.forEach(p => {
+      p.mesh.fillOpacity = 1
+      p.mesh.color = 0xffffff
+      p.mesh.scale?.setScalar(1)
+    })
+  }
+}
+
+// 加载诗歌并初始化季节效果（带过渡动画）
+const loadPoem = async (season: Season) => {
   const poem = poems.find(p => p.season === season)
-  if (poem) {
+  if (!poem) return
+
+  // 首次加载：无过渡，直接创建
+  if (isFirstLoad) {
+    isFirstLoad = false
     await createParticles(poem.content)
     
-    // 等待粒子创建完成后初始化季节效果
-    setTimeout(() => {
-      if (particles.value.length === 0) return
-      
-      if (season === 'spring') {
-        initSpring(particles.value)
-      } else if (season === 'summer') {
-        initSummer(particles.value)
-      } else if (season === 'winter') {
-        initWinter(particles.value)
-      } else {
-        // 秋天：恢复正常显示
-        particles.value.forEach(p => {
-          p.mesh.fillOpacity = 1
-          p.mesh.color = 0xffffff
-          p.mesh.scale?.setScalar(1)
-        })
-      }
-    }, 200)
+    // 聚合动画
+    assembleParticles(particles.value, 800, () => {
+      initSeasonEffect(season)
+    })
+    assembleCard(getCardMesh(), 800)
+    return
   }
+
+  // 非首次：先崩解旧内容，再创建新内容
+  const oldParticles = [...particles.value]
+  const oldCard = getCardMesh()
+
+  // 崩解动画
+  dissolveParticles(oldParticles, 600)
+  dissolveCard(oldCard, 600, async () => {
+    // 崩解完成后，清理并创建新内容
+    clearParticles()
+    await createParticles(poem.content)
+    
+    // 聚合动画
+    assembleParticles(particles.value, 800, () => {
+      initSeasonEffect(season)
+    })
+    assembleCard(getCardMesh(), 800)
+  })
 }
 
 // 监听季节变化
@@ -94,6 +133,9 @@ watch(() => props.season, async (newSeason) => {
 // 渲染循环
 onUpdate((delta) => {
   if (!isReady.value || particles.value.length === 0) return
+  
+  // 过渡动画期间跳过物理和季节效果
+  if (isTransitioning.value) return
 
   const params = seasonParams.value
 

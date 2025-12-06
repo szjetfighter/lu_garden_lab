@@ -408,3 +408,140 @@ float alpha = smoothstep(0.5 - edge, 0.5 + edge, dist);
 - 缩小到极限：城市变成一个小点，边界消失
 
 Troika的SDF纹理分辨率是固定的（默认64x64 per glyph），当屏幕尺寸小于这个精度时就会崩溃。
+
+---
+
+## 6.3 Troika Text与Raycaster的限制
+
+### 问题
+尝试用Three.js的Raycaster检测单个Troika Text字符时，检测失败。
+
+### 原因
+Troika Text使用**SDF渲染**，其内部结构是：
+- **一个简单平面几何体**（Quad）
+- 所有字符形状完全由**shader在GPU上渲染**
+- CPU端没有每个字符的独立几何信息
+
+Raycaster的工作原理：
+```
+射线 → 遍历物体的几何顶点 → 计算三角形交点
+```
+
+由于Troika只有一个平面几何体，Raycaster只能检测到"是否碰到整个文本块"，无法知道具体碰到了哪个字符。
+
+### 解决方案
+使用**间接检测**：
+
+1. **检测承载卡片**（标准Mesh，Raycaster可检测）
+2. 获取**触碰点的世界坐标**（`intersects[0].point`）
+3. 计算触碰点与每个字符位置的**距离**
+4. 找出**最近的字符**
+
+```typescript
+// 检测卡片
+const intersects = raycaster.intersectObject(cardMesh)
+if (intersects.length > 0) {
+  const hitPoint = intersects[0].point  // 触碰点世界坐标
+  
+  // 计算每个粒子的距离
+  const distances = particles.map(p => ({
+    particle: p,
+    dist: Math.hypot(p.position.x - hitPoint.x, p.position.y - hitPoint.y)
+  }))
+  
+  // 找最近的
+  const minDist = Math.min(...distances.map(d => d.dist))
+  const hitParticles = distances.filter(d => d.dist <= minDist + 0.05)
+}
+```
+
+### 适用场景
+- 需要检测"哪个字符被触碰"
+- 粒子化文字效果（每个字符独立响应）
+
+---
+
+## 6.4 Troika Text的正确清理
+
+### 问题
+将`fillOpacity`设为0后，从侧面仍能看到黑色残影。
+
+### 原因
+Troika的SDF shader在低透明度时仍可能渲染边缘伪影，且`dispose()`不一定完全清理内部缓存。
+
+### 完整清理流程
+
+```typescript
+// 1. Three.js级别隐藏
+p.mesh.visible = false
+
+// 2. Troika透明度归零
+p.mesh.fillOpacity = 0
+
+// 3. 清空文本内容（释放SDF渲染数据）
+p.mesh.text = ''
+
+// 4. 从场景移除
+scene.remove(p.mesh)
+
+// 5. 调用dispose释放GPU资源
+if (p.mesh.dispose) p.mesh.dispose()
+```
+
+### 关键点
+- `visible = false`：渲染器完全跳过该对象
+- `text = ''`：触发Troika清空内部SDF数据
+- 两者配合才能确保从任何角度都不可见
+
+---
+
+# 七、传感器与交互
+
+## 7.1 触摸检测的坐标系问题
+
+### 问题
+触摸/鼠标位置检测不准确，点击位置与实际响应位置有偏移。
+
+### 原因
+事件监听器绑定在`window`上，坐标计算使用的是**窗口尺寸**：
+
+```typescript
+// 错误：使用窗口坐标
+pointer.x = (e.clientX / window.innerWidth) * 2 - 1
+pointer.y = -(e.clientY / window.innerHeight) * 2 + 1
+```
+
+当Canvas不是全屏时（有header、sidebar等），计算结果偏移。
+
+### 正确做法
+使用**Canvas的相对坐标**：
+
+```typescript
+function getCanvasPointer(clientX: number, clientY: number) {
+  const canvas = containerRef.value?.querySelector('canvas')
+  if (canvas) {
+    const rect = canvas.getBoundingClientRect()
+    return {
+      x: ((clientX - rect.left) / rect.width) * 2 - 1,
+      y: -((clientY - rect.top) / rect.height) * 2 + 1,
+    }
+  }
+  // 降级
+  return { x: 0, y: 0 }
+}
+```
+
+### 核心公式
+```
+NDC.x = ((clientX - rect.left) / rect.width) * 2 - 1
+NDC.y = -((clientY - rect.top) / rect.height) * 2 + 1
+```
+
+- `rect.left/top`：Canvas在页面中的偏移
+- `rect.width/height`：Canvas实际尺寸
+- 结果范围：-1 到 +1（NDC坐标）
+
+### 适用场景
+- Canvas不是全屏
+- 页面有固定header/sidebar
+- 响应式布局中Canvas尺寸动态变化

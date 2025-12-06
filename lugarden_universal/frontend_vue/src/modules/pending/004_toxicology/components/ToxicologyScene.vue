@@ -60,8 +60,8 @@ onMounted(() => {
   // 创建离心机设备
   createDevice()
   
-  // 加载诗歌
-  loadPoem(poemMingFang)
+  // 加载诗歌（暂时注释）
+  // loadPoem(poemMingFang)
   
   // 注册更新回调
   onUpdate((delta, _time) => {
@@ -69,8 +69,8 @@ onMounted(() => {
     const angularVelocity = (props.rpm * Math.PI * 2) / 60
     globalRotation += angularVelocity * delta
     
-    // 更新粒子
-    applyCentrifuge(props.rpm, delta)
+    // 更新粒子（暂时注释）
+    // applyCentrifuge(props.rpm, delta)
     
     // 更新设备（同步旋转和指示灯）
     updateDevice(globalRotation, props.rpm / 9000)

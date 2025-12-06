@@ -113,7 +113,7 @@ export function useToxicScene(containerRef: Ref<HTMLElement | null>) {
     })
     renderer.value.setSize(width, height)
     renderer.value.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)) // 降低分辨率
-    renderer.value.setClearColor(0x0a0a0a, 1)
+    renderer.value.setClearColor(0xcccccc, 1) // 淡灰色背景（调试用）
     container.appendChild(renderer.value.domElement)
 
     // 相机 - 正视

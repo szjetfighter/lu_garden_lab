@@ -139,29 +139,18 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
     ventHole.position.y = 2.2
     deviceGroup.add(ventHole)
     
-    // ========== 转子盘（文字的承载平台）==========
+    // ========== 转子组（用于旋转）==========
     rotorGroup = markRaw(new THREE.Group())
-    rotorGroup.position.y = -0.5
     
-    // 转子盘主体
-    const rotorGeometry = new THREE.CylinderGeometry(2.5, 2.5, 0.15, 64)
-    const rotorMaterial = new THREE.MeshStandardMaterial({
-      color: 0x111111,
-      metalness: 0.7,
-      roughness: 0.4
-    })
-    const rotor = new THREE.Mesh(rotorGeometry, rotorMaterial)
-    rotorGroup.add(rotor)
-    
-    // 转子中心轴
-    const axleGeometry = new THREE.CylinderGeometry(0.3, 0.3, 3, 32)
+    // 中心轴（贯穿上下）
+    const axleGeometry = new THREE.CylinderGeometry(0.2, 0.2, 6, 32)
     const axleMaterial = new THREE.MeshStandardMaterial({
-      color: 0x222222,
+      color: 0x333333,
       metalness: 0.95,
       roughness: 0.1
     })
     const axle = new THREE.Mesh(axleGeometry, axleMaterial)
-    axle.position.y = -1.5
+    axle.position.y = -0.5
     rotorGroup.add(axle)
     
     deviceGroup.add(rotorGroup)
@@ -190,30 +179,6 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
       deviceGroup.add(indicator)
     }
     
-    // ========== 警告标签 ==========
-    // 生物危害标志（简化版）
-    const warningGeometry = new THREE.PlaneGeometry(0.8, 0.8)
-    const warningCanvas = document.createElement('canvas')
-    warningCanvas.width = 128
-    warningCanvas.height = 128
-    const ctx = warningCanvas.getContext('2d')!
-    ctx.fillStyle = '#ffcc00'
-    ctx.fillRect(0, 0, 128, 128)
-    ctx.fillStyle = '#000000'
-    ctx.font = 'bold 80px Arial'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText('☣', 64, 64)
-    
-    const warningTexture = new THREE.CanvasTexture(warningCanvas)
-    const warningMaterial = new THREE.MeshBasicMaterial({
-      map: warningTexture,
-      transparent: true
-    })
-    const warning = new THREE.Mesh(warningGeometry, warningMaterial)
-    warning.position.set(0, 2.3, 3.1)
-    warning.rotation.y = Math.PI
-    deviceGroup.add(warning)
     
     // ========== 灯光 ==========
     // 环境光（整体提亮）

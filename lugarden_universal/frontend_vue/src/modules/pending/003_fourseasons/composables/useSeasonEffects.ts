@@ -20,6 +20,8 @@ import {
 import {
   autumnParams,
   applyAutumnWind,
+  resetAutumn,
+  initAutumn,
 } from './effects/autumn'
 
 import {
@@ -48,6 +50,8 @@ export function useSeasonEffects() {
   // 切换季节
   const setSeason = (season: Season) => {
     currentSeason.value = season
+    // 重置秋天消失的粒子
+    resetAutumn()
     // 重置冬天解冻进度
     if (season === 'winter') {
       winterThawProgress.value = 0
@@ -73,6 +77,7 @@ export function useSeasonEffects() {
     
     // 秋天
     applyAutumnWind,
+    initAutumn,
     
     // 冬天
     applyWinterFreeze,

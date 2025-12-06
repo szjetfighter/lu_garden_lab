@@ -39,8 +39,8 @@ const {
   getCardMesh,
 } = useTextParticles(scene)
 
-// 传感器
-const { tilt, pointer, shakeIntensity, isShaking } = useSensors()
+// 传感器（传入容器引用以获取正确的Canvas坐标）
+const { tilt, pointer, shakeIntensity, isShaking } = useSensors(containerRef)
 
 // 季节效果
 const {
@@ -51,6 +51,7 @@ const {
   applySummerHeat,
   initSummer,
   applyAutumnWind,
+  initAutumn,
   applyWinterFreeze,
   initWinter,
 } = useSeasonEffects()
@@ -75,15 +76,10 @@ const initSeasonEffect = (season: Season) => {
     initSpring(particles.value)
   } else if (season === 'summer') {
     initSummer(particles.value)
+  } else if (season === 'autumn') {
+    initAutumn(particles.value)
   } else if (season === 'winter') {
     initWinter(particles.value)
-  } else {
-    // 秋天：恢复正常显示
-    particles.value.forEach(p => {
-      p.mesh.fillOpacity = 1
-      p.mesh.color = 0xffffff
-      p.mesh.scale?.setScalar(1)
-    })
   }
 }
 
@@ -169,7 +165,7 @@ onUpdate((delta) => {
       // 用Raycaster检测是否点击到卡片
       let hitCard = false
       if (pointer.value.active) {
-        pointerVec.set(pointer.value.x * 2, pointer.value.y * 2)
+        pointerVec.set(pointer.value.x, pointer.value.y)  // 已经是-1~1
         raycaster.setFromCamera(pointerVec, camera)
         const intersects = raycaster.intersectObjects(scene.children, false)
         hitCard = intersects.length > 0
@@ -178,12 +174,24 @@ onUpdate((delta) => {
       break
       
     case 'autumn':
-      // 手滑过或倾斜手机，风吹落叶
+      // 把NDC坐标转换到世界坐标，用距离检测
+      let hitParticles: typeof particles.value = []
+      if (pointer.value.active) {
+        // NDC -> 世界坐标
+        const worldPos = new THREE.Vector3(pointer.value.x, pointer.value.y, 0)
+        worldPos.unproject(camera)
+        
+        // 检测距离小于阈值的粒子
+        const hitRadius = 0.3
+        hitParticles = particles.value.filter(p => {
+          const dx = p.position.x - worldPos.x
+          const dy = p.position.y - worldPos.y
+          return dx * dx + dy * dy < hitRadius * hitRadius
+        })
+      }
       applyAutumnWind(
         particles.value,
-        pointer.value.x,
-        pointer.value.y,
-        pointer.value.active,
+        hitParticles,
         tilt.value.x,
         tilt.value.y
       )

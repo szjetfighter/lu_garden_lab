@@ -1,58 +1,70 @@
+/**
+ * 秋季效果：解离
+ * 
+ * 交互设计：
+ * 1. 手指/鼠标扫过 → 单个字符被吹走（消失）
+ * 2. 倾斜手机 → 剩余文字随机飘动加剧
+ */
+
 import type { CharParticle } from '../useTextParticles'
 
 // 秋天季节参数
 export const autumnParams = {
-  homeForce: 0.002,     // 很弱的回家力
-  damping: 0.98,        // 高阻尼，飘得慢
-  repulsionRadius: 2.5,
-  repulsionStrength: 0.5,
-  jitter: 0.01,
-  gravity: { x: 0, y: -0.005 }, // 缓慢下落
+  homeForce: 0.06,      // 较强回家力
+  damping: 0.92,        // 适度阻尼
+  repulsionRadius: 0,   // 无斥力
+  repulsionStrength: 0,
+  jitter: 0,
+  gravity: { x: 0, y: 0 },
   initialScale: 1,
 }
 
-// 秋天效果：风吹落叶
-// 手滑过或倾斜手机产生风，文字像落叶一样飘散
+// 被吹走的粒子集合
+const blownAway = new Set<CharParticle>()
+
+// 重置（切换季节时调用）
+export function resetAutumn() {
+  blownAway.clear()
+}
+
+// 初始化秋季（恢复所有粒子可见）
+export function initAutumn(particles: CharParticle[]) {
+  blownAway.clear()
+  particles.forEach(p => {
+    p.mesh.fillOpacity = 1
+  })
+}
+
+// 秋天效果函数
+// hitParticles: 由Raycaster检测到的被触碰的粒子
 export function applyAutumnWind(
   particles: CharParticle[],
-  pointerX: number,
-  pointerY: number,
-  pointerActive: boolean,
+  hitParticles: CharParticle[],
   tiltX: number,
   tiltY: number
 ) {
-  // 手滑过产生风
-  if (pointerActive) {
-    const pointerPos = { x: pointerX * 4, y: pointerY * 3 }
-    const windRadius = 3
-    
-    particles.forEach(p => {
-      const dx = p.position.x - pointerPos.x
-      const dy = p.position.y - pointerPos.y
-      const distance = Math.sqrt(dx * dx + dy * dy)
-      
-      if (distance < windRadius) {
-        const intensity = 1 - distance / windRadius
-        // 被风吹走
-        p.velocity.x += dx * 0.02 * intensity
-        p.velocity.y += dy * 0.02 * intensity
-        // 旋转
-        p.mesh.rotation.z += (Math.random() - 0.5) * 0.1 * intensity
-      }
-    })
+  // 被触碰的粒子：吹走消失
+  for (const p of hitParticles) {
+    if (!blownAway.has(p)) {
+      blownAway.add(p)
+      p.mesh.fillOpacity = 0
+    }
   }
   
-  // 手机倾斜也产生风
-  const windStrength = 0.015
-  particles.forEach(p => {
-    p.velocity.x += tiltX * windStrength
-    p.velocity.y -= tiltY * windStrength * 0.3
+  // 处理所有粒子
+  for (const p of particles) {
+    // 已吹走的粒子：保持透明
+    if (blownAway.has(p)) {
+      p.mesh.fillOpacity = 0
+      continue
+    }
     
-    // 随机飘动
-    p.velocity.x += (Math.random() - 0.5) * 0.005
-    p.velocity.y += (Math.random() - 0.5) * 0.005
-    
-    // 轻微旋转（落叶翻转）
-    p.mesh.rotation.z += (Math.random() - 0.5) * 0.01
-  })
+    // 效果2：倾斜 → 抖动
+    const tiltStrength = Math.abs(tiltX) + Math.abs(tiltY)
+    if (tiltStrength > 0.05) {
+      const shake = tiltStrength * 0.008
+      p.velocity.x += (Math.random() - 0.5) * shake
+      p.velocity.y += (Math.random() - 0.5) * shake
+    }
+  }
 }

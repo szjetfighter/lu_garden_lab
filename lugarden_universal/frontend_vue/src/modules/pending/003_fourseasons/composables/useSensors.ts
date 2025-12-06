@@ -1,10 +1,10 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, type Ref } from 'vue'
 
-export function useSensors() {
+export function useSensors(containerRef?: Ref<HTMLElement | null>) {
   // 陀螺仪数据 (倾斜)
   const tilt = ref({ x: 0, y: 0 })
   
-  // 鼠标/触摸位置 (归一化到 -1 ~ 1)
+  // 鼠标/触摸位置 (归一化到 -1 ~ 1，相对于Canvas)
   const pointer = ref({ x: 0, y: 0, active: false })
   
   // 摇晃检测
@@ -49,13 +49,29 @@ export function useSensors() {
     }
   }
 
+  // 计算相对于Canvas的归一化坐标 (-1 ~ 1)
+  const getCanvasPointer = (clientX: number, clientY: number) => {
+    // 获取容器内的canvas
+    const container = containerRef?.value
+    const canvas = container?.querySelector('canvas')
+    if (canvas) {
+      const rect = canvas.getBoundingClientRect()
+      return {
+        x: ((clientX - rect.left) / rect.width) * 2 - 1,
+        y: -((clientY - rect.top) / rect.height) * 2 + 1,
+      }
+    }
+    // 降级：使用窗口坐标
+    return {
+      x: (clientX / window.innerWidth) * 2 - 1,
+      y: -(clientY / window.innerHeight) * 2 + 1,
+    }
+  }
+
   // 鼠标移动
   const handleMouseMove = (e: MouseEvent) => {
-    pointer.value = {
-      x: (e.clientX / window.innerWidth) * 2 - 1,
-      y: -(e.clientY / window.innerHeight) * 2 + 1,
-      active: true,
-    }
+    const pos = getCanvasPointer(e.clientX, e.clientY)
+    pointer.value = { ...pos, active: true }
   }
 
   const handleMouseLeave = () => {
@@ -66,22 +82,16 @@ export function useSensors() {
   const handleTouchStart = (e: TouchEvent) => {
     if (e.touches.length > 0) {
       const touch = e.touches[0]
-      pointer.value = {
-        x: (touch.clientX / window.innerWidth) * 2 - 1,
-        y: -(touch.clientY / window.innerHeight) * 2 + 1,
-        active: true,
-      }
+      const pos = getCanvasPointer(touch.clientX, touch.clientY)
+      pointer.value = { ...pos, active: true }
     }
   }
 
   const handleTouchMove = (e: TouchEvent) => {
     if (e.touches.length > 0) {
       const touch = e.touches[0]
-      pointer.value = {
-        x: (touch.clientX / window.innerWidth) * 2 - 1,
-        y: -(touch.clientY / window.innerHeight) * 2 + 1,
-        active: true,
-      }
+      const pos = getCanvasPointer(touch.clientX, touch.clientY)
+      pointer.value = { ...pos, active: true }
     }
   }
 

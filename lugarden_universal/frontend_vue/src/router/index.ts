@@ -202,6 +202,17 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false
     }
   },
+  // Pending - 毒理学报告（冯铗《一剂》离心提纯实验）
+  {
+    path: '/pending/004_toxicology',
+    name: 'Toxicology',
+    component: () => import('@/modules/pending/004_toxicology/views/ToxicologyView.vue'),
+    meta: {
+      title: '毒理学报告 - 陆家花园',
+      description: '冯铗《一剂》离心提纯实验',
+      requiresAuth: false
+    }
+  },
   // 404 重定向
   {
     path: '/:pathMatch(.*)*',

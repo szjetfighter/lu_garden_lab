@@ -82,6 +82,26 @@
             </button>
           </div>
         </div>
+
+        <!-- 毒理学报告 入口 -->
+        <div 
+          class="unified-content-card rounded-base animate-fadeInUp cursor-pointer flex flex-col h-full"
+          style="animation-delay: 0.4s; background: linear-gradient(145deg, #1a1a1a, #0a0a0a); border: 1px solid #333;"
+          @click="enterToxicology"
+        >
+          <div class="flex-1">
+            <h2 class="text-2xl font-bold mb-2" style="color: #00ff00; text-shadow: 0 0 10px rgba(0,255,0,0.5);">毒理学报告</h2>
+            <div class="text-base mb-4 whitespace-pre-line leading-loose" style="color: #666;">
+              冯铗《一剂》· 离心提纯实验
+            </div>
+          </div>
+          <div class="flex justify-between items-center mt-4">
+            <p class="text-xs m-0" style="color: #ff0000;">状态: ☣️ 实验中</p>
+            <button class="btn-primary" style="background: #00ff00; color: #000;">
+              进入
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -114,5 +134,10 @@ const enterWhoIsZD = () => {
 // 进入四气
 const enterFourSeasons = () => {
   router.push('/pending/003_fourseasons')
+}
+
+// 进入毒理学报告
+const enterToxicology = () => {
+  router.push('/pending/004_toxicology')
 }
 </script>

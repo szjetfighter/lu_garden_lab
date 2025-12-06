@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "collection": "一剂",
+    "poet": "冯铗",
+    "processor": "首席毒理学家",
+    "version": "1.0",
+    "section": "正体"
+  },
+  "poems": [
+    {
+      "title": "鸣放",
+      "crystals": ["霰弹", "锈锁"],
+      "tokens": [
+        { "text": "连着", "type": "adv", "rpm": 2800 },
+        { "text": "几天", "type": "time", "rpm": 2500 },
+        { "text": "在", "type": "prep", "rpm": 800 },
+        { "text": "河边", "type": "noun", "rpm": 5200 },
+        { "text": "暴走", "type": "verb", "rpm": 7200 },
+        { "text": "，", "type": "punct", "rpm": 500 },
+        { "text": "闻", "type": "verb", "rpm": 5800 },
+        { "text": "这", "type": "det", "rpm": 600 },
+        { "text": "好", "type": "adj", "rpm": 3200 },
+        { "text": "世界", "type": "noun", "rpm": 6000 },
+        { "text": "的", "type": "filler", "rpm": 400 },
+        { "text": "\n", "type": "break", "rpm": 99999 },
+        { "text": "好", "type": "adj", "rpm": 3200 },
+        { "text": "。", "type": "punct", "rpm": 500 },
+        { "text": "这", "type": "det", "rpm": 600 },
+        { "text": "硝味", "type": "core_noun", "rpm": 9200 },
+        { "text": "。", "type": "punct", "rpm": 500 },
+        { "text": "\n", "type": "break", "rpm": 99999 },
+        { "text": "像", "type": "prep", "rpm": 1200 },
+        { "text": "一阵", "type": "quant", "rpm": 2200 },
+        { "text": "无比", "type": "adv", "rpm": 2800 },
+        { "text": "缓慢", "type": "adj", "rpm": 3500 },
+        { "text": "的", "type": "filler", "rpm": 400 },
+        { "text": "霰弹", "type": "core_noun", "rpm": 9800 },
+        { "text": "。", "type": "punct", "rpm": 500 },
+        { "text": "\n", "type": "break", "rpm": 99999 },
+        { "text": "\n", "type": "break", "rpm": 99999 },
+        { "text": "沙垟桥", "type": "noun", "rpm": 5500 },
+        { "text": "上", "type": "prep", "rpm": 800 },
+        { "text": "众人", "type": "noun", "rpm": 5000 },
+        { "text": "夜聚", "type": "verb", "rpm": 6200 },
+        { "text": "如", "type": "prep", "rpm": 1000 },
+        { "text": "溃", "type": "core_verb", "rpm": 8800 },
+        { "text": "。", "type": "punct", "rpm": 500 },
+        { "text": "\n", "type": "break", "rpm": 99999 },
+        { "text": "表演", "type": "noun", "rpm": 5200 },
+        { "text": "中", "type": "prep", "rpm": 800 },
+        { "text": "的", "type": "filler", "rpm": 400 },
+        { "text": "无人机群", "type": "core_noun", "rpm": 9500 },
+        { "text": "\n", "type": "break", "rpm": 99999 },
+        { "text": "一会儿", "type": "adv", "rpm": 2200 },
+        { "text": "摆字", "type": "verb", "rpm": 6000 },
+        { "text": "，", "type": "punct", "rpm": 500 },
+        { "text": "一会儿", "type": "adv", "rpm": 2200 },
+        { "text": "排出", "type": "verb", "rpm": 5800 }
+      ]
+    }
+  ]
+}

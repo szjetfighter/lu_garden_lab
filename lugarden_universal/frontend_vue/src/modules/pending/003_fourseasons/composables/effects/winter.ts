@@ -34,7 +34,7 @@ export function applyWinterFreeze(
     winterThawProgress.value = Math.min(1, winterThawProgress.value + 0.05)
   } else {
     // 不摇晃时慢慢重新冻住
-    winterThawProgress.value = Math.max(0, winterThawProgress.value - 0.002)
+    winterThawProgress.value = Math.max(0, winterThawProgress.value - 0.0005)
   }
 
   const thaw = winterThawProgress.value
@@ -48,12 +48,6 @@ export function applyWinterFreeze(
     const blue = Math.floor(255 - thaw * 55)
     const color = (255 << 16) | (255 << 8) | blue
     p.mesh.color = thaw > 0.8 ? 0xffffff : color
-    
-    // 解冻时轻微抖动
-    if (thaw > 0.3 && thaw < 1) {
-      p.velocity.x += (Math.random() - 0.5) * 0.01 * thaw
-      p.velocity.y += (Math.random() - 0.5) * 0.01 * thaw
-    }
     
     // 完全解冻后恢复正常
     if (thaw >= 1) {

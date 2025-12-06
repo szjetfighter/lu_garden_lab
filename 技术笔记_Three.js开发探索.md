@@ -545,3 +545,74 @@ NDC.y = -((clientY - rect.top) / rect.height) * 2 + 1
 - Canvas不是全屏
 - 页面有固定header/sidebar
 - 响应式布局中Canvas尺寸动态变化
+
+---
+
+## 7.2 Troika多Text对象透视渲染问题
+
+### 问题
+
+多个独立的Troika Text对象在透视倾斜时，远离相机一侧的字符出现异常：
+- 变淡/模糊
+- 空心黑边
+- 颜色不正确
+
+### 关键发现
+
+| 场景 | 表现 |
+|------|------|
+| 1个Text对象渲染整段文字 | ✅ 正常 |
+| N个独立Text对象各渲染1个字符 | ❌ 透视异常 |
+
+即使只有2个Text对象，问题也会出现。**不是数量问题，而是"独立对象"问题。**
+
+### 根因分析
+
+Troika Text使用透明材质渲染SDF文字。当多个独立透明对象在同一平面时：
+1. Three.js按对象中心距离排序渲染
+2. 透视倾斜时，排序可能不正确
+3. 透明度混合计算错误，导致远侧对象颜色异常
+
+而单个Text对象内的所有字符在同一个渲染调用中处理，不存在对象间排序问题。
+
+### 解决方案：Canvas 2D替代
+
+用Canvas 2D绘制字符，作为纹理贴到平面Mesh上：
+
+```typescript
+// 创建字符纹理
+const canvas = document.createElement('canvas')
+const ctx = canvas.getContext('2d')!
+ctx.font = `${fontSize}px "Source Han Serif SC", serif`
+ctx.fillStyle = 'white'
+ctx.fillText(char, size / 2, size / 2)
+
+const texture = new THREE.CanvasTexture(canvas)
+
+// 创建平面Mesh
+const material = new THREE.MeshBasicMaterial({
+  map: texture,
+  transparent: true,
+  side: THREE.DoubleSide,
+  depthWrite: true,
+  alphaTest: 0.1,  // 关键：用alphaTest替代透明度混合
+})
+```
+
+### 关键技术点
+
+| 设置 | 作用 |
+|------|------|
+| `side: THREE.DoubleSide` | 双面渲染，任意角度可见 |
+| `depthWrite: true` | 启用深度写入 |
+| `alphaTest: 0.1` | 丢弃低透明度像素，避免透明度混合问题 |
+
+### alphaTest vs 透明度混合
+
+- **透明度混合**：需要正确的渲染顺序，多对象易出问题
+- **alphaTest**：二值化（保留/丢弃），无需排序，简单可靠
+
+### 适用场景
+- 需要每个字符独立控制（粒子效果）
+- 需要极端透视角度
+- Troika单对象方案无法满足需求时

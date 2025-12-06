@@ -5,7 +5,9 @@ export function useSensors(containerRef?: Ref<HTMLElement | null>) {
   const tilt = ref({ x: 0, y: 0 })
   
   // 鼠标/触摸位置 (归一化到 -1 ~ 1，相对于Canvas)
-  const pointer = ref({ x: 0, y: 0, active: false })
+  // active: 鼠标/触摸在画布上移动
+  // pressed: 鼠标按下或触摸中
+  const pointer = ref({ x: 0, y: 0, active: false, pressed: false })
   
   // 摇晃检测
   const shakeIntensity = ref(0)
@@ -71,11 +73,20 @@ export function useSensors(containerRef?: Ref<HTMLElement | null>) {
   // 鼠标移动
   const handleMouseMove = (e: MouseEvent) => {
     const pos = getCanvasPointer(e.clientX, e.clientY)
-    pointer.value = { ...pos, active: true }
+    pointer.value = { ...pointer.value, ...pos, active: true }
+  }
+
+  const handleMouseDown = () => {
+    pointer.value.pressed = true
+  }
+
+  const handleMouseUp = () => {
+    pointer.value.pressed = false
   }
 
   const handleMouseLeave = () => {
     pointer.value.active = false
+    pointer.value.pressed = false
   }
 
   // 触摸
@@ -83,7 +94,7 @@ export function useSensors(containerRef?: Ref<HTMLElement | null>) {
     if (e.touches.length > 0) {
       const touch = e.touches[0]
       const pos = getCanvasPointer(touch.clientX, touch.clientY)
-      pointer.value = { ...pos, active: true }
+      pointer.value = { ...pointer.value, ...pos, active: true, pressed: true }
     }
   }
 
@@ -91,12 +102,13 @@ export function useSensors(containerRef?: Ref<HTMLElement | null>) {
     if (e.touches.length > 0) {
       const touch = e.touches[0]
       const pos = getCanvasPointer(touch.clientX, touch.clientY)
-      pointer.value = { ...pos, active: true }
+      pointer.value = { ...pointer.value, ...pos, active: true }
     }
   }
 
   const handleTouchEnd = () => {
     pointer.value.active = false
+    pointer.value.pressed = false
   }
 
   // 请求陀螺仪权限 (iOS 13+)
@@ -122,6 +134,8 @@ export function useSensors(containerRef?: Ref<HTMLElement | null>) {
 
     // 鼠标
     window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousedown', handleMouseDown)
+    window.addEventListener('mouseup', handleMouseUp)
     window.addEventListener('mouseleave', handleMouseLeave)
 
     // 触摸
@@ -134,6 +148,8 @@ export function useSensors(containerRef?: Ref<HTMLElement | null>) {
     window.removeEventListener('deviceorientation', handleOrientation)
     window.removeEventListener('devicemotion', handleMotion)
     window.removeEventListener('mousemove', handleMouseMove)
+    window.removeEventListener('mousedown', handleMouseDown)
+    window.removeEventListener('mouseup', handleMouseUp)
     window.removeEventListener('mouseleave', handleMouseLeave)
     window.removeEventListener('touchstart', handleTouchStart)
     window.removeEventListener('touchmove', handleTouchMove)

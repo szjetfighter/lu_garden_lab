@@ -93,8 +93,8 @@ const loadPoem = async (season: Season) => {
     isFirstLoad = false
     await createParticles(poem.content, season)
     
-    // 聚合动画
-    assembleParticles(particles.value, 800, () => {
+    // 聚合动画（根据季节设置不同终点）
+    assembleParticles(particles.value, 800, season, () => {
       initSeasonEffect(season)
     })
     assembleCard(getCardMesh(), 800)
@@ -112,8 +112,8 @@ const loadPoem = async (season: Season) => {
     clearParticles()
     await createParticles(poem.content, season)
     
-    // 聚合动画
-    assembleParticles(particles.value, 800, () => {
+    // 聚合动画（根据季节设置不同终点）
+    assembleParticles(particles.value, 800, season, () => {
       initSeasonEffect(season)
     })
     assembleCard(getCardMesh(), 800)
@@ -157,8 +157,8 @@ onUpdate((delta) => {
   // 季节特效
   switch (props.season) {
     case 'spring':
-      // 自然生长，不需要交互
-      applySpringGrowth(particles.value, delta)
+      // 持续生长，按着时停止
+      applySpringGrowth(particles.value, delta, pointer.value.pressed)
       break
       
     case 'summer':

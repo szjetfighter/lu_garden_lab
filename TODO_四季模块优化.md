@@ -112,6 +112,33 @@
   - useSensors接收容器ref，计算Canvas相对坐标
   - 消失动画：渐隐+飘散+缩小+旋转，完成后从场景移除mesh
 
+#### - [x] 任务A.4：季节切换动画优化与春季持续生长
+- **核心思想**: 解决季节切换时的"闪现"问题，为春季添加持续生长交互
+- 交付物：
+  - 聚合动画按季节设置不同终点状态
+  - 春季持续生长效果（按住停止）
+  - 传感器区分鼠标移动(active)和按下(pressed)
+- 验收标准：
+  - 进入春季时从种子状态(opacity=0.15, scale=0.5)开始生长，无闪现
+  - 进入冬季时直接显示冰封状态(opacity=0.15, scale=0.95, 冰蓝色)，无闪现
+  - 夏/秋季正常显示完整诗歌
+  - 春季持续生长到15倍（约2分钟），按住屏幕时停止生长
+- **风险评估**: 低风险 - 优化动画时序
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/pending/003_fourseasons/composables/useTransition.ts`
+  - `lugarden_universal/frontend_vue/src/modules/pending/003_fourseasons/components/PoemScene.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/003_fourseasons/composables/effects/spring.ts`
+  - `lugarden_universal/frontend_vue/src/modules/pending/003_fourseasons/composables/effects/winter.ts`
+  - `lugarden_universal/frontend_vue/src/modules/pending/003_fourseasons/composables/useSensors.ts`
+- 完成状态：✅ 已完成
+- Git Commit: `16a1373` - feat: 季节切换动画优化 - 聚合终点按季节区分、春季持续生长、传感器pressed状态
+- 技术要点:
+  - 聚合动画终点 = 季节效果起点，消除闪现问题
+  - 春季聚合终点: opacity=0.15, scale=0.5（种子状态）
+  - 冬季聚合终点: opacity=0.15, scale=0.95, color=0xaaddff（冰封状态）
+  - useSensors新增pressed状态，区分鼠标移动和按下
+  - 春季生长: scale 0.5→15, opacity 0.15→1, 增速0.002/帧
+
 ---
 
 ## 测试与验收

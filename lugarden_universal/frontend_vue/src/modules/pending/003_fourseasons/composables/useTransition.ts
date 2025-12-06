@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import * as THREE from 'three'
 import type { CharParticle } from './useTextParticles'
+import type { Season } from './useSeasonEffects'
 
 export interface CardFragment {
   mesh: THREE.Mesh
@@ -125,17 +126,29 @@ export function useTransition() {
 
   /**
    * 文字粒子聚合效果
-   * 粒子从随机位置飞入并淡入
+   * 粒子从随机位置飞入，根据季节设置不同的终点状态
    */
   const assembleParticles = (
     particles: CharParticle[],
     duration: number = 800,
+    season: Season,
     onComplete?: () => void
   ) => {
     if (particles.length === 0) {
       onComplete?.()
       return
     }
+
+    // 根据季节设置聚合动画的终点状态
+    // 春/冬：保持"未完成"状态，由季节效果继续演变
+    // 夏/秋：直接完全显示
+    const endState: Record<Season, { opacity: number; scale: number; color: number }> = {
+      spring: { opacity: 0.15, scale: 0.5, color: 0xffffff },
+      summer: { opacity: 1, scale: 1, color: 0xffffff },
+      autumn: { opacity: 1, scale: 1, color: 0xffffff },
+      winter: { opacity: 0.15, scale: 0.95, color: 0xaaddff },
+    }
+    const target = endState[season]
 
     const startTime = Date.now()
 
@@ -150,7 +163,7 @@ export function useTransition() {
       )
       p.mesh.position.copy(p.position)
       p.mesh.fillOpacity = 0
-      p.mesh.scale?.setScalar(0.5)
+      p.mesh.scale?.setScalar(0)
     })
 
     const animate = () => {
@@ -174,12 +187,17 @@ export function useTransition() {
         )
         p.mesh.position.copy(p.position)
         
-        // 淡入
-        p.mesh.fillOpacity = eased
+        // 淡入到目标opacity
+        p.mesh.fillOpacity = eased * target.opacity
         
-        // 放大到正常
-        const scale = 0.5 + eased * 0.5
+        // 放大到目标scale
+        const scale = eased * target.scale
         p.mesh.scale?.setScalar(scale)
+        
+        // 冬季设置冰蓝色
+        if (season === 'winter' && p.mesh.color !== undefined) {
+          p.mesh.color = target.color
+        }
       })
 
       if (progress < 1) {
@@ -188,13 +206,16 @@ export function useTransition() {
         assembleAnimationId = null
         isTransitioning.value = false
         
-        // 确保最终状态正确
+        // 确保最终状态正确（使用季节目标值）
         particles.forEach(p => {
           p.position.copy(p.home)
           p.mesh.position.copy(p.home)
-          p.mesh.fillOpacity = 1
-          p.mesh.scale?.setScalar(1)
+          p.mesh.fillOpacity = target.opacity
+          p.mesh.scale?.setScalar(target.scale)
           p.velocity.set(0, 0, 0)
+          if (season === 'winter' && p.mesh.color !== undefined) {
+            p.mesh.color = target.color
+          }
         })
         
         onComplete?.()

@@ -8,42 +8,48 @@ export const springParams = {
   repulsionStrength: 0,
   jitter: 0,
   gravity: { x: 0, y: 0 },
-  initialScale: 0.1,    // 初始很小（种子）
+  initialScale: 0.5,    // 聚合动画终点（种子状态）
 }
 
-// 初始化春天（设置为种子状态）
-export function initSpring(particles: CharParticle[]) {
-  particles.forEach(p => {
-    p.mesh.scale?.setScalar(0.1)
-    p.mesh.fillOpacity = 0.8
-  })
+// 初始化春天（聚合动画已设置种子状态，此处仅确认）
+// 聚合动画终点：opacity=0.15, scale=0.5
+export function initSpring(_particles: CharParticle[]) {
+  // 聚合动画已设置正确的初始状态，无需重复设置
 }
 
-// 春天效果：自然生长
-// 初始文字很小（种子），随时间自然生长到完整大小
+// 春天效果：持续生长（按着时停止）
+// 从种子状态（opacity=0.15, scale=0.5）不断生长到15倍（约30秒）
+// isPressed: 用户是否按着屏幕，按着时停止生长
 export function applySpringGrowth(
   particles: CharParticle[],
-  _deltaTime: number
+  _deltaTime: number,
+  isPressed: boolean = false
 ) {
-  particles.forEach((p, index) => {
-    const currentScale = p.mesh.scale?.x || 0.1
-    // 每个字有不同的生长延迟，形成波浪效果
-    const growthSpeed = 0.008
+  // 按着时不生长
+  if (isPressed) return
+  
+  particles.forEach((p, _index) => {
+    const currentScale = p.mesh.scale?.x || 0.5
+    const currentOpacity = p.mesh.fillOpacity
+    const growthSpeed = 0.002
+    const maxScale = 15
     
-    if (currentScale < 1) {
-      const newScale = Math.min(1, currentScale + growthSpeed)
+    if (currentScale < maxScale) {
+      // scale: 0.5 → 15（持续生长）
+      const newScale = Math.min(maxScale, currentScale + growthSpeed)
       p.mesh.scale?.setScalar(newScale)
       
-      // 生长时略微上浮
-      if (currentScale < 0.5) {
+      // opacity: 0.15 → 1（在scale达到1之前完成）
+      if (currentOpacity < 1) {
+        const opacitySpeed = growthSpeed * 1.7
+        const newOpacity = Math.min(1, currentOpacity + opacitySpeed)
+        p.mesh.fillOpacity = newOpacity
+      }
+      
+      // 生长初期略微上浮
+      if (currentScale < 0.7) {
         p.velocity.y += 0.002
       }
-    }
-    
-    // 完全长成后轻微呼吸效果
-    if (currentScale >= 0.99) {
-      const breath = Math.sin(Date.now() * 0.002 + index * 0.1) * 0.02
-      p.mesh.scale?.setScalar(1 + breath)
     }
   })
 }

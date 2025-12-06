@@ -9,20 +9,17 @@ export const winterParams = {
   repulsionStrength: 0,
   jitter: 0,
   gravity: { x: 0, y: 0 },
-  initialScale: 1,
+  initialScale: 0.95,   // 聚合动画终点（冰封状态）
 }
 
 // 冬天解冻进度 (0-1)
 export const winterThawProgress = ref(0)
 
-// 初始化冬天（冰封状态）
-export function initWinter(particles: CharParticle[]) {
+// 初始化冬天（聚合动画已设置冰封状态，此处仅重置解冻进度）
+// 聚合动画终点：opacity=0.15, scale=0.95, color=0xaaddff
+export function initWinter(_particles: CharParticle[]) {
   winterThawProgress.value = 0
-  particles.forEach(p => {
-    p.mesh.fillOpacity = 0.15
-    p.mesh.color = 0xaaddff  // 冰蓝色
-    p.mesh.scale?.setScalar(0.95)
-  })
+  // 聚合动画已设置正确的冰封状态，无需重复设置
 }
 
 // 冬天效果：冰封+摇晃解冻

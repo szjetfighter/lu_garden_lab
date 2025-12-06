@@ -1,9 +1,10 @@
 import { ref } from 'vue'
 import * as THREE from 'three'
-import { Text } from 'troika-three-text'
+// Canvas 2D方案替代Troika Text，解决透视角度渲染问题
+// import { Text } from 'troika-three-text'
 
-// 思源宋体 - 子集化字体（仅包含诗歌用到的706个字符，210KB）
-import sourceHanSerifUrl from '../assets/fonts/思源宋体-subset.ttf?url'
+// 思源宋体 - 用于Canvas 2D渲染（通过CSS font-family引用）
+// import sourceHanSerifUrl from '../assets/fonts/思源宋体-subset.ttf?url'
 // 卡片背景纹理 - 四季
 import springTextureUrl from '../assets/textures/spring-texture.jpg?url'
 import summerTextureUrl from '../assets/textures/summer-texture.jpg?url'
@@ -20,9 +21,94 @@ const seasonTextures: Record<Season, string> = {
   winter: winterTextureUrl,
 }
 
+// Canvas字符纹理缓存（避免重复创建相同字符的纹理）
+const charTextureCache = new Map<string, THREE.CanvasTexture>()
+
+/**
+ * 创建单个字符的Canvas纹理
+ */
+function createCharTexture(char: string, fontSize: number = 128): THREE.CanvasTexture {
+  const cacheKey = `${char}_${fontSize}`
+  if (charTextureCache.has(cacheKey)) {
+    return charTextureCache.get(cacheKey)!.clone()
+  }
+
+  const canvas = document.createElement('canvas')
+  const size = fontSize * 1.5  // 留边距
+  canvas.width = size
+  canvas.height = size
+
+  const ctx = canvas.getContext('2d')!
+  
+  // 使用思源宋体，降级到系统字体
+  ctx.font = `${fontSize}px "Source Han Serif SC", "Noto Serif SC", "SimSun", serif`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillStyle = 'white'
+  ctx.fillText(char, size / 2, size / 2)
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.minFilter = THREE.LinearFilter
+  texture.magFilter = THREE.LinearFilter
+  texture.needsUpdate = true
+
+  charTextureCache.set(cacheKey, texture)
+  return texture.clone()
+}
+
+// 扩展Mesh类型，添加Troika兼容属性
+interface CanvasCharMesh extends THREE.Mesh {
+  fillOpacity: number   // 兼容Troika的fillOpacity
+  text?: string         // 兼容Troika的text属性
+  color?: number        // 兼容Troika的color属性
+  dispose?: () => void  // 兼容Troika的dispose方法
+}
+
+/**
+ * 创建带有fillOpacity兼容属性的Mesh
+ */
+function createCompatibleMesh(geometry: THREE.BufferGeometry, material: THREE.MeshBasicMaterial): CanvasCharMesh {
+  const mesh = new THREE.Mesh(geometry, material) as unknown as CanvasCharMesh
+  
+  // 添加fillOpacity getter/setter，映射到material.opacity
+  Object.defineProperty(mesh, 'fillOpacity', {
+    get() {
+      return material.opacity
+    },
+    set(value: number) {
+      material.opacity = value
+    }
+  })
+  
+  // 添加text属性（用于兼容，清空时不做操作）
+  Object.defineProperty(mesh, 'text', {
+    value: '',
+    writable: true
+  })
+  
+  // 添加color getter/setter，映射到material.color
+  Object.defineProperty(mesh, 'color', {
+    get() {
+      return material.color.getHex()
+    },
+    set(value: number) {
+      material.color.setHex(value)
+    }
+  })
+  
+  // 添加dispose方法，清理geometry和material
+  mesh.dispose = () => {
+    geometry.dispose()
+    material.map?.dispose()
+    material.dispose()
+  }
+  
+  return mesh
+}
+
 export interface CharParticle {
   char: string
-  mesh: any // Troika Text instance
+  mesh: CanvasCharMesh  // Canvas 2D mesh with Troika-compatible properties
   home: THREE.Vector3
   position: THREE.Vector3
   velocity: THREE.Vector3
@@ -274,25 +360,30 @@ export function useTextParticles(scene: THREE.Scene) {
           continue
         }
 
-        // 创建Troika文字
-        const textMesh = new Text()
-        textMesh.text = char
-        textMesh.font = sourceHanSerifUrl  // 使用本地思源宋体
-        textMesh.fontSize = charSize
-        textMesh.color = 0xffffff
-        textMesh.anchorX = 'center'
-        textMesh.anchorY = 'middle'
+        // Canvas 2D方案：创建字符纹理和平面Mesh
+        const texture = createCharTexture(char, 128)
+        const material = new THREE.MeshBasicMaterial({
+          map: texture,
+          transparent: true,
+          side: THREE.DoubleSide,  // 双面渲染，解决透视问题
+          depthWrite: true,        // 启用深度写入
+          alphaTest: 0.1,          // Alpha测试，避免透明区域参与深度
+        })
+        
+        // 创建平面几何体，尺寸与charSize匹配
+        const geometry = new THREE.PlaneGeometry(charSize * 1.2, charSize * 1.2)
+        // 使用兼容层创建Mesh，添加fillOpacity等Troika兼容属性
+        const textMesh = createCompatibleMesh(geometry, material)
 
         // X位置：以行中心为原点，奇数字符中间字在0，偶数字符对称分布
         // 公式：(i - (n-1)/2) * charSpacing
         const homePos = new THREE.Vector3(
           (charIdx - (charCount - 1) / 2) * charSpacing,
           currentY,
-          0
+          0.01  // 略微前移，避免与卡片z-fighting
         )
 
         textMesh.position.copy(homePos)
-        textMesh.sync()
 
         scene.add(textMesh)
 
@@ -393,11 +484,13 @@ export function useTextParticles(scene: THREE.Scene) {
     })
   }
 
-  // 清理
+  // 清理（Canvas 2D方案：需要清理geometry和material）
   const dispose = () => {
     particles.value.forEach(p => {
       scene.remove(p.mesh)
-      p.mesh.dispose()
+      if (p.mesh.dispose) {
+        p.mesh.dispose()
+      }
     })
     particles.value = []
   }

@@ -93,10 +93,12 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
       transmission: 0.9,
       transparent: true,
       opacity: 0.15,
-      side: THREE.DoubleSide
+      side: THREE.DoubleSide,
+      depthWrite: false  // 让内部物体可见
     })
     const glass = new THREE.Mesh(glassGeometry, glassMaterial)
     glass.position.y = -0.5
+    glass.renderOrder = 1  // 后渲染
     deviceGroup.add(glass)
     
     // 玻璃罩顶部金属环
@@ -152,6 +154,74 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
     const axle = new THREE.Mesh(axleGeometry, axleMaterial)
     axle.position.y = -0.5
     rotorGroup.add(axle)
+    
+    // ========== 4根试管 + 支架 ==========
+    const tubeCount = 4
+    const tubeRadius = 0.2
+    const tubeHeight = 3
+    const tubeDistance = 1.5  // 四周柱距离的一半
+    
+    // 试管材质（半透明玻璃）
+    const tubeMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xaaffff,
+      metalness: 0,
+      roughness: 0.05,
+      transmission: 0.85,
+      transparent: true,
+      opacity: 0.3,
+      side: THREE.DoubleSide,
+      depthWrite: false  // 解决透明物体渲染顺序问题
+    })
+    
+    // 支架材质
+    const bracketMaterial = new THREE.MeshStandardMaterial({
+      color: 0x444444,
+      metalness: 0.8,
+      roughness: 0.3
+    })
+    
+    for (let i = 0; i < tubeCount; i++) {
+      // 位置：0°、90°、180°、270°
+      const angle = (i / tubeCount) * Math.PI * 2
+      const x = Math.cos(angle) * tubeDistance
+      const z = Math.sin(angle) * tubeDistance
+      
+      // 试管主体（圆柱）
+      const tubeBodyGeometry = new THREE.CylinderGeometry(tubeRadius, tubeRadius, tubeHeight - tubeRadius, 32, 1, true)
+      const tubeBody = new THREE.Mesh(tubeBodyGeometry, tubeMaterial)
+      tubeBody.position.set(x, -0.5, z)
+      rotorGroup.add(tubeBody)
+      
+      // 试管底部（半球封口）
+      const tubeBottomGeometry = new THREE.SphereGeometry(tubeRadius, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2)
+      const tubeBottom = new THREE.Mesh(tubeBottomGeometry, tubeMaterial)
+      tubeBottom.position.set(x, -0.5 - (tubeHeight - tubeRadius) / 2, z)
+      rotorGroup.add(tubeBottom)
+      
+      // 试管顶部开口边缘
+      const tubeRimGeometry = new THREE.TorusGeometry(tubeRadius, 0.03, 8, 32)
+      const tubeRimMaterial = new THREE.MeshStandardMaterial({
+        color: 0x666666,
+        metalness: 0.7,
+        roughness: 0.3
+      })
+      const tubeRim = new THREE.Mesh(tubeRimGeometry, tubeRimMaterial)
+      tubeRim.position.set(x, -0.5 + (tubeHeight - tubeRadius) / 2, z)
+      tubeRim.rotation.x = Math.PI / 2
+      rotorGroup.add(tubeRim)
+      
+      // 支架（从中轴到试管中部的水平杆）
+      const bracketLength = tubeDistance - 0.2  // 减去中轴半径
+      const bracketGeometry = new THREE.BoxGeometry(bracketLength, 0.08, 0.08)
+      const bracket = new THREE.Mesh(bracketGeometry, bracketMaterial)
+      bracket.position.set(
+        Math.cos(angle) * (tubeDistance / 2 + 0.1),
+        -0.5,  // 垂直中心
+        Math.sin(angle) * (tubeDistance / 2 + 0.1)
+      )
+      bracket.rotation.y = -angle
+      rotorGroup.add(bracket)
+    }
     
     deviceGroup.add(rotorGroup)
     

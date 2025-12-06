@@ -4,6 +4,8 @@ import { Text } from 'troika-three-text'
 
 // 思源宋体 - 子集化字体（仅包含诗歌用到的706个字符，210KB）
 import sourceHanSerifUrl from '../assets/fonts/思源宋体-subset.ttf?url'
+// 卡片背景纹理
+import cardTextureUrl from '../assets/textures/leather-texture.jpg?url'
 
 export interface CharParticle {
   char: string
@@ -73,12 +75,18 @@ export function useTextParticles(scene: THREE.Scene) {
     
     const cardGeometry = new THREE.ShapeGeometry(shape)
     
+    // 加载纹理
+    const textureLoader = new THREE.TextureLoader()
+    const cardTexture = textureLoader.load(cardTextureUrl)
+    cardTexture.wrapS = THREE.RepeatWrapping
+    cardTexture.wrapT = THREE.RepeatWrapping
+    
     // 使用自定义ShaderMaterial实现从右下角开始的燃烧消失效果
     const cardMaterial = new THREE.ShaderMaterial({
       uniforms: {
         uProgress: { value: 0.0 },  // 消失进度
         uTime: { value: 0.0 },  // 时间，用于火焰闪烁
-        uBaseColor: { value: new THREE.Color(0x1a1a2e) },
+        uTexture: { value: cardTexture },  // 纹理贴图
         uBurnColor: { value: new THREE.Color(0xff6622) },
         uCardSize: { value: new THREE.Vector2(cardWidth, cardHeight) },
       },
@@ -94,9 +102,10 @@ export function useTextParticles(scene: THREE.Scene) {
       fragmentShader: `
         uniform float uProgress;
         uniform float uTime;
-        uniform vec3 uBaseColor;
+        uniform sampler2D uTexture;
         uniform vec3 uBurnColor;
         uniform vec2 uCardSize;
+        varying vec2 vUv;
         varying vec2 vPosition;
         
         // 简单噪声函数
@@ -137,9 +146,13 @@ export function useTextParticles(scene: THREE.Scene) {
           float burnEdge = uProgress * 1.2;
           float burnWidth = 0.08;
           
-          // 初始状态：全部显示原色
+          // 根据位置计算正确的UV（ShapeGeometry的UV不是0-1范围）
+          vec2 uv = (vPosition / uCardSize) + 0.5;  // 转换到0-1范围
+          vec3 texColor = texture2D(uTexture, uv).rgb;
+          
+          // 初始状态：全部显示纹理
           if (uProgress < 0.01) {
-            gl_FragColor = vec4(uBaseColor, 0.85);
+            gl_FragColor = vec4(texColor, 0.85);
             return;
           }
           
@@ -167,15 +180,15 @@ export function useTextParticles(scene: THREE.Scene) {
             
             // 亮度随机变化
             float brightness = 0.8 + flicker * 0.4;
-            vec3 color = mix(fireColor * brightness, uBaseColor, edgeFactor * 0.8);
+            vec3 color = mix(fireColor * brightness, texColor, edgeFactor * 0.8);
             
             float alpha = 0.95 * max(0.3, edgeFactor);
             gl_FragColor = vec4(color, alpha);
             return;
           }
           
-          // 未燃烧区域：原色
-          gl_FragColor = vec4(uBaseColor, 0.85);
+          // 未燃烧区域：纹理
+          gl_FragColor = vec4(texColor, 0.85);
         }
       `,
       transparent: true,
@@ -188,7 +201,8 @@ export function useTextParticles(scene: THREE.Scene) {
     scene.add(cardMesh)
     
     // 从顶部开始，垂直居中
-    const startYBase = totalHeight / 2
+    // n行文字占据(n-1)*lineHeight的范围，中心应在原点
+    const startYBase = (totalHeight - lineHeight) / 2
 
     for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
       const line = lines[lineIdx]
@@ -198,10 +212,9 @@ export function useTextParticles(scene: THREE.Scene) {
         continue
       }
 
-      const lineWidth = line.length * charSpacing
-      const lineStartX = -lineWidth / 2
+      const charCount = line.length
 
-      for (let charIdx = 0; charIdx < line.length; charIdx++) {
+      for (let charIdx = 0; charIdx < charCount; charIdx++) {
         const char = line[charIdx]
         if (char === ' ') {
           continue
@@ -216,10 +229,10 @@ export function useTextParticles(scene: THREE.Scene) {
         textMesh.anchorX = 'center'
         textMesh.anchorY = 'middle'
 
-        // X位置：行起始 + 字符索引 * 间距
-        // 所有文字在同一平面上（Z=0），呈现平面卡片效果
+        // X位置：以行中心为原点，奇数字符中间字在0，偶数字符对称分布
+        // 公式：(i - (n-1)/2) * charSpacing
         const homePos = new THREE.Vector3(
-          lineStartX + charIdx * charSpacing,
+          (charIdx - (charCount - 1) / 2) * charSpacing,
           currentY,
           0
         )

@@ -32,7 +32,7 @@ export function useThreeScene(containerRef: Ref<HTMLElement | null>) {
     // 相机 
     camera.aspect = width / height
     camera.updateProjectionMatrix()
-    camera.position.set(0, -7, 4)  // 直接倾斜
+    camera.position.set(0, 0, 10)  // 正视
     camera.lookAt(0, 0, 0)
 
     // 轨道控制器 - 可旋转、缩放

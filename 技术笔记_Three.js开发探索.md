@@ -315,3 +315,96 @@ controls.touches = {
 # 五、性能优化
 
 > 占位：后续补充模型缓存、懒加载、LOD等内容
+
+---
+
+# 六、Troika 3D文字
+
+## 6.1 中文字体加载问题
+
+### 问题
+Troika默认从CDN加载字体，中文字体（如思源宋体）体积巨大（10-20MB），导致：
+- 移动端加载极慢（可能超时）
+- 首次渲染延迟明显
+- 流量浪费
+
+### 解决方案：字体子集化
+
+只保留实际用到的字符，大幅减小文件体积。
+
+**工具**：`pyftsubset`（fonttools包）
+
+```bash
+# 安装
+pip install fonttools
+
+# 子集化
+pyftsubset "思源宋体.ttf" \
+  --text-file=chars.txt \
+  --output-file="思源宋体-subset.ttf"
+```
+
+**效果**：
+- 原始字体：11.8MB
+- 子集化后：208-210KB（约56倍压缩）
+
+### 项目实践
+
+创建交互式工具 `tools/subset-font.py`，支持：
+1. 从代码文件提取中文字符
+2. 从字符文件读取
+3. 直接输入字符串
+
+```typescript
+// 使用本地子集字体
+import fontUrl from '../assets/fonts/思源宋体-subset.ttf?url'
+
+const text = new Text()
+text.font = fontUrl
+```
+
+---
+
+## 6.2 SDF渲染原理
+
+### 什么是SDF（Signed Distance Field）
+
+传统字体渲染存储像素位图，放大会模糊。
+
+**SDF方式**：存储每个像素到字形边缘的"有符号距离值"：
+- 正值 = 在字形内部
+- 负值 = 在字形外部
+- 0 = 正好在边缘
+
+### Shader采样
+
+```glsl
+float dist = texture2D(sdfTexture, uv).a;
+float alpha = smoothstep(0.5 - edge, 0.5 + edge, dist);
+```
+
+**优势**：无论放大多少倍，边缘都是锐利的（数学计算而非像素插值）。
+
+### 透视极小字的黑框问题
+
+当文字在屏幕上变得极小（透视压缩到几个像素）：
+
+1. **采样精度不足**：一个屏幕像素覆盖了SDF纹理的多个texel
+2. **距离值混淆**：内部和外部的距离值被平均，阈值判断失效
+3. **结果**：shader认为整个区域都是"边缘"或"内部"，渲染成黑色方块
+
+### 解决方案
+
+| 方案 | 实现 | 适用场景 |
+|------|------|----------|
+| 限制相机角度 | `controls.maxPolarAngle` | 固定视角应用 |
+| 增大sdfGlyphSize | `text.sdfGlyphSize = 128` | 需要极端缩放 |
+| 改用正交相机 | `OrthographicCamera` | 无透视需求 |
+
+### 类比
+
+用放大镜看地图上的城市边界线：
+- 正常大小：边界清晰
+- 缩小到极限：城市变成一个小点，边界消失
+
+Troika的SDF纹理分辨率是固定的（默认64x64 per glyph），当屏幕尺寸小于这个精度时就会崩溃。

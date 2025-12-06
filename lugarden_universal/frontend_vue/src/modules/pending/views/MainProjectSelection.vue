@@ -72,9 +72,7 @@
           <div class="flex-1">
             <h2 class="text-2xl font-bold mb-2 text-gray-800">四气</h2>
             <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">
-              脱囊、动身、解离、坐定
-              <br />
-              <span class="text-xs text-gray-400">施岳宏 · 节气诗选</span>
+              脱囊，动身，解离，坐定
             </div>
           </div>
           <div class="flex justify-between items-center mt-4">

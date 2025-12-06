@@ -131,7 +131,7 @@
   - `lugarden_universal/frontend_vue/src/modules/pending/003_fourseasons/composables/effects/winter.ts`
   - `lugarden_universal/frontend_vue/src/modules/pending/003_fourseasons/composables/useSensors.ts`
 - 完成状态：✅ 已完成
-- Git Commit: `16a1373` - feat: 季节切换动画优化 - 聚合终点按季节区分、春季持续生长、传感器pressed状态
+- Git Commit: `e4e798a`
 - 技术要点:
   - 聚合动画终点 = 季节效果起点，消除闪现问题
   - 春季聚合终点: opacity=0.15, scale=0.5（种子状态）

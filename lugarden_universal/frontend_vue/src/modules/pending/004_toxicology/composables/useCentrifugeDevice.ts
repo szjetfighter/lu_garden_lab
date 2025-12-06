@@ -155,12 +155,46 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
     axle.position.y = -0.5
     rotorGroup.add(axle)
     
-    // ========== 4根试管 + 支架 ==========
+    // ========== 带孔圆盘（试管架）==========
     const tubeCount = 4
     const tubeRadius = 0.2
     const tubeHeight = 3
-    const tubeDistance = 1.5  // 四周柱距离的一半
+    const tubeDistance = 1.5  // 试管距中心距离
+    const diskRadius = 2.5
+    const diskThickness = 0.4
+    const holeRadius = tubeRadius + 0.05  // 孔略大于试管
     
+    // 创建带孔圆盘形状
+    const diskShape = new THREE.Shape()
+    diskShape.absarc(0, 0, diskRadius, 0, Math.PI * 2, false)
+    
+    // 添加4个孔
+    for (let i = 0; i < tubeCount; i++) {
+      const angle = (i / tubeCount) * Math.PI * 2
+      const holeX = Math.cos(angle) * tubeDistance
+      const holeY = Math.sin(angle) * tubeDistance
+      
+      const hole = new THREE.Path()
+      hole.absarc(holeX, holeY, holeRadius, 0, Math.PI * 2, true)
+      diskShape.holes.push(hole)
+    }
+    
+    // 挤出成圆盘
+    const diskGeometry = new THREE.ExtrudeGeometry(diskShape, {
+      depth: diskThickness,
+      bevelEnabled: false
+    })
+    const diskMaterial = new THREE.MeshStandardMaterial({
+      color: 0xaaaaaa,
+      metalness: 0.6,
+      roughness: 0.4
+    })
+    const disk = new THREE.Mesh(diskGeometry, diskMaterial)
+    disk.rotation.x = -Math.PI / 2  // 水平放置
+    disk.position.y = -0.5 + diskThickness / 2 + 1  // 向上平移1
+    rotorGroup.add(disk)
+    
+    // ========== 4根试管 ==========
     // 试管材质（半透明玻璃）
     const tubeMaterial = new THREE.MeshPhysicalMaterial({
       color: 0xaaffff,
@@ -170,35 +204,29 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
       transparent: true,
       opacity: 0.3,
       side: THREE.DoubleSide,
-      depthWrite: false  // 解决透明物体渲染顺序问题
-    })
-    
-    // 支架材质
-    const bracketMaterial = new THREE.MeshStandardMaterial({
-      color: 0x444444,
-      metalness: 0.8,
-      roughness: 0.3
+      depthWrite: false
     })
     
     for (let i = 0; i < tubeCount; i++) {
-      // 位置：0°、90°、180°、270°
       const angle = (i / tubeCount) * Math.PI * 2
       const x = Math.cos(angle) * tubeDistance
       const z = Math.sin(angle) * tubeDistance
       
-      // 试管主体（圆柱）
+      // 试管主体（圆柱）- 从圆盘向下延伸
       const tubeBodyGeometry = new THREE.CylinderGeometry(tubeRadius, tubeRadius, tubeHeight - tubeRadius, 32, 1, true)
       const tubeBody = new THREE.Mesh(tubeBodyGeometry, tubeMaterial)
-      tubeBody.position.set(x, -0.5, z)
+      tubeBody.position.set(x, -0.5 - (tubeHeight - tubeRadius) / 2 + diskThickness / 2 + 1, z)
       rotorGroup.add(tubeBody)
       
       // 试管底部（半球封口）
       const tubeBottomGeometry = new THREE.SphereGeometry(tubeRadius, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2)
       const tubeBottom = new THREE.Mesh(tubeBottomGeometry, tubeMaterial)
-      tubeBottom.position.set(x, -0.5 - (tubeHeight - tubeRadius) / 2, z)
+      // 底部位置 = 圆柱底端
+      const tubeBodyBottom = -0.5 - (tubeHeight - tubeRadius) / 2 - (tubeHeight - tubeRadius) / 2 + diskThickness / 2 + 1
+      tubeBottom.position.set(x, tubeBodyBottom, z)
       rotorGroup.add(tubeBottom)
       
-      // 试管顶部开口边缘
+      // 试管顶部开口边缘（在圆盘上方）
       const tubeRimGeometry = new THREE.TorusGeometry(tubeRadius, 0.03, 8, 32)
       const tubeRimMaterial = new THREE.MeshStandardMaterial({
         color: 0x666666,
@@ -206,21 +234,9 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
         roughness: 0.3
       })
       const tubeRim = new THREE.Mesh(tubeRimGeometry, tubeRimMaterial)
-      tubeRim.position.set(x, -0.5 + (tubeHeight - tubeRadius) / 2, z)
+      tubeRim.position.set(x, -0.5 + diskThickness / 2 + 0.02 + 1, z)
       tubeRim.rotation.x = Math.PI / 2
       rotorGroup.add(tubeRim)
-      
-      // 支架（从中轴到试管中部的水平杆）
-      const bracketLength = tubeDistance - 0.2  // 减去中轴半径
-      const bracketGeometry = new THREE.BoxGeometry(bracketLength, 0.08, 0.08)
-      const bracket = new THREE.Mesh(bracketGeometry, bracketMaterial)
-      bracket.position.set(
-        Math.cos(angle) * (tubeDistance / 2 + 0.1),
-        -0.5,  // 垂直中心
-        Math.sin(angle) * (tubeDistance / 2 + 0.1)
-      )
-      bracket.rotation.y = -angle
-      rotorGroup.add(bracket)
     }
     
     deviceGroup.add(rotorGroup)

@@ -29,6 +29,7 @@
           ref="sceneRef"
           :rpm="currentRpm"
           :is-meltdown="isMeltdownPhase"
+          @open-report="isReportOpen = true"
         />
         
         <!-- RPM 进度条 -->
@@ -54,17 +55,6 @@
             </span>
           </div>
         </div>
-        
-        <!-- 查看毒理报告按钮（崩解结束1秒后渐入） -->
-        <Transition name="fade">
-          <button 
-            v-if="showReportButton"
-            class="view-report-btn"
-            @click="isReportOpen = true"
-          >
-            查看毒理报告
-          </button>
-        </Transition>
       </div>
 
       <!-- 控制面板 -->
@@ -448,18 +438,33 @@ const goBack = () => {
   font-size: 1rem;
   font-weight: 400;
   padding: 1rem 2rem;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(30, 30, 35, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #f0f0f0;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   letter-spacing: 0.2em;
   transition: all 0.3s ease;
+  animation: btnBreathe 3s ease-in-out infinite;
+}
+
+@keyframes btnBreathe {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 1;
+  }
 }
 
 .view-report-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(50, 50, 55, 0.8);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translate(-50%, -50%) scale(1.02);
 }
 
 /* 渐入动画 */

@@ -8,11 +8,16 @@ import * as THREE from 'three'
 import { useToxicScene } from '../composables/useToxicScene'
 import { useToxicParticles } from '../composables/useToxicParticles'
 import { useCentrifugeDevice } from '../composables/useCentrifugeDevice'
+import { useReportButton } from '../composables/useReportButton'
 import { getRandomPoem } from '../data/loader'
 
 const props = defineProps<{
   rpm: number
   isMeltdown?: boolean
+}>()
+
+const emit = defineEmits<{
+  openReport: []
 }>()
 
 const containerRef = ref<HTMLDivElement | null>(null)
@@ -37,7 +42,7 @@ const {
 const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
 
-// 点击处理 - 根据角度判断试管
+// 点击处理
 const handleClick = (event: MouseEvent) => {
   if (!containerRef.value || !renderer.value || !camera) return
   
@@ -46,6 +51,15 @@ const handleClick = (event: MouseEvent) => {
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
   
   raycaster.setFromCamera(mouse, camera)
+  
+  // 优先检测报告按钮点击
+  if (checkReportButtonClick(raycaster)) {
+    emit('openReport')
+    return
+  }
+  
+  // 崩解后不响应试管点击
+  if (isMeltdownActive) return
   
   // 检测与场景中物体的交点
   const intersects = raycaster.intersectObjects(scene.children, true)
@@ -88,6 +102,16 @@ const {
   updateMeltdown: updateDeviceMeltdown
 } = useCentrifugeDevice(scene)
 
+// 报告按钮（WebGL元素）
+const {
+  create: createReportButton,
+  show: showReportButton,
+  hide: hideReportButton,
+  update: updateReportButton,
+  checkClick: checkReportButtonClick,
+  dispose: disposeReportButton
+} = useReportButton(scene, camera)
+
 // 开始崩解
 const startMeltdown = () => {
   isMeltdownActive = true
@@ -107,11 +131,17 @@ const reset = () => {
   resetParticles()
 }
 
+// 崩解完成后显示按钮的延迟
+let showButtonTimer: number | null = null
+
 onMounted(() => {
   initScene()
   
   // 创建离心机设备
   createDevice()
+  
+  // 创建报告按钮（初始隐藏）
+  createReportButton()
   
   // 加载随机诗歌
   const poem = getRandomPoem()
@@ -137,8 +167,21 @@ onMounted(() => {
       // 更新崩解效果
       updateParticleMeltdown(progress)
       updateDeviceMeltdown(progress)
+      
+      // 崩解完成后1秒显示按钮
+      if (progress >= 1 && !showButtonTimer) {
+        showButtonTimer = window.setTimeout(() => {
+          showReportButton()
+        }, 1000)
+      }
+      
+      // 更新报告按钮
+      updateReportButton(delta)
       return
     }
+    
+    // 更新报告按钮（呼吸动画）
+    updateReportButton(delta)
     
     // 如果有悬浮展示，优先更新悬浮动画
     if (isFloating()) {
@@ -163,6 +206,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   containerRef.value?.removeEventListener('click', handleClick)
+  if (showButtonTimer) {
+    clearTimeout(showButtonTimer)
+  }
+  disposeReportButton()
   disposeDevice()
   disposeScene()
 })

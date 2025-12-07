@@ -15,8 +15,11 @@
       <!-- 标题区 -->
       <div class="header-section text-center mb-6 animate-fadeInUp">
         <h1 class="text-3xl font-bold tracking-widest text-gray-800 mb-2">毒理学报告</h1>
-        <p class="poem-title text-base text-gray-500">冯铗《一剂》· 离心提纯实验</p>
+        <button class="author-link" @click="isAboutOpen = true">About 冯铗</button>
       </div>
+
+      <!-- 作者简介弹窗 -->
+      <AboutAuthor :is-open="isAboutOpen" @close="isAboutOpen = false" />
 
       <!-- 3D场景容器 -->
       <div class="scene-container animate-fadeInUp" style="animation-delay: 0.1s;">
@@ -66,6 +69,7 @@ import { useRouter } from 'vue-router'
 import ControlKnob from '../components/ControlKnob.vue'
 import ClinicalMonitor from '../components/ClinicalMonitor.vue'
 import ToxicologyScene from '../components/ToxicologyScene.vue'
+import AboutAuthor from '../components/AboutAuthor.vue'
 import BackButton from '@/shared/components/BackButton.vue'
 
 const router = useRouter()
@@ -75,6 +79,7 @@ const sceneRef = ref<InstanceType<typeof ToxicologyScene> | null>(null)
 const currentRpm = ref(0)
 const isMeltdown = ref(false)
 const extractionRate = ref(0)
+const isAboutOpen = ref(false)
 
 // RPM状态文本
 const rpmStatusText = computed(() => {
@@ -255,8 +260,19 @@ const goBack = () => {
   color: #333;
 }
 
-.poem-title {
+.author-link {
+  display: inline-block;
   margin-top: var(--spacing-sm, 0.5rem);
+  font-size: 0.75rem;
+  color: var(--text-tertiary, #9ca3af);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.author-link:hover {
+  color: var(--color-brand-primary, #bca09e);
 }
 
 @keyframes blink {

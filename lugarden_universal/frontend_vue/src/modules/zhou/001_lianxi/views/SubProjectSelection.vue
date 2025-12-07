@@ -17,10 +17,10 @@
         <h1 class="content-title animate-fadeInDown">
           {{ zhouStore.navigation.currentMainProject.name }}
         </h1>
-        <div class="content-subtitle animate-fadeIn" style="animation-delay: 0.2s;">
+        <div class="content-subtitle animate-fadeIn mb-1" style="animation-delay: 0.2s;">
           {{ zhouStore.navigation.currentMainProject.description }}
         </div>
-        <p class="text-gray-500 mb-8">
+        <p class="mb-6">
           <span 
             class="author-link"
             @click.stop="showAuthorModal = true"
@@ -142,14 +142,15 @@ const selectChapter = (chapterName: string) => {
   color: #64748b;
 }
 
-/* 作者可点击 (A/B测试位置3) */
+/* 作者可点击 - 统一样式 */
 .author-link {
+  font-size: 0.75rem;
+  color: var(--text-tertiary, #9ca3af);
   cursor: pointer;
   transition: color 0.2s;
 }
 
 .author-link:hover {
-  color: #1a365d;
-  text-decoration: underline;
+  color: var(--color-brand-primary, #bca09e);
 }
 </style>

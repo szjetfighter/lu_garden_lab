@@ -1,49 +1,55 @@
 <template>
-  <div class="toxicology-container">
-    <!-- 3D场景 -->
-    <ToxicologyScene 
-      ref="sceneRef"
-      :rpm="currentRpm" 
-      class="scene-container"
-    />
-    
-    <!-- UI覆盖层 -->
-    <div class="ui-overlay">
-      <!-- 顶部：标题与状态 -->
-      <header class="header">
-        <div class="header-left">
-          <button class="back-btn" @click="goBack">←</button>
-        </div>
-        <div class="header-center">
-          <h1 class="title">毒理学报告</h1>
-          <div class="subtitle">冯铗《一剂》· 离心提纯实验</div>
-        </div>
-        <div class="header-right">
-          <button class="reset-btn" @click="resetExperiment">重置</button>
-        </div>
-      </header>
-
-      <!-- 提取率显示 -->
-      <div class="extraction-info" v-if="currentRpm > 0">
-        <span class="label">有效成分提取率:</span>
-        <span class="value">{{ extractionRate.toFixed(1) }}%</span>
+  <div class="toxicology-view">
+    <div class="container mx-auto px-4 py-8">
+      <!-- 返回按钮 -->
+      <div class="mb-6">
+        <BackButton 
+          text="返回"
+          variant="default"
+          size="medium"
+          :hover-animation="true"
+          @click="goBack"
+        />
       </div>
 
-      <!-- 底部：控制面板 -->
-      <footer class="control-panel">
-        <ControlKnob 
-          v-model:rpm="currentRpm" 
-          :max-rpm="9000"
-          @change="onRpmChange"
+      <!-- 标题区 -->
+      <div class="header-section text-center mb-6 animate-fadeInUp">
+        <h1 class="text-3xl font-bold tracking-widest text-gray-800 mb-2">毒理学报告</h1>
+        <p class="poem-title text-base text-gray-500">冯铗《一剂》· 离心提纯实验</p>
+      </div>
+
+      <!-- 3D场景容器 -->
+      <div class="scene-container animate-fadeInUp" style="animation-delay: 0.1s;">
+        <ToxicologyScene 
+          ref="sceneRef"
+          :rpm="currentRpm" 
         />
-        <div class="rpm-display">
-          <span class="rpm-value">{{ currentRpm }}</span>
-          <span class="rpm-unit">RPM</span>
+        
+        <!-- 提取率显示（覆盖在场景上） -->
+        <div class="extraction-overlay" v-if="currentRpm > 0">
+          <span class="label">提取率:</span>
+          <span class="value">{{ extractionRate.toFixed(1) }}%</span>
         </div>
-        <div class="rpm-status" :class="rpmStatusClass">
-          {{ rpmStatusText }}
+      </div>
+
+      <!-- 控制面板 -->
+      <div class="control-section animate-fadeInUp" style="animation-delay: 0.2s;">
+        <div class="control-panel">
+          <ControlKnob 
+            v-model:rpm="currentRpm" 
+            :max-rpm="9000"
+            @change="onRpmChange"
+          />
+          <div class="rpm-display">
+            <span class="rpm-value">{{ currentRpm }}</span>
+            <span class="rpm-unit">RPM</span>
+          </div>
+          <div class="rpm-status" :class="rpmStatusClass">
+            {{ rpmStatusText }}
+          </div>
+          <button class="reset-btn" @click="resetExperiment">重置实验</button>
         </div>
-      </footer>
+      </div>
 
       <!-- 医疗警告（熔断时显示） -->
       <ClinicalMonitor 
@@ -60,6 +66,7 @@ import { useRouter } from 'vue-router'
 import ControlKnob from '../components/ControlKnob.vue'
 import ClinicalMonitor from '../components/ClinicalMonitor.vue'
 import ToxicologyScene from '../components/ToxicologyScene.vue'
+import BackButton from '@/shared/components/BackButton.vue'
 
 const router = useRouter()
 
@@ -109,120 +116,79 @@ const goBack = () => {
 </script>
 
 <style scoped>
-.toxicology-container {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  background: #0a0a0a;
-  overflow: hidden;
+.toxicology-view {
+  min-height: 100vh;
+  background: radial-gradient(ellipse at center, var(--bg-card, #f5f1e8) 0%, #e5e7eb 100%);
 }
 
 .scene-container {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
-  height: 100%;
-  z-index: 1;
+  max-width: 600px;
+  margin: 0 auto;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  
+  /* 统一卡片样式 */
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 250, 252, 0.6) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all var(--duration-normal, 0.3s) ease-out;
 }
 
-.ui-overlay {
+.scene-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.extraction-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
+  top: 1rem;
+  right: 1rem;
+  font-family: 'Courier New', monospace;
+  text-align: right;
   pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
 }
 
-.header {
-  padding: 1rem 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  pointer-events: auto;
+.extraction-overlay .label {
+  font-size: 0.625rem;
+  color: #999;
 }
 
-.header-left,
-.header-right {
-  width: 80px;
-}
-
-.header-center {
-  text-align: center;
-}
-
-.back-btn,
-.reset-btn {
-  font-family: 'Courier New', monospace;
-  font-size: 0.875rem;
-  padding: 0.5rem 1rem;
-  background: rgba(0, 255, 0, 0.1);
-  border: 1px solid #00ff00;
-  color: #00ff00;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.back-btn:hover,
-.reset-btn:hover {
-  background: rgba(0, 255, 0, 0.2);
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-}
-
-.title {
-  font-family: 'Courier New', monospace;
+.extraction-overlay .value {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #00ff00;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-  margin: 0;
+  color: #ff4444;
 }
 
-.subtitle {
-  font-family: 'Courier New', monospace;
-  font-size: 0.75rem;
-  color: #666;
-  margin-top: 0.25rem;
-}
-
-.extraction-info {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: 'Courier New', monospace;
-  text-align: center;
-  pointer-events: none;
-}
-
-.extraction-info .label {
-  display: block;
-  font-size: 0.75rem;
-  color: #666;
-}
-
-.extraction-info .value {
-  display: block;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #ff0000;
-  text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+.control-section {
+  max-width: 600px;
+  margin: var(--spacing-lg, 1.5rem) auto 0;
 }
 
 .control-panel {
-  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  pointer-events: auto;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 250, 252, 0.6) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .rpm-display {
@@ -233,10 +199,9 @@ const goBack = () => {
 }
 
 .rpm-value {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #00ff00;
-  text-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+  color: #22c55e;
 }
 
 .rpm-unit {
@@ -248,7 +213,7 @@ const goBack = () => {
   font-family: 'Courier New', monospace;
   font-size: 0.75rem;
   padding: 0.25rem 0.75rem;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 .status-idle {
@@ -257,19 +222,41 @@ const goBack = () => {
 }
 
 .status-normal {
-  color: #00ff00;
-  background: rgba(0, 255, 0, 0.1);
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
 }
 
 .status-warning {
-  color: #ffaa00;
-  background: rgba(255, 170, 0, 0.1);
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
 }
 
 .status-danger {
-  color: #ff0000;
-  background: rgba(255, 0, 0, 0.2);
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
   animation: blink 0.5s ease-in-out infinite alternate;
+}
+
+.reset-btn {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: rgba(102, 102, 102, 0.1);
+  border: 1px solid #ccc;
+  color: #666;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reset-btn:hover {
+  background: rgba(102, 102, 102, 0.2);
+  border-color: #999;
+  color: #333;
+}
+
+.poem-title {
+  margin-top: var(--spacing-sm, 0.5rem);
 }
 
 @keyframes blink {

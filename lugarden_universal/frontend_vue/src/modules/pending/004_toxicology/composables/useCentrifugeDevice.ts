@@ -354,10 +354,28 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
       group.rotation.z = Math.cos(angle) * dynamicTilt
     })
     
-    // 动态调整光源强度
+    // 中心灯动态变色：绿→红→亮白红（与发光环同步）
     if (innerLight) {
-      // 绿光随转速增强
-      innerLight.intensity = 2 + rpmRatio * 8
+      if (rpmRatio < 0.3) {
+        // 绿色
+        innerLight.color.setRGB(0, 1, 0)
+        innerLight.intensity = 2 + rpmRatio * 5
+      } else if (rpmRatio < 0.6) {
+        // 绿→红 渐变
+        const t = (rpmRatio - 0.3) / 0.3
+        innerLight.color.setRGB(t, 1 - t, 0)
+        innerLight.intensity = 3 + t * 4
+      } else if (rpmRatio < 0.9) {
+        // 红色增亮
+        const t = (rpmRatio - 0.6) / 0.3
+        innerLight.color.setRGB(1, t * 0.5, t * 0.5)
+        innerLight.intensity = 7 + t * 5
+      } else {
+        // 刺眼亮白红 + 闪烁
+        const flash = 0.8 + Math.sin(Date.now() * 0.03) * 0.2
+        innerLight.color.setRGB(1, 0.7 * flash, 0.7 * flash)
+        innerLight.intensity = 12 + Math.sin(Date.now() * 0.02) * 3
+      }
     }
     if (bottomLight) {
       // 红色警示光在高转速时亮起

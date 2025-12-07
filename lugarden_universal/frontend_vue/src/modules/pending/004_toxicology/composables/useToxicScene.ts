@@ -87,6 +87,7 @@ export function useToxicScene(containerRef: Ref<HTMLElement | null>) {
   const renderer = shallowRef<THREE.WebGLRenderer | null>(null)
   const composer = shallowRef<EffectComposer | null>(null)
   const scanlinePass = shallowRef<ShaderPass | null>(null)
+  const bloomPass = shallowRef<UnrealBloomPass | null>(null)
   
   // 轨道控制器
   let controls: OrbitControls | null = null
@@ -151,14 +152,14 @@ export function useToxicScene(containerRef: Ref<HTMLElement | null>) {
     const renderPass = new RenderPass(scene, camera)
     composer.value.addPass(renderPass)
 
-    // Bloom - CRT泛光
-    const bloomPass = new UnrealBloomPass(
+    // Bloom - CRT泛光（动态强度）
+    bloomPass.value = new UnrealBloomPass(
       new THREE.Vector2(width, height),
-      0.3,  // 强度
+      0.3,  // 初始强度
       0.4,  // 半径
-      0.85  // 阈值
+      0.7   // 阈值（让绿色发光环等发光）
     )
-    composer.value.addPass(bloomPass)
+    composer.value.addPass(bloomPass.value)
 
     // 扫描线 + 噪点 + Glitch
     scanlinePass.value = new ShaderPass(ScanlineShader)
@@ -196,6 +197,11 @@ export function useToxicScene(containerRef: Ref<HTMLElement | null>) {
       const rpmRatio = currentRpm.value / maxRpm
       scanlinePass.value.uniforms.scanlineIntensity.value = 0.05 + rpmRatio * 0.15
       scanlinePass.value.uniforms.noiseIntensity.value = 0.08 + rpmRatio * 0.92
+      
+      // 动态 Bloom 辉光（随转速增强）
+      if (bloomPass.value) {
+        bloomPass.value.strength = 0.3 + rpmRatio * 0.8  // 0.3 → 1.1
+      }
       
       // 三阶段 Glitch 和背景颜色（平滑过渡）
       // 颜色定义：深灰 → 紫红 → 亮紫红 → 亮红

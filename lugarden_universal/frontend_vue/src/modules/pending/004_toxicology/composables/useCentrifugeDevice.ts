@@ -20,6 +20,8 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
   // 内部光源（用于动态调节）
   let innerLight: THREE.PointLight | null = null
   let bottomLight: THREE.PointLight | null = null
+  // 底座发光环材质（用于动态变色）
+  let baseRingMaterial: THREE.MeshBasicMaterial | null = null
   // 试管组引用（用于离心倾斜）
   const tubeGroups: { group: THREE.Group; angle: number }[] = []
   
@@ -36,9 +38,9 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
     base.position.y = -3.4
     deviceGroup.add(base)
     
-    // 底座边缘发光环
+    // 底座边缘发光环（动态变色：绿→红→亮白红）
     const baseRingGeometry = new THREE.TorusGeometry(3.8, 0.08, 16, 64)
-    const baseRingMaterial = new THREE.MeshBasicMaterial({
+    baseRingMaterial = new THREE.MeshBasicMaterial({
       color: 0x00ff00,
       transparent: true,
       opacity: 0.8
@@ -363,6 +365,30 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
       // 高转速时闪烁
       if (rpmRatio > 0.8) {
         bottomLight.intensity *= 0.5 + Math.sin(Date.now() * 0.02) * 0.5
+      }
+    }
+    
+    // 底座发光环动态变色：绿→红→亮白红
+    if (baseRingMaterial) {
+      if (rpmRatio < 0.3) {
+        // 绿色
+        baseRingMaterial.color.setRGB(0, 1, 0)
+        baseRingMaterial.opacity = 0.8
+      } else if (rpmRatio < 0.6) {
+        // 绿→红 渐变
+        const t = (rpmRatio - 0.3) / 0.3
+        baseRingMaterial.color.setRGB(t, 1 - t, 0)
+        baseRingMaterial.opacity = 0.8 + t * 0.2
+      } else if (rpmRatio < 0.9) {
+        // 红色增亮
+        const t = (rpmRatio - 0.6) / 0.3
+        baseRingMaterial.color.setRGB(1, t * 0.5, t * 0.5)  // 加白
+        baseRingMaterial.opacity = 1
+      } else {
+        // 刺眼亮白红 + 闪烁
+        const flash = 0.8 + Math.sin(Date.now() * 0.03) * 0.2
+        baseRingMaterial.color.setRGB(1, 0.7 * flash, 0.7 * flash)
+        baseRingMaterial.opacity = 1
       }
     }
     

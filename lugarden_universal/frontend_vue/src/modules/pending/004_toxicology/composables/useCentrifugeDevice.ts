@@ -161,7 +161,7 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
     const tubeCount = 4
     const tubeRadius = 0.2
     const tubeHeight = 3
-    const tubeDistance = 1.5  // 试管距中心距离
+    const tubeDistance = 1  // 试管距中心距离
     const diskRadius = 2.5
     const diskThickness = 0.4
     const holeRadius = tubeRadius + 0.05  // 孔略大于试管
@@ -211,8 +211,8 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
     
     // 圆盘高度（试管锚点）
     const diskY = -0.5 + diskThickness / 2 + 1
-    // 初始倾斜角度（15% of 最大60°）
-    const initialTilt = 0.15 * (Math.PI / 3)
+    // 初始倾斜角度（0%）
+    const initialTilt = 0
     
     for (let i = 0; i < tubeCount; i++) {
       const angle = (i / tubeCount) * Math.PI * 2
@@ -225,8 +225,8 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
       
       // 初始倾斜：底部向外（径向方向）
       // 绕切线轴旋转，使试管在径向垂直平面内倾斜
-      tubeGroup.rotation.x = Math.sin(angle) * initialTilt
-      tubeGroup.rotation.z = -Math.cos(angle) * initialTilt
+      tubeGroup.rotation.x = -Math.sin(angle) * initialTilt
+      tubeGroup.rotation.z = Math.cos(angle) * initialTilt
       
       // 试管主体（圆柱）- 相对于锚点向下
       const tubeBodyGeometry = new THREE.CylinderGeometry(tubeRadius, tubeRadius, tubeHeight - tubeRadius, 32, 1, true)
@@ -342,15 +342,14 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
       rotorGroup.rotation.y = rotation
     }
     
-    // 试管离心倾斜（15% 初始 + RPM 增量，最大 60°）
-    const maxTilt = Math.PI / 3  // 60°
-    const baseTilt = 0.15 * maxTilt  // 15% 初始倾斜
-    const dynamicTilt = baseTilt + rpmRatio * (maxTilt - baseTilt)
+    // 试管离心倾斜（0% 初始，最大 35°）
+    const maxTilt = (35 / 180) * Math.PI  // 35°
+    const dynamicTilt = rpmRatio * maxTilt
     
     tubeGroups.forEach(({ group, angle }) => {
-      // 绕切线轴旋转，使试管在径向垂直平面内倾斜
-      group.rotation.x = Math.sin(angle) * dynamicTilt
-      group.rotation.z = -Math.cos(angle) * dynamicTilt
+      // 绕切线轴旋转，使试管在径向垂直平面内倾斜（底部向外）
+      group.rotation.x = -Math.sin(angle) * dynamicTilt
+      group.rotation.z = Math.cos(angle) * dynamicTilt
     })
     
     // 动态调整光源强度

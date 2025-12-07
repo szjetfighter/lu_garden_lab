@@ -29,29 +29,34 @@
           :rpm="currentRpm"
         />
         
-        <!-- 提取率显示（覆盖在场景上） -->
-        <div class="extraction-overlay" v-if="currentRpm > 0">
-          <span class="label">提取率:</span>
-          <span class="value">{{ extractionRate.toFixed(1) }}%</span>
+        <!-- RPM 进度条 -->
+        <div class="rpm-progress-bar">
+          <div class="rpm-track">
+            <div class="rpm-fill" :style="{ width: (currentRpm / 9000 * 100) + '%' }"></div>
+          </div>
+          <div class="rpm-ticks">
+            <span v-for="n in 10" :key="n" class="tick" :class="{ active: currentRpm >= (n - 1) * 1000 }">
+              {{ (n - 1) * 1000 }}
+            </span>
+          </div>
+          <div class="rpm-current">{{ currentRpm }} RPM</div>
         </div>
       </div>
 
       <!-- 控制面板 -->
       <div class="control-section animate-fadeInUp" style="animation-delay: 0.2s;">
-        <div class="control-panel">
-          <ControlKnob 
-            v-model:rpm="currentRpm" 
-            :max-rpm="9000"
-            @change="onRpmChange"
-          />
-          <div class="rpm-display">
-            <span class="rpm-value">{{ currentRpm }}</span>
-            <span class="rpm-unit">RPM</span>
-          </div>
-          <div class="rpm-status" :class="rpmStatusClass">
-            {{ rpmStatusText }}
-          </div>
-          <button class="reset-btn" @click="resetExperiment">重置实验</button>
+        <div class="control-panel-simple">
+          <button 
+            class="accelerate-btn"
+            :style="accelerateBtnStyle"
+            @mousedown="startAccelerate"
+            @mouseup="stopAccelerate"
+            @mouseleave="stopAccelerate"
+            @touchstart.prevent="startAccelerate"
+            @touchend.prevent="stopAccelerate"
+          >
+            加速
+          </button>
         </div>
       </div>
 
@@ -68,7 +73,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import ControlKnob from '../components/ControlKnob.vue'
 import ClinicalMonitor from '../components/ClinicalMonitor.vue'
 import ToxicologyScene from '../components/ToxicologyScene.vue'
 import AboutAuthor from '../components/AboutAuthor.vue'
@@ -80,37 +84,52 @@ const router = useRouter()
 const sceneRef = ref<InstanceType<typeof ToxicologyScene> | null>(null)
 const currentRpm = ref(0)
 const isMeltdown = ref(false)
-const extractionRate = ref(0)
 const isAboutOpen = ref(false)
 
-// RPM状态文本
-const rpmStatusText = computed(() => {
-  if (currentRpm.value === 0) return '待机'
-  if (currentRpm.value < 3000) return '低速分离'
-  if (currentRpm.value < 6000) return '中速分离'
-  if (currentRpm.value < 8000) return '高速分离'
-  return '⚠️ 危险转速'
-})
+// 加速控制
+let accelerateInterval: number | null = null
+const isAccelerating = ref(false)
 
-const rpmStatusClass = computed(() => {
-  if (currentRpm.value === 0) return 'status-idle'
-  if (currentRpm.value < 6000) return 'status-normal'
-  if (currentRpm.value < 8000) return 'status-warning'
-  return 'status-danger'
-})
-
-// RPM变化回调
-const onRpmChange = (rpm: number) => {
-  // 更新提取率
-  if (sceneRef.value) {
-    extractionRate.value = sceneRef.value.getExtractionRate() * 100
-  }
+const startAccelerate = () => {
+  isAccelerating.value = true
+  accelerateInterval = window.setInterval(() => {
+    if (currentRpm.value < 9000) {
+      currentRpm.value = Math.min(9000, currentRpm.value + 100)
+    }
+  }, 50)
 }
+
+const stopAccelerate = () => {
+  isAccelerating.value = false
+  if (accelerateInterval) {
+    clearInterval(accelerateInterval)
+    accelerateInterval = null
+  }
+  // 自然减速
+  const decelerate = () => {
+    if (currentRpm.value > 0 && !isAccelerating.value) {
+      currentRpm.value = Math.max(0, currentRpm.value - 50)
+      requestAnimationFrame(decelerate)
+    }
+  }
+  decelerate()
+}
+
+// 按钮颜色（黑色到暗红色）
+const accelerateBtnStyle = computed(() => {
+  const ratio = currentRpm.value / 9000
+  const r = Math.floor(30 + ratio * 120)  // 30 -> 150
+  const g = Math.floor(30 - ratio * 20)   // 30 -> 10
+  const b = Math.floor(30 - ratio * 20)   // 30 -> 10
+  return {
+    backgroundColor: `rgb(${r}, ${g}, ${b})`,
+    borderColor: `rgb(${r + 30}, ${g + 10}, ${b + 10})`
+  }
+})
 
 // 重置实验
 const resetExperiment = () => {
   currentRpm.value = 0
-  extractionRate.value = 0
   if (sceneRef.value) {
     sceneRef.value.reset()
   }
@@ -188,62 +207,87 @@ const goBack = () => {
   margin: var(--spacing-lg, 1.5rem) auto 0;
 }
 
-.control-panel {
+.control-panel-simple {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1.5rem;
-  background: #111;
-  border: 1px solid #333;
-  border-radius: var(--radius-lg, 12px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  gap: 1rem;
 }
 
-.rpm-display {
+.accelerate-btn {
   font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  background: rgb(30, 30, 30);
+  border: 2px solid rgb(60, 40, 40);
+  color: #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.accelerate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(150, 30, 30, 0.3);
+}
+
+.accelerate-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(150, 30, 30, 0.4);
+}
+
+/* RPM 进度条 */
+.rpm-progress-bar {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+}
+
+.rpm-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.rpm-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #333 0%, #661111 50%, #aa2222 100%);
+  border-radius: 3px;
+  transition: width 0.1s ease;
+}
+
+.rpm-ticks {
   display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding: 0 2px;
 }
 
-.rpm-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #22c55e;
-}
-
-.rpm-unit {
-  font-size: 0.875rem;
-  color: #888;
-}
-
-.rpm-status {
+.rpm-ticks .tick {
   font-family: 'Courier New', monospace;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
+  font-size: 0.6rem;
+  color: #444;
+  transition: color 0.2s;
 }
 
-.status-idle {
-  color: #666;
-  background: rgba(102, 102, 102, 0.1);
+.rpm-ticks .tick.active {
+  color: #aa4444;
 }
 
-.status-normal {
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.1);
-}
-
-.status-warning {
-  color: #f59e0b;
-  background: rgba(245, 158, 11, 0.1);
-}
-
-.status-danger {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.15);
-  animation: blink 0.5s ease-in-out infinite alternate;
+.rpm-current {
+  text-align: center;
+  margin-top: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #aa4444;
 }
 
 .reset-btn {

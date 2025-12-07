@@ -497,13 +497,13 @@ export function useToxicParticles(scene: THREE.Scene, camera?: THREE.Perspective
           const flyProgress = (progress - 0.4) / 0.6
           p.mesh.position.lerp(target, 0.08)
           
-          // 变深红色
+          // 白色
           const material = p.mesh.material as THREE.MeshBasicMaterial
-          material.color.setRGB(0.6, 0.1, 0.1)
+          material.color.setRGB(1, 1, 1)
           material.opacity = 1
           
-          // 放大
-          p.scale = 1.5 + flyProgress * 0.5
+          // 放大（更大）
+          p.scale = 2.5 + flyProgress * 1.5  // 2.5 → 4
           p.mesh.scale.setScalar(p.scale)
           
           // 面向相机

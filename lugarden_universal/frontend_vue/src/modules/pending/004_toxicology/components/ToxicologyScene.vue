@@ -127,15 +127,16 @@ onMounted(() => {
       const elapsed = (performance.now() - meltdownStartTime) / 1000  // 秒
       const progress = Math.min(1, elapsed / 5)  // 5秒内 0→1
       
-      // 继续高速旋转
-      globalRotation += (9000 * Math.PI * 2 / 60) * delta
+      // 前40%（2秒）：继续旋转
+      if (progress < 0.4) {
+        globalRotation += (9000 * Math.PI * 2 / 60) * delta
+        updateParticles(globalRotation, 1)
+      }
+      // 后60%（3秒）：粒子由 updateMeltdown 完全控制，不再跟随旋转
       
       // 更新崩解效果
       updateParticleMeltdown(progress)
       updateDeviceMeltdown(progress)
-      
-      // 更新粒子位置
-      updateParticles(globalRotation, 1)
       return
     }
     

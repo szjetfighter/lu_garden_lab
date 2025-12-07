@@ -3,9 +3,10 @@
  * 毒理报告弹窗
  * 显示离心后残留的诗歌原文
  */
-import { computed } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import poemsData from '../data/poems.json'
+import { FontSizeCalculator } from '@/shared/services/FontSizeCalculator'
 
 const props = defineProps<{
   isOpen: boolean
@@ -23,7 +24,38 @@ const poemContent = computed(() => {
 })
 
 const poemLines = computed(() => poemContent.value?.lines || [])
-const poemAuthor = poemsData.author
+
+// 字号自适应
+const poemBodyRef = ref<HTMLElement | null>(null)
+const adaptiveFontSize = ref(16) // 默认 1rem = 16px
+
+const FONT_CONFIG = {
+  baseFontSize: 16,
+  minFontSize: 10,
+  fontFamily: "'Noto Serif SC', serif",
+  fontWeight: 'normal'
+}
+
+const calcFontSize = () => {
+  if (!poemBodyRef.value || poemLines.value.length === 0) return
+  
+  const containerWidth = poemBodyRef.value.clientWidth
+  const result = FontSizeCalculator.calcAdaptiveFontSizeMultiple(
+    poemLines.value,
+    containerWidth,
+    FONT_CONFIG
+  )
+  adaptiveFontSize.value = result.fontSize
+}
+
+// 监听弹窗打开和诗歌内容变化
+watch([() => props.isOpen, poemLines], ([isOpen]) => {
+  if (isOpen) {
+    nextTick(() => {
+      setTimeout(calcFontSize, 50) // 等待 DOM 渲染
+    })
+  }
+})
 </script>
 
 <template>
@@ -51,11 +83,12 @@ const poemAuthor = poemsData.author
             <h3 class="poem-title">{{ poemTitle || '未知' }}</h3>
             
             <!-- 诗歌内容 -->
-            <div class="poem-body">
+            <div ref="poemBodyRef" class="poem-body">
               <p
                 v-for="(line, index) in poemLines"
                 :key="index"
                 class="poem-line"
+                :style="{ fontSize: adaptiveFontSize + 'px' }"
               >
                 {{ line }}
               </p>
@@ -179,12 +212,13 @@ const poemAuthor = poemsData.author
 }
 
 .poem-line {
-  font-size: 1rem;
+  /* font-size 由 JS 动态计算 */
   line-height: 2.2;
   color: #e0e0e0;
   font-family: 'Noto Serif SC', serif;
   margin: 0;
   text-align: center;
+  white-space: pre;
 }
 
 .modal-watermark {

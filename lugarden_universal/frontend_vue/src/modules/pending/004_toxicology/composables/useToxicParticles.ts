@@ -73,7 +73,7 @@ function getTubeCenter(tubeIndex: number): THREE.Vector3 {
   )
 }
 
-export function useToxicParticles(scene: THREE.Scene) {
+export function useToxicParticles(scene: THREE.Scene, camera?: THREE.PerspectiveCamera) {
   const particles = ref<ToxicParticle[]>([])
   const meshGroup = shallowRef<THREE.Group | null>(null)
   
@@ -319,9 +319,11 @@ export function useToxicParticles(scene: THREE.Scene) {
 
   // 悬浮展示状态
   let floatingTube = -1  // 当前悬浮展示的试管索引，-1 表示无
+  let isReturning = false  // 是否正在收回
   const floatTargets = new Map<ToxicParticle, THREE.Vector3>()
+  const returnTargets = new Map<ToxicParticle, THREE.Vector3>()
 
-  // 让指定试管的词悬浮出来
+  // 让指定试管的词悬浮出来（向相机弹射）
   const floatOutTube = (tubeIndex: number) => {
     if (floatingTube === tubeIndex) {
       // 点击同一个试管，收回
@@ -333,18 +335,26 @@ export function useToxicParticles(scene: THREE.Scene) {
     floatTargets.clear()
     
     const tubeParticles = particles.value.filter(p => p.tubeIndex === tubeIndex)
-    const count = tubeParticles.length
     
-    // 在屏幕前方排列成云状
+    // 获取相机位置，计算弹射方向
+    const camPos = camera?.position.clone() || new THREE.Vector3(0, 0, 10)
+    // 在相机前方 3-5 单位处展示
+    const displayDistance = 5
+    const displayCenter = camPos.clone().normalize().multiplyScalar(displayDistance)
+    
+    // 在相机前方排列成云状
     tubeParticles.forEach((p, i) => {
-      // 随机分布在前方区域
+      // 随机分布在相机前方区域
       const row = Math.floor(i / 8)
       const col = i % 8
-      const x = (col - 3.5) * 0.3 + (Math.random() - 0.5) * 0.1
-      const y = 2 - row * 0.4 + (Math.random() - 0.5) * 0.1
-      const z = 3 + (Math.random() - 0.5) * 0.5
+      const offsetX = (col - 3.5) * 0.25 + (Math.random() - 0.5) * 0.1
+      const offsetY = -row * 0.35 + (Math.random() - 0.5) * 0.1
       
-      floatTargets.set(p, new THREE.Vector3(x, y, z))
+      const target = displayCenter.clone()
+      target.x += offsetX
+      target.y += offsetY + 1  // 稍微抬高
+      
+      floatTargets.set(p, target)
       
       // 放大并变亮
       p.scale = 2
@@ -356,17 +366,56 @@ export function useToxicParticles(scene: THREE.Scene) {
 
   // 收回悬浮的词
   const returnToTube = () => {
-    floatingTube = -1
-    floatTargets.clear()
+    if (floatingTube < 0) return
     
-    // 恢复所有粒子的大小
-    particles.value.forEach(p => {
+    isReturning = true
+    returnTargets.clear()
+    
+    // 为悬浮的粒子设置返回目标（试管内位置）
+    floatTargets.forEach((_, p) => {
+      // 计算试管内的目标位置
+      const tubeAngle = (p.tubeIndex / TUBE_COUNT) * Math.PI * 2
+      const anchorX = Math.cos(tubeAngle) * TUBE_DISTANCE
+      const anchorZ = Math.sin(tubeAngle) * TUBE_DISTANCE
+      const targetY = DISK_Y - p.localY * TUBE_HEIGHT
+      
+      returnTargets.set(p, new THREE.Vector3(anchorX, targetY, anchorZ))
+      
+      // 恢复大小
       p.scale = 1
     })
+    
+    floatTargets.clear()
   }
 
   // 更新悬浮动画
   const updateFloating = () => {
+    const camPos = camera?.position || new THREE.Vector3(0, 0, 10)
+    
+    // 处理收回动画
+    if (isReturning && returnTargets.size > 0) {
+      let allReturned = true
+      
+      returnTargets.forEach((target, p) => {
+        p.mesh.position.lerp(target, 0.15)
+        p.mesh.scale.setScalar(p.scale)
+        
+        // 检查是否到达目标
+        if (p.mesh.position.distanceTo(target) > 0.1) {
+          allReturned = false
+        }
+      })
+      
+      // 全部返回后结束
+      if (allReturned) {
+        isReturning = false
+        floatingTube = -1
+        returnTargets.clear()
+      }
+      return
+    }
+    
+    // 处理悬浮动画
     if (floatingTube < 0) return
     
     floatTargets.forEach((target, p) => {
@@ -375,12 +424,12 @@ export function useToxicParticles(scene: THREE.Scene) {
       p.mesh.scale.setScalar(p.scale)
       
       // 面向相机
-      p.mesh.lookAt(0, p.mesh.position.y, 10)
+      p.mesh.lookAt(camPos)
     })
   }
 
   // 检查是否有悬浮状态
-  const isFloating = () => floatingTube >= 0
+  const isFloating = () => floatingTube >= 0 || isReturning
 
   return {
     particles,

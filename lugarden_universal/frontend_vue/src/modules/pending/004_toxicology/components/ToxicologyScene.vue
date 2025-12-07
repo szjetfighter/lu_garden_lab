@@ -72,7 +72,7 @@ const {
   floatOutTube,
   updateFloating,
   isFloating
-} = useToxicParticles(scene)
+} = useToxicParticles(scene, camera)
 
 // 离心机设备
 const {

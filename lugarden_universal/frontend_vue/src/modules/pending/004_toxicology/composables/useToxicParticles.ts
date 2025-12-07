@@ -16,6 +16,7 @@ const TUBE_RADIUS = 0.15  // 略小于试管内径
 const TUBE_HEIGHT = 2.5   // 试管有效高度
 const TUBE_DISTANCE = 1   // 试管距中心距离
 const DISK_Y = 0.7        // 圆盘高度（试管锚点）
+const MAX_TILT = (35 / 180) * Math.PI  // 最大倾斜角度 35°
 
 export interface ToxicParticle {
   mesh: THREE.Mesh
@@ -147,31 +148,46 @@ export function useToxicParticles(scene: THREE.Scene) {
     scene.add(group)
     
     // 初始更新位置
-    updateAllPositions(0)
+    updateAllPositions(0, 0)
   }
 
-  // 更新所有粒子的世界位置
-  const updateAllPositions = (globalRotation: number) => {
+  // 更新所有粒子的世界位置（考虑试管倾斜）
+  const updateAllPositions = (globalRotation: number, rpmRatio: number) => {
+    const tiltAngle = rpmRatio * MAX_TILT  // 当前倾斜角度
+    
     particles.value.forEach(p => {
       const tubeAngle = (p.tubeIndex / TUBE_COUNT) * Math.PI * 2 + globalRotation
       
-      // 试管中心位置（跟随旋转）
-      const tubeCenterX = Math.cos(tubeAngle) * TUBE_DISTANCE
-      const tubeCenterZ = Math.sin(tubeAngle) * TUBE_DISTANCE
+      // 试管锚点位置（圆盘孔位置，跟随旋转）
+      const anchorX = Math.cos(tubeAngle) * TUBE_DISTANCE
+      const anchorZ = Math.sin(tubeAngle) * TUBE_DISTANCE
       
-      // 试管内局部偏移
-      const offsetX = Math.cos(p.localAngle) * p.localRadius
-      const offsetZ = Math.sin(p.localAngle) * p.localRadius
-      const offsetY = -p.localY * TUBE_HEIGHT  // 向下
+      // 试管内局部偏移（未倾斜状态）
+      const localOffsetX = Math.cos(p.localAngle) * p.localRadius
+      const localOffsetZ = Math.sin(p.localAngle) * p.localRadius
+      const localOffsetY = -p.localY * TUBE_HEIGHT  // 向下
       
-      // 世界坐标
+      // 应用试管倾斜变换
+      // 试管绕切线轴旋转，方向是底部向外（径向）
+      // 倾斜轴：切线方向 = (-sin(tubeAngle), 0, cos(tubeAngle))
+      // 旋转后：局部Y轴（试管轴）向外倾斜
+      
+      // 使用四元数进行旋转
+      const tangentAxis = new THREE.Vector3(-Math.sin(tubeAngle), 0, Math.cos(tubeAngle))
+      const quaternion = new THREE.Quaternion().setFromAxisAngle(tangentAxis, tiltAngle)
+      
+      // 局部偏移向量
+      const localOffset = new THREE.Vector3(localOffsetX, localOffsetY, localOffsetZ)
+      localOffset.applyQuaternion(quaternion)
+      
+      // 世界坐标 = 锚点 + 倾斜后的偏移
       p.mesh.position.set(
-        tubeCenterX + offsetX,
-        DISK_Y + offsetY,
-        tubeCenterZ + offsetZ
+        anchorX + localOffset.x,
+        DISK_Y + localOffset.y,
+        anchorZ + localOffset.z
       )
       
-      // 面向相机（billboarding）
+      // 面向相机
       p.mesh.rotation.y = -tubeAngle
       
       p.mesh.scale.setScalar(p.scale)
@@ -242,8 +258,8 @@ export function useToxicParticles(scene: THREE.Scene) {
   /**
    * 更新（由外部调用）
    */
-  const update = (globalRotation: number) => {
-    updateAllPositions(globalRotation)
+  const update = (globalRotation: number, rpmRatio: number) => {
+    updateAllPositions(globalRotation, rpmRatio)
   }
 
   const reset = () => {
@@ -268,7 +284,7 @@ export function useToxicParticles(scene: THREE.Scene) {
       material.opacity = 1
     })
     
-    updateAllPositions(0)
+    updateAllPositions(0, 0)
   }
 
   const clear = () => {

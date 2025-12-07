@@ -20,6 +20,8 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
   // 内部光源（用于动态调节）
   let innerLight: THREE.PointLight | null = null
   let bottomLight: THREE.PointLight | null = null
+  // 试管组引用（用于离心倾斜）
+  const tubeGroups: { group: THREE.Group; angle: number }[] = []
   
   const create = () => {
     // ========== 底座 ==========
@@ -207,26 +209,38 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
       depthWrite: false
     })
     
+    // 圆盘高度（试管锚点）
+    const diskY = -0.5 + diskThickness / 2 + 1
+    // 初始倾斜角度（15% of 最大60°）
+    const initialTilt = 0.15 * (Math.PI / 3)
+    
     for (let i = 0; i < tubeCount; i++) {
       const angle = (i / tubeCount) * Math.PI * 2
       const x = Math.cos(angle) * tubeDistance
       const z = Math.sin(angle) * tubeDistance
       
-      // 试管主体（圆柱）- 从圆盘向下延伸
+      // 创建试管组（锚点在圆盘孔位置）
+      const tubeGroup = new THREE.Group()
+      tubeGroup.position.set(x, diskY, z)
+      
+      // 初始倾斜：底部向外（径向方向）
+      // 绕切线轴旋转，使试管在径向垂直平面内倾斜
+      tubeGroup.rotation.x = Math.sin(angle) * initialTilt
+      tubeGroup.rotation.z = -Math.cos(angle) * initialTilt
+      
+      // 试管主体（圆柱）- 相对于锚点向下
       const tubeBodyGeometry = new THREE.CylinderGeometry(tubeRadius, tubeRadius, tubeHeight - tubeRadius, 32, 1, true)
       const tubeBody = new THREE.Mesh(tubeBodyGeometry, tubeMaterial)
-      tubeBody.position.set(x, -0.5 - (tubeHeight - tubeRadius) / 2 + diskThickness / 2 + 1, z)
-      rotorGroup.add(tubeBody)
+      tubeBody.position.set(0, -(tubeHeight - tubeRadius) / 2, 0)
+      tubeGroup.add(tubeBody)
       
       // 试管底部（半球封口）
       const tubeBottomGeometry = new THREE.SphereGeometry(tubeRadius, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2)
       const tubeBottom = new THREE.Mesh(tubeBottomGeometry, tubeMaterial)
-      // 底部位置 = 圆柱底端
-      const tubeBodyBottom = -0.5 - (tubeHeight - tubeRadius) / 2 - (tubeHeight - tubeRadius) / 2 + diskThickness / 2 + 1
-      tubeBottom.position.set(x, tubeBodyBottom, z)
-      rotorGroup.add(tubeBottom)
+      tubeBottom.position.set(0, -(tubeHeight - tubeRadius), 0)
+      tubeGroup.add(tubeBottom)
       
-      // 试管顶部开口边缘（在圆盘上方）
+      // 试管顶部开口边缘
       const tubeRimGeometry = new THREE.TorusGeometry(tubeRadius, 0.03, 8, 32)
       const tubeRimMaterial = new THREE.MeshStandardMaterial({
         color: 0x666666,
@@ -234,9 +248,12 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
         roughness: 0.3
       })
       const tubeRim = new THREE.Mesh(tubeRimGeometry, tubeRimMaterial)
-      tubeRim.position.set(x, -0.5 + diskThickness / 2 + 0.02 + 1, z)
+      tubeRim.position.set(0, 0.02, 0)
       tubeRim.rotation.x = Math.PI / 2
-      rotorGroup.add(tubeRim)
+      tubeGroup.add(tubeRim)
+      
+      rotorGroup.add(tubeGroup)
+      tubeGroups.push({ group: tubeGroup, angle })
     }
     
     deviceGroup.add(rotorGroup)
@@ -325,6 +342,17 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
       rotorGroup.rotation.y = rotation
     }
     
+    // 试管离心倾斜（15% 初始 + RPM 增量，最大 60°）
+    const maxTilt = Math.PI / 3  // 60°
+    const baseTilt = 0.15 * maxTilt  // 15% 初始倾斜
+    const dynamicTilt = baseTilt + rpmRatio * (maxTilt - baseTilt)
+    
+    tubeGroups.forEach(({ group, angle }) => {
+      // 绕切线轴旋转，使试管在径向垂直平面内倾斜
+      group.rotation.x = Math.sin(angle) * dynamicTilt
+      group.rotation.z = -Math.cos(angle) * dynamicTilt
+    })
+    
     // 动态调整光源强度
     if (innerLight) {
       // 绿光随转速增强
@@ -360,6 +388,9 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
   
   const dispose = () => {
     scene.remove(deviceGroup)
+    
+    // 清理试管组引用
+    tubeGroups.length = 0
     
     // 递归清理
     deviceGroup.traverse(obj => {

@@ -23,7 +23,35 @@ const poemContent = computed(() => {
   return poemsData.poems.find(p => p.title === props.poemTitle)
 })
 
-const poemLines = computed(() => poemContent.value?.lines || [])
+// 检测是否是 sections 格式（如八芥）
+const hasSections = computed(() => {
+  return poemContent.value && 'sections' in poemContent.value
+})
+
+// sections 格式的数据
+const poemSections = computed(() => {
+  if (!hasSections.value || !poemContent.value) return []
+  return (poemContent.value as any).sections || []
+})
+
+// 普通格式的 lines
+const poemLines = computed(() => {
+  if (hasSections.value) return []
+  return (poemContent.value as any)?.lines || []
+})
+
+// 所有行（用于字号计算）
+const allLines = computed(() => {
+  if (hasSections.value) {
+    const lines: string[] = []
+    for (const section of poemSections.value) {
+      if (section.subtitle) lines.push(section.subtitle)
+      if (section.lines) lines.push(...section.lines)
+    }
+    return lines
+  }
+  return poemLines.value
+})
 
 // 字号自适应
 const poemBodyRef = ref<HTMLElement | null>(null)
@@ -37,11 +65,11 @@ const FONT_CONFIG = {
 }
 
 const calcFontSize = () => {
-  if (!poemBodyRef.value || poemLines.value.length === 0) return
+  if (!poemBodyRef.value || allLines.value.length === 0) return
   
   const containerWidth = poemBodyRef.value.clientWidth
   const result = FontSizeCalculator.calcAdaptiveFontSizeMultiple(
-    poemLines.value,
+    allLines.value,
     containerWidth,
     FONT_CONFIG
   )
@@ -49,7 +77,7 @@ const calcFontSize = () => {
 }
 
 // 监听弹窗打开和诗歌内容变化
-watch([() => props.isOpen, poemLines], ([isOpen]) => {
+watch([() => props.isOpen, allLines], ([isOpen]) => {
   if (isOpen) {
     nextTick(() => {
       setTimeout(calcFontSize, 50) // 等待 DOM 渲染
@@ -84,14 +112,41 @@ watch([() => props.isOpen, poemLines], ([isOpen]) => {
             
             <!-- 诗歌内容 -->
             <div ref="poemBodyRef" class="poem-body">
-              <p
-                v-for="(line, index) in poemLines"
-                :key="index"
-                class="poem-line"
-                :style="{ fontSize: adaptiveFontSize + 'px' }"
-              >
-                {{ line }}
-              </p>
+              <!-- sections 格式（如八芥） -->
+              <template v-if="hasSections">
+                <div 
+                  v-for="(section, sIdx) in poemSections" 
+                  :key="sIdx"
+                  class="poem-section-block"
+                >
+                  <p 
+                    v-if="section.subtitle" 
+                    class="poem-subtitle"
+                    :style="{ fontSize: adaptiveFontSize + 'px' }"
+                  >
+                    {{ section.subtitle }}
+                  </p>
+                  <p
+                    v-for="(line, lIdx) in section.lines"
+                    :key="lIdx"
+                    class="poem-line"
+                    :style="{ fontSize: adaptiveFontSize + 'px' }"
+                  >
+                    {{ line }}
+                  </p>
+                </div>
+              </template>
+              <!-- 普通格式 -->
+              <template v-else>
+                <p
+                  v-for="(line, index) in poemLines"
+                  :key="index"
+                  class="poem-line"
+                  :style="{ fontSize: adaptiveFontSize + 'px' }"
+                >
+                  {{ line }}
+                </p>
+              </template>
             </div>
           </div>
           
@@ -209,6 +264,25 @@ watch([() => props.isOpen, poemLines], ([isOpen]) => {
 
 .poem-body {
   padding: 1rem 0;
+}
+
+.poem-section-block {
+  margin-bottom: 1.5rem;
+}
+
+.poem-section-block:last-child {
+  margin-bottom: 0;
+}
+
+.poem-subtitle {
+  /* font-size 由 JS 动态计算 */
+  line-height: 2;
+  color: #aa8866;
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+  white-space: pre;
 }
 
 .poem-line {

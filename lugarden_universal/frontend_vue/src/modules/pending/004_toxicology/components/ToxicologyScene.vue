@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
+import * as THREE from 'three'
 import { useToxicScene } from '../composables/useToxicScene'
 import { useToxicParticles } from '../composables/useToxicParticles'
 import { useCentrifugeDevice } from '../composables/useCentrifugeDevice'
@@ -21,11 +22,44 @@ let globalRotation = 0
 // 场景
 const { 
   scene, 
+  camera,
+  renderer,
   init: initScene, 
   dispose: disposeScene, 
   onUpdate,
   setRpm 
 } = useToxicScene(containerRef)
+
+// 射线检测器
+const raycaster = new THREE.Raycaster()
+const mouse = new THREE.Vector2()
+
+// 点击处理 - 根据角度判断试管
+const handleClick = (event: MouseEvent) => {
+  if (!containerRef.value || !renderer.value || !camera) return
+  
+  const rect = containerRef.value.getBoundingClientRect()
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+  
+  raycaster.setFromCamera(mouse, camera)
+  
+  // 检测与场景中物体的交点
+  const intersects = raycaster.intersectObjects(scene.children, true)
+  
+  if (intersects.length > 0) {
+    const point = intersects[0].point
+    // 根据点击位置的角度判断试管索引
+    const angle = Math.atan2(point.z, point.x)
+    // 转换为 0-3 的索引
+    let tubeIndex = Math.floor(((angle + Math.PI) / (Math.PI * 2)) * 4 + 0.5) % 4
+    // 调整旋转偏移
+    tubeIndex = (tubeIndex + Math.floor(globalRotation / (Math.PI / 2))) % 4
+    
+    // 3D悬浮展示
+    floatOutTube(tubeIndex)
+  }
+}
 
 // 粒子系统
 const { 
@@ -34,7 +68,10 @@ const {
   update: updateParticles,
   reset: resetParticles,
   getResidue,
-  getExtractionRate
+  getExtractionRate,
+  floatOutTube,
+  updateFloating,
+  isFloating
 } = useToxicParticles(scene)
 
 // 离心机设备
@@ -65,8 +102,17 @@ onMounted(() => {
   const poem = getRandomPoem()
   loadPoem(poem)
   
+  // 添加点击事件
+  containerRef.value?.addEventListener('click', handleClick)
+  
   // 注册更新回调
   onUpdate((delta, _time) => {
+    // 如果有悬浮展示，优先更新悬浮动画
+    if (isFloating()) {
+      updateFloating()
+      return
+    }
+    
     // 更新旋转角度
     const angularVelocity = (props.rpm * Math.PI * 2) / 60
     globalRotation += angularVelocity * delta
@@ -83,6 +129,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  containerRef.value?.removeEventListener('click', handleClick)
   disposeDevice()
   disposeScene()
 })

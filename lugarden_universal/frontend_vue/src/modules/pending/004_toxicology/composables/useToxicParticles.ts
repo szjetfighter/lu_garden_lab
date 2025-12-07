@@ -309,6 +309,79 @@ export function useToxicParticles(scene: THREE.Scene) {
     return total > 0 ? settled / total : 0
   }
 
+  // 获取指定试管的所有词（随机顺序）
+  const getTubeWords = (tubeIndex: number): string[] => {
+    const tubeParticles = particles.value.filter(p => p.tubeIndex === tubeIndex)
+    // 随机打乱
+    const shuffled = [...tubeParticles].sort(() => Math.random() - 0.5)
+    return shuffled.map(p => p.char)
+  }
+
+  // 悬浮展示状态
+  let floatingTube = -1  // 当前悬浮展示的试管索引，-1 表示无
+  const floatTargets = new Map<ToxicParticle, THREE.Vector3>()
+
+  // 让指定试管的词悬浮出来
+  const floatOutTube = (tubeIndex: number) => {
+    if (floatingTube === tubeIndex) {
+      // 点击同一个试管，收回
+      returnToTube()
+      return
+    }
+    
+    floatingTube = tubeIndex
+    floatTargets.clear()
+    
+    const tubeParticles = particles.value.filter(p => p.tubeIndex === tubeIndex)
+    const count = tubeParticles.length
+    
+    // 在屏幕前方排列成云状
+    tubeParticles.forEach((p, i) => {
+      // 随机分布在前方区域
+      const row = Math.floor(i / 8)
+      const col = i % 8
+      const x = (col - 3.5) * 0.3 + (Math.random() - 0.5) * 0.1
+      const y = 2 - row * 0.4 + (Math.random() - 0.5) * 0.1
+      const z = 3 + (Math.random() - 0.5) * 0.5
+      
+      floatTargets.set(p, new THREE.Vector3(x, y, z))
+      
+      // 放大并变亮
+      p.scale = 2
+      const material = p.mesh.material as THREE.MeshBasicMaterial
+      material.color.setHex(0x00ff00)
+      material.opacity = 1
+    })
+  }
+
+  // 收回悬浮的词
+  const returnToTube = () => {
+    floatingTube = -1
+    floatTargets.clear()
+    
+    // 恢复所有粒子的大小
+    particles.value.forEach(p => {
+      p.scale = 1
+    })
+  }
+
+  // 更新悬浮动画
+  const updateFloating = () => {
+    if (floatingTube < 0) return
+    
+    floatTargets.forEach((target, p) => {
+      // 平滑移动到目标位置
+      p.mesh.position.lerp(target, 0.1)
+      p.mesh.scale.setScalar(p.scale)
+      
+      // 面向相机
+      p.mesh.lookAt(0, p.mesh.position.y, 10)
+    })
+  }
+
+  // 检查是否有悬浮状态
+  const isFloating = () => floatingTube >= 0
+
   return {
     particles,
     meshGroup,
@@ -318,6 +391,11 @@ export function useToxicParticles(scene: THREE.Scene) {
     reset,
     clear,
     getResidue,
-    getExtractionRate
+    getExtractionRate,
+    getTubeWords,
+    floatOutTube,
+    returnToTube,
+    updateFloating,
+    isFloating
   }
 }

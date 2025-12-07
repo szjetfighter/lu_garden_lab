@@ -26,7 +26,7 @@
       <div class="scene-container animate-fadeInUp" style="animation-delay: 0.1s;">
         <ToxicologyScene 
           ref="sceneRef"
-          :rpm="currentRpm" 
+          :rpm="currentRpm"
         />
         
         <!-- 提取率显示（覆盖在场景上） -->
@@ -60,6 +60,7 @@
         v-if="isMeltdown" 
         @dismiss="isMeltdown = false"
       />
+
     </div>
   </div>
 </template>

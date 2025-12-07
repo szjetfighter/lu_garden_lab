@@ -448,38 +448,67 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
 
   // ========== 崩解效果 ==========
   let isMeltdownActive = false
+  const fragmentVelocities = new Map<THREE.Object3D, THREE.Vector3>()
 
   const startMeltdown = () => {
     isMeltdownActive = true
+    fragmentVelocities.clear()
+    
+    // 给每个mesh分配随机飞散速度
+    deviceGroup.traverse(obj => {
+      if (obj instanceof THREE.Mesh) {
+        const angle = Math.random() * Math.PI * 2
+        const upAngle = Math.random() * Math.PI * 0.5 - 0.25  // 略向上
+        const speed = 0.03 + Math.random() * 0.08
+        
+        const velocity = new THREE.Vector3(
+          Math.cos(angle) * Math.cos(upAngle) * speed,
+          Math.sin(upAngle) * speed * 0.5 + 0.02,  // 向上
+          Math.sin(angle) * Math.cos(upAngle) * speed
+        )
+        fragmentVelocities.set(obj, velocity)
+      }
+    })
   }
 
   const updateMeltdown = (progress: number) => {
     if (!isMeltdownActive) return
     
-    // 前2秒：剧烈震动
+    // 前2秒（40%）：剧烈震动
     if (progress < 0.4) {
       const shake = 0.15 * (1 + progress * 2)
       deviceGroup.position.x = (Math.random() - 0.5) * shake
       deviceGroup.position.z = (Math.random() - 0.5) * shake
-      deviceGroup.rotation.y += 0.1  // 加速旋转
+      deviceGroup.rotation.y += 0.1
     } else {
-      // 后3秒：爆炸消散
+      // 后3秒（60%）：崩解飞散
       const fadeProgress = (progress - 0.4) / 0.6  // 0→1
       
-      // 设备向外爆炸扩散
-      deviceGroup.scale.setScalar(1 + fadeProgress * 0.5)
-      
-      // 设备逐渐透明消失
       deviceGroup.traverse(obj => {
         if (obj instanceof THREE.Mesh) {
+          const velocity = fragmentVelocities.get(obj)
+          if (velocity) {
+            // 向外飞散
+            obj.position.add(velocity)
+            
+            // 旋转
+            obj.rotation.x += (Math.random() - 0.5) * 0.05
+            obj.rotation.z += (Math.random() - 0.5) * 0.05
+          }
+          
+          // 淡出
           const material = obj.material as THREE.MeshBasicMaterial | THREE.MeshStandardMaterial
           material.transparent = true
-          material.opacity = Math.max(0, 1 - fadeProgress * 1.5)
+          material.opacity = Math.max(0, 1 - fadeProgress)
+          
+          // 缩小
+          const scale = Math.max(0, 1 - fadeProgress * 0.5)
+          obj.scale.setScalar(scale)
         }
       })
       
       // 完全消失后隐藏
-      if (fadeProgress > 0.7) {
+      if (fadeProgress > 0.95) {
         deviceGroup.visible = false
       }
     }

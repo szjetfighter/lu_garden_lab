@@ -83,14 +83,14 @@
           </div>
         </div>
 
-        <!-- 毒理学报告 入口 -->
+        <!-- 毒理报告 入口 -->
         <div 
           class="unified-content-card rounded-base animate-fadeInUp cursor-pointer flex flex-col h-full"
           style="animation-delay: 0.4s;"
           @click="enterToxicology"
         >
           <div class="flex-1">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">毒理学报告</h2>
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">毒理报告</h2>
             <div class="text-base mb-4 whitespace-pre-line leading-loose text-gray-600 italic">
               为熬死老家伙们做长久的准备
             </div>
@@ -136,7 +136,7 @@ const enterFourSeasons = () => {
   router.push('/pending/003_fourseasons')
 }
 
-// 进入毒理学报告
+// 进入毒理报告
 const enterToxicology = () => {
   router.push('/pending/004_toxicology')
 }

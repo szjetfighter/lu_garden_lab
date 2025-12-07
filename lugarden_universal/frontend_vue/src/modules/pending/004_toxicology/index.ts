@@ -15,10 +15,20 @@ import type { RouteRecordRaw } from 'vue-router'
 export const toxicologyRoutes: RouteRecordRaw[] = [
   {
     path: '/pending/004_toxicology',
-    name: 'toxicology',
-    component: () => import('./views/ToxicologyView.vue'),
+    name: 'toxicology-entry',
+    component: () => import('./views/ToxicologyEntry.vue'),
     meta: {
       title: '毒理学报告',
+      subtitle: '冯铗《一剂》',
+      status: 'experimental'
+    }
+  },
+  {
+    path: '/pending/004_toxicology/report',
+    name: 'toxicology-report',
+    component: () => import('./views/ToxicologyView.vue'),
+    meta: {
+      title: '毒理学报告 - 离心机',
       subtitle: '冯铗《一剂》',
       status: 'experimental'
     }

@@ -5,16 +5,17 @@
       <div class="mb-6">
         <BackButton 
           text="返回"
-          variant="default"
+          variant="ghost"
           size="medium"
           :hover-animation="true"
           @click="goBack"
+          class="dark-back-btn"
         />
       </div>
 
       <!-- 标题区 -->
       <div class="header-section text-center mb-6 animate-fadeInUp">
-        <h1 class="text-3xl font-bold tracking-widest text-gray-800 mb-2">毒理学报告</h1>
+        <h1 class="text-3xl font-bold tracking-widest text-gray-100 mb-2">毒理学报告</h1>
         <button class="author-link" @click="isAboutOpen = true">About 冯铗</button>
       </div>
 
@@ -123,7 +124,18 @@ const goBack = () => {
 <style scoped>
 .toxicology-view {
   min-height: 100vh;
-  background: radial-gradient(ellipse at center, var(--bg-card, #f5f1e8) 0%, #e5e7eb 100%);
+  background: #0a0a0a;
+}
+
+/* 深色主题返回按钮 */
+.dark-back-btn {
+  color: #888 !important;
+  background: transparent !important;
+}
+
+.dark-back-btn:hover {
+  color: #fff !important;
+  background: transparent !important;
 }
 
 .scene-container {
@@ -134,25 +146,17 @@ const goBack = () => {
   aspect-ratio: 3 / 4;
   overflow: hidden;
   
-  /* 统一卡片样式 */
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 250, 252, 0.6) 100%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  /* 深色卡片样式 */
+  background: #111;
+  border: 1px solid #333;
   border-radius: var(--radius-lg, 12px);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    0 2px 8px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   transition: all var(--duration-normal, 0.3s) ease-out;
 }
 
 .scene-container:hover {
   transform: translateY(-2px);
-  box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.15),
-    0 4px 12px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
 }
 
 .extraction-overlay {
@@ -189,11 +193,10 @@ const goBack = () => {
   align-items: center;
   gap: 0.75rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 250, 252, 0.6) 100%);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: #111;
+  border: 1px solid #333;
   border-radius: var(--radius-lg, 12px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .rpm-display {
@@ -211,7 +214,7 @@ const goBack = () => {
 
 .rpm-unit {
   font-size: 0.875rem;
-  color: #666;
+  color: #888;
 }
 
 .rpm-status {
@@ -246,25 +249,25 @@ const goBack = () => {
   font-family: 'Courier New', monospace;
   font-size: 0.75rem;
   padding: 0.5rem 1rem;
-  background: rgba(102, 102, 102, 0.1);
-  border: 1px solid #ccc;
-  color: #666;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #444;
+  color: #888;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .reset-btn:hover {
-  background: rgba(102, 102, 102, 0.2);
-  border-color: #999;
-  color: #333;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #666;
+  color: #ccc;
 }
 
 .author-link {
   display: inline-block;
   margin-top: var(--spacing-sm, 0.5rem);
   font-size: 0.75rem;
-  color: var(--text-tertiary, #9ca3af);
+  color: #666;
   background: none;
   border: none;
   cursor: pointer;
@@ -272,7 +275,7 @@ const goBack = () => {
 }
 
 .author-link:hover {
-  color: var(--color-brand-primary, #bca09e);
+  color: #22c55e;
 }
 
 @keyframes blink {

@@ -14,7 +14,7 @@
 
       <!-- 标题区 -->
       <div class="header-section text-center mb-6 animate-fadeInUp">
-        <h1 class="text-3xl font-bold tracking-widest text-gray-800 mb-2">毒理学报告</h1>
+        <h1 class="text-3xl font-bold tracking-widest text-gray-800 mb-2">毒理报告</h1>
         <p class="subtitle">你中的，哪门子毒</p>
       </div>
 
@@ -40,7 +40,7 @@
             <p class="mocking-speaker">陆家明：</p>
             <p class="mocking-text">中毒的人能选自己中的是什么毒，</p>
             <p class="mocking-text">但你不能。</p>
-            <div class="mocking-hint">正在进入毒理学报告...</div>
+            <div class="mocking-hint">正在进入毒理报告...</div>
           </div>
         </div>
       </Transition>

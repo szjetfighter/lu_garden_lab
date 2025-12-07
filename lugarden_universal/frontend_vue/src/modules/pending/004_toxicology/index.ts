@@ -1,5 +1,5 @@
 /**
- * 毒理学报告 (The Toxicology Report)
+ * 毒理报告 (The Toxicology Report)
  * 
  * 代号: 004_toxicology
  * 诗人: 冯铗
@@ -18,7 +18,7 @@ export const toxicologyRoutes: RouteRecordRaw[] = [
     name: 'toxicology-entry',
     component: () => import('./views/ToxicologyEntry.vue'),
     meta: {
-      title: '毒理学报告',
+      title: '毒理报告',
       subtitle: '冯铗《一剂》',
       status: 'experimental'
     }
@@ -28,7 +28,7 @@ export const toxicologyRoutes: RouteRecordRaw[] = [
     name: 'toxicology-report',
     component: () => import('./views/ToxicologyView.vue'),
     meta: {
-      title: '毒理学报告 - 离心机',
+      title: '毒理报告 - 离心机',
       subtitle: '冯铗《一剂》',
       status: 'experimental'
     }

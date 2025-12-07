@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * 毒理学报告弹窗
+ * 毒理报告弹窗
  * 显示离心后残留的诗歌原文
  */
 import { XMarkIcon } from '@heroicons/vue/24/outline'
@@ -34,7 +34,7 @@ const emit = defineEmits<{
           <!-- 标题 -->
           <div class="report-header">
             <div class="report-label">TOXICOLOGY REPORT</div>
-            <h2 class="report-title">毒理学报告</h2>
+            <h2 class="report-title">毒理报告</h2>
           </div>
           
           <!-- 诗歌信息 -->

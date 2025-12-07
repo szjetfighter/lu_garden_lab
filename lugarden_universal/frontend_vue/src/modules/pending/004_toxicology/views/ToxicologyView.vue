@@ -15,7 +15,7 @@
 
       <!-- 标题区 -->
       <div class="header-section text-center mb-6 animate-fadeInUp">
-        <h1 class="text-3xl font-bold tracking-widest text-gray-100 mb-2">毒理学报告</h1>
+        <h1 class="text-3xl font-bold tracking-widest text-gray-100 mb-2">毒理报告</h1>
         <button class="author-link" @click="isAboutOpen = true">About 冯铗</button>
       </div>
 
@@ -38,11 +38,11 @@
           class="rpm-progress-bar"
           :class="{ 
             shaking: isMeltdownPhase && meltdownProgress < 0.4,
-            dissolving: isMeltdownPhase && meltdownProgress >= 0.2
+            dissolving: isMeltdownPhase && meltdownProgress >= 0.4
           }"
-          :style="isMeltdownPhase && meltdownProgress >= 0.2 ? {
-            opacity: Math.max(0, 1 - (meltdownProgress - 0.2) / 0.2),
-            transform: `translateX(-50%) scale(${1 + (meltdownProgress - 0.2) * 0.5})`
+          :style="isMeltdownPhase && meltdownProgress >= 0.4 ? {
+            opacity: Math.max(0, 1 - (meltdownProgress - 0.4) / 0.3),
+            transform: `translateX(-50%) scale(${1 - (meltdownProgress - 0.4) * 0.5})`
           } : {}"
         >
           <div class="rpm-track">

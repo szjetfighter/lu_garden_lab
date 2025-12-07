@@ -195,14 +195,45 @@ export function useToxicScene(containerRef: Ref<HTMLElement | null>) {
       // 根据RPM调整效果强度
       const rpmRatio = currentRpm.value / maxRpm
       scanlinePass.value.uniforms.scanlineIntensity.value = 0.05 + rpmRatio * 0.15
-      scanlinePass.value.uniforms.noiseIntensity.value = 0.02 + rpmRatio * 0.08
+      scanlinePass.value.uniforms.noiseIntensity.value = 0.08 + rpmRatio * 0.92
       
-      // 高转速时启用Glitch
-      if (rpmRatio > 0.7) {
-        scanlinePass.value.uniforms.glitchIntensity.value = (rpmRatio - 0.7) / 0.3
+      // 三阶段 Glitch 和背景颜色（平滑过渡）
+      // 颜色定义：深灰 → 紫红 → 亮紫红 → 亮红
+      const colors = [
+        { r: 0x1a, g: 0x1a, b: 0x1a },  // 深灰
+        { r: 0x1a, g: 0x0a, b: 0x15 },  // 紫红
+        { r: 0x2a, g: 0x0a, b: 0x1a },  // 亮紫红
+        { r: 0x33, g: 0x08, b: 0x08 },  // 亮红
+      ]
+      
+      // 计算颜色插值
+      let colorIndex: number
+      let colorT: number
+      if (rpmRatio >= 0.9) {
+        colorIndex = 2
+        colorT = Math.min(1, (rpmRatio - 0.9) / 0.1)
+        scanlinePass.value.uniforms.glitchIntensity.value = 1.5 + (rpmRatio - 0.9) * 15
+      } else if (rpmRatio >= 0.6) {
+        colorIndex = 1
+        colorT = (rpmRatio - 0.6) / 0.3
+        scanlinePass.value.uniforms.glitchIntensity.value = 0.5 + (rpmRatio - 0.6) * 3.33
+      } else if (rpmRatio >= 0.3) {
+        colorIndex = 0
+        colorT = (rpmRatio - 0.3) / 0.3
+        scanlinePass.value.uniforms.glitchIntensity.value = 0.2 + (rpmRatio - 0.3) * 1
       } else {
+        colorIndex = 0
+        colorT = 0
         scanlinePass.value.uniforms.glitchIntensity.value = 0
       }
+      
+      // 线性插值颜色
+      const c1 = colors[colorIndex]
+      const c2 = colors[Math.min(colorIndex + 1, colors.length - 1)]
+      const r = Math.floor(c1.r + (c2.r - c1.r) * colorT)
+      const g = Math.floor(c1.g + (c2.g - c1.g) * colorT)
+      const b = Math.floor(c1.b + (c2.b - c1.b) * colorT)
+      renderer.value?.setClearColor((r << 16) | (g << 8) | b, 1)
     }
     
     // 执行所有更新回调

@@ -8,7 +8,7 @@
 
 import { ref, shallowRef, markRaw } from 'vue'
 import * as THREE from 'three'
-import type { ToxicPoem, ToxicToken } from '../data/poems'
+import type { ToxicPoem, ToxicToken } from '../data/loader'
 
 // 试管参数（与 useCentrifugeDevice 一致）
 const TUBE_COUNT = 4
@@ -85,13 +85,8 @@ export function useToxicParticles(scene: THREE.Scene) {
     const group = new THREE.Group()
     meshGroup.value = markRaw(group)
     
-    // 收集所有 token
-    const allTokens: ToxicToken[] = []
-    poem.lines.forEach(line => {
-      line.tokens.forEach(token => {
-        allTokens.push(token)
-      })
-    })
+    // 新格式：tokens 已经是扁平化的
+    const allTokens = poem.tokens
     
     if (allTokens.length === 0) return
     

@@ -7,7 +7,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useToxicScene } from '../composables/useToxicScene'
 import { useToxicParticles } from '../composables/useToxicParticles'
 import { useCentrifugeDevice } from '../composables/useCentrifugeDevice'
-import { poemMingFang } from '../data/poems'
+import { getRandomPoem } from '../data/loader'
 
 const props = defineProps<{
   rpm: number
@@ -61,8 +61,9 @@ onMounted(() => {
   // 创建离心机设备
   createDevice()
   
-  // 加载诗歌
-  loadPoem(poemMingFang)
+  // 加载随机诗歌
+  const poem = getRandomPoem()
+  loadPoem(poem)
   
   // 注册更新回调
   onUpdate((delta, _time) => {

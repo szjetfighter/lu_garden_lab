@@ -94,6 +94,7 @@
       <!-- 毒理报告弹窗 -->
       <ToxicologyReportModal 
         :is-open="isReportOpen"
+        :poem-title="sceneRef?.currentPoemTitle"
         @close="isReportOpen = false"
       />
 

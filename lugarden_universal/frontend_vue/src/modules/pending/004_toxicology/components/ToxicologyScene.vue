@@ -24,6 +24,9 @@ const containerRef = ref<HTMLDivElement | null>(null)
 let meltdownStartTime = 0
 let isMeltdownActive = false
 
+// 当前诗歌标题
+const currentPoemTitle = ref('')
+
 // 累积旋转角度（用于同步设备和粒子）
 let globalRotation = 0
 
@@ -145,6 +148,7 @@ onMounted(() => {
   
   // 加载随机诗歌
   const poem = getRandomPoem()
+  currentPoemTitle.value = poem.title
   loadPoem(poem)
   
   // 添加点击事件
@@ -219,7 +223,8 @@ defineExpose({
   reset,
   getResidue,
   getExtractionRate,
-  startMeltdown
+  startMeltdown,
+  currentPoemTitle
 })
 </script>
 

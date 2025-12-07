@@ -3,18 +3,27 @@
  * 毒理报告弹窗
  * 显示离心后残留的诗歌原文
  */
+import { computed } from 'vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
+import poemsData from '../data/poems.json'
 
 const props = defineProps<{
   isOpen: boolean
   poemTitle?: string
-  poemAuthor?: string
-  poemLines?: string[]
 }>()
 
 const emit = defineEmits<{
   close: []
 }>()
+
+// 从 poems.json 获取诗歌内容
+const poemContent = computed(() => {
+  if (!props.poemTitle) return null
+  return poemsData.poems.find(p => p.title === props.poemTitle)
+})
+
+const poemLines = computed(() => poemContent.value?.lines || [])
+const poemAuthor = poemsData.author
 </script>
 
 <template>
@@ -39,10 +48,7 @@ const emit = defineEmits<{
           
           <!-- 诗歌信息 -->
           <div class="poem-section">
-            <div class="poem-meta">
-              <span class="poem-title">{{ poemTitle || '未知' }}</span>
-              <span class="poem-author">{{ poemAuthor || '佚名' }}</span>
-            </div>
+            <h3 class="poem-title">{{ poemTitle || '未知' }}</h3>
             
             <!-- 诗歌内容 -->
             <div class="poem-body">
@@ -159,25 +165,13 @@ const emit = defineEmits<{
   margin: 1.5rem 0;
 }
 
-.poem-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px dashed #333;
-}
-
 .poem-title {
   font-family: 'Noto Serif SC', serif;
-  font-size: 1rem;
-  color: #ccc;
-}
-
-.poem-author {
-  font-family: 'Courier New', monospace;
-  font-size: 0.8rem;
-  color: #666;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: #e0e0e0;
+  text-align: center;
+  margin: 0 0 1.5rem 0;
 }
 
 .poem-body {

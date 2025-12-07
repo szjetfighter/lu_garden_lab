@@ -445,11 +445,60 @@ export function useCentrifugeDevice(scene: THREE.Scene) {
       }
     })
   }
+
+  // ========== 崩解效果 ==========
+  let isMeltdownActive = false
+
+  const startMeltdown = () => {
+    isMeltdownActive = true
+  }
+
+  const updateMeltdown = (progress: number) => {
+    if (!isMeltdownActive) return
+    
+    // 前2秒：剧烈震动
+    if (progress < 0.4) {
+      const shake = 0.15 * (1 + progress * 2)
+      deviceGroup.position.x = (Math.random() - 0.5) * shake
+      deviceGroup.position.z = (Math.random() - 0.5) * shake
+      deviceGroup.rotation.y += 0.1  // 加速旋转
+    } else {
+      // 后3秒：爆炸消散
+      const fadeProgress = (progress - 0.4) / 0.6  // 0→1
+      
+      // 设备向外爆炸扩散
+      deviceGroup.scale.setScalar(1 + fadeProgress * 0.5)
+      
+      // 设备逐渐透明消失
+      deviceGroup.traverse(obj => {
+        if (obj instanceof THREE.Mesh) {
+          const material = obj.material as THREE.MeshBasicMaterial | THREE.MeshStandardMaterial
+          material.transparent = true
+          material.opacity = Math.max(0, 1 - fadeProgress * 1.5)
+        }
+      })
+      
+      // 完全消失后隐藏
+      if (fadeProgress > 0.7) {
+        deviceGroup.visible = false
+      }
+    }
+    
+    // 灯光快速熄灭
+    if (innerLight) {
+      innerLight.intensity = Math.max(0, 15 * (1 - progress * 2))
+    }
+    if (bottomLight) {
+      bottomLight.intensity = Math.max(0, 5 * (1 - progress * 2))
+    }
+  }
   
   return {
     deviceGroup,
     create,
     update,
-    dispose
+    dispose,
+    startMeltdown,
+    updateMeltdown
   }
 }

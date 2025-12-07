@@ -452,6 +452,79 @@ export function useToxicParticles(scene: THREE.Scene, camera?: THREE.Perspective
   // 检查是否有悬浮状态
   const isFloating = () => floatingTube >= 0 || isReturning
 
+  // ========== 崩解效果 ==========
+  let isMeltdownActive = false
+  const meltdownTargets = new Map<ToxicParticle, THREE.Vector3>()
+
+  const startMeltdown = () => {
+    isMeltdownActive = true
+    meltdownTargets.clear()
+    
+    // 筛选残留粒子（高权重且未消散）并设置弹出目标
+    const survivors = particles.value.filter(p => p.weight >= 0.5 && p.opacity > 0.3)
+    const count = survivors.length
+    
+    survivors.forEach((p, i) => {
+      // 在画面中心区域随机分布
+      const cols = Math.ceil(Math.sqrt(count))
+      const row = Math.floor(i / cols)
+      const col = i % cols
+      const spacing = 1.2
+      
+      const target = new THREE.Vector3(
+        (col - cols / 2) * spacing + (Math.random() - 0.5) * 0.3,
+        (row - cols / 2) * spacing * 0.8,
+        5  // 朝向相机
+      )
+      meltdownTargets.set(p, target)
+    })
+  }
+
+  const updateMeltdown = (progress: number) => {
+    if (!isMeltdownActive) return
+    
+    particles.value.forEach(p => {
+      const target = meltdownTargets.get(p)
+      
+      if (target) {
+        // 残留粒子：前40%震动，后60%弹出
+        if (progress < 0.4) {
+          // 震动
+          p.mesh.position.x += (Math.random() - 0.5) * 0.05
+          p.mesh.position.y += (Math.random() - 0.5) * 0.05
+        } else {
+          // 弹出到目标位置
+          const flyProgress = (progress - 0.4) / 0.6
+          p.mesh.position.lerp(target, 0.08)
+          
+          // 变深红色
+          const material = p.mesh.material as THREE.MeshBasicMaterial
+          material.color.setRGB(0.6, 0.1, 0.1)
+          material.opacity = 1
+          
+          // 放大
+          p.scale = 1.5 + flyProgress * 0.5
+          p.mesh.scale.setScalar(p.scale)
+          
+          // 面向相机
+          const cameraPos = camera?.position || new THREE.Vector3(0, 0, 10)
+          p.mesh.lookAt(cameraPos)
+        }
+      } else {
+        // 非残留粒子：快速消散
+        p.opacity = Math.max(0, p.opacity - 0.03)
+        p.mesh.position.y += 0.08 * (1 - progress)
+        p.mesh.position.z += 0.05
+        p.mesh.rotation.z += 0.05
+        
+        const material = p.mesh.material as THREE.MeshBasicMaterial
+        material.opacity = p.opacity
+        p.scale = Math.max(0.1, p.scale - 0.02)
+        p.mesh.scale.setScalar(p.scale)
+      }
+    })
+  }
+
   return {
     particles,
     meshGroup,
@@ -466,6 +539,8 @@ export function useToxicParticles(scene: THREE.Scene, camera?: THREE.Perspective
     floatOutTube,
     returnToTube,
     updateFloating,
-    isFloating
+    isFloating,
+    startMeltdown,
+    updateMeltdown
   }
 }

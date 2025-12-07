@@ -12,9 +12,12 @@ import { getRandomPoem } from '../data/loader'
 
 const props = defineProps<{
   rpm: number
+  isMeltdown?: boolean
 }>()
 
 const containerRef = ref<HTMLDivElement | null>(null)
+let meltdownStartTime = 0
+let isMeltdownActive = false
 
 // 累积旋转角度（用于同步设备和粒子）
 let globalRotation = 0
@@ -71,15 +74,27 @@ const {
   getExtractionRate,
   floatOutTube,
   updateFloating,
-  isFloating
+  isFloating,
+  startMeltdown: startParticleMeltdown,
+  updateMeltdown: updateParticleMeltdown
 } = useToxicParticles(scene, camera)
 
 // 离心机设备
 const {
   create: createDevice,
   update: updateDevice,
-  dispose: disposeDevice
+  dispose: disposeDevice,
+  startMeltdown: startDeviceMeltdown,
+  updateMeltdown: updateDeviceMeltdown
 } = useCentrifugeDevice(scene)
+
+// 开始崩解
+const startMeltdown = () => {
+  isMeltdownActive = true
+  meltdownStartTime = performance.now()
+  startParticleMeltdown()
+  startDeviceMeltdown()
+}
 
 // 监听RPM变化
 watch(() => props.rpm, (newRpm) => {
@@ -107,6 +122,23 @@ onMounted(() => {
   
   // 注册更新回调
   onUpdate((delta, _time) => {
+    // 崩解模式
+    if (isMeltdownActive) {
+      const elapsed = (performance.now() - meltdownStartTime) / 1000  // 秒
+      const progress = Math.min(1, elapsed / 5)  // 5秒内 0→1
+      
+      // 继续高速旋转
+      globalRotation += (9000 * Math.PI * 2 / 60) * delta
+      
+      // 更新崩解效果
+      updateParticleMeltdown(progress)
+      updateDeviceMeltdown(progress)
+      
+      // 更新粒子位置
+      updateParticles(globalRotation, 1)
+      return
+    }
+    
     // 如果有悬浮展示，优先更新悬浮动画
     if (isFloating()) {
       updateFloating()
@@ -138,7 +170,8 @@ onUnmounted(() => {
 defineExpose({
   reset,
   getResidue,
-  getExtractionRate
+  getExtractionRate,
+  startMeltdown
 })
 </script>
 

@@ -25,12 +25,14 @@
       <!-- 3D场景容器 -->
       <div class="scene-container animate-fadeInUp" style="animation-delay: 0.1s;">
         <ToxicologyScene 
+          :key="sceneKey"
           ref="sceneRef"
           :rpm="currentRpm"
+          :is-meltdown="isMeltdownPhase"
         />
         
-        <!-- RPM 进度条 -->
-        <div class="rpm-progress-bar">
+        <!-- RPM 进度条（崩解/结束时隐藏） -->
+        <div v-if="!isMeltdownPhase && !isFinished" class="rpm-progress-bar">
           <div class="rpm-track">
             <div class="rpm-fill" :style="{ width: (currentRpm / 9000 * 100) + '%' }"></div>
           </div>
@@ -46,16 +48,27 @@
       <!-- 控制面板 -->
       <div class="control-section animate-fadeInUp" style="animation-delay: 0.2s;">
         <div class="control-panel-simple">
+          <!-- 结束后显示重新开始 -->
           <button 
+            v-if="isFinished"
+            class="restart-btn"
+            @click="restart"
+          >
+            重新开始
+          </button>
+          <!-- 正常/崩解中显示加速（崩解中禁用） -->
+          <button 
+            v-else
             class="accelerate-btn"
             :style="accelerateBtnStyle"
+            :disabled="isMeltdownPhase"
             @mousedown="startAccelerate"
             @mouseup="stopAccelerate"
             @mouseleave="stopAccelerate"
             @touchstart.prevent="startAccelerate"
             @touchend.prevent="stopAccelerate"
           >
-            加速
+            {{ isMeltdownPhase ? '失控中...' : '加速' }}
           </button>
         </div>
       </div>
@@ -85,21 +98,31 @@ const sceneRef = ref<InstanceType<typeof ToxicologyScene> | null>(null)
 const currentRpm = ref(0)
 const isMeltdown = ref(false)
 const isAboutOpen = ref(false)
+const isMeltdownPhase = ref(false)  // 崩解阶段
+const isFinished = ref(false)  // 结束状态
+const sceneKey = ref(0)  // 用于重新加载场景
 
 // 加速控制
 let accelerateInterval: number | null = null
 const isAccelerating = ref(false)
 
 const startAccelerate = () => {
+  if (isMeltdownPhase.value || isFinished.value) return  // 崩解中禁止操作
+  
   isAccelerating.value = true
   accelerateInterval = window.setInterval(() => {
     if (currentRpm.value < 9000) {
       currentRpm.value = Math.min(9000, currentRpm.value + 100)
+    } else if (!isMeltdownPhase.value) {
+      // 达到9000，触发崩解
+      triggerMeltdown()
     }
   }, 50)
 }
 
 const stopAccelerate = () => {
+  if (isMeltdownPhase.value) return  // 崩解中禁止操作
+  
   isAccelerating.value = false
   if (accelerateInterval) {
     clearInterval(accelerateInterval)
@@ -107,12 +130,40 @@ const stopAccelerate = () => {
   }
   // 自然减速
   const decelerate = () => {
-    if (currentRpm.value > 0 && !isAccelerating.value) {
+    if (currentRpm.value > 0 && !isAccelerating.value && !isMeltdownPhase.value) {
       currentRpm.value = Math.max(0, currentRpm.value - 50)
       requestAnimationFrame(decelerate)
     }
   }
   decelerate()
+}
+
+// 触发崩解
+const triggerMeltdown = () => {
+  isMeltdownPhase.value = true
+  isAccelerating.value = false
+  if (accelerateInterval) {
+    clearInterval(accelerateInterval)
+    accelerateInterval = null
+  }
+  
+  // 通知场景开始崩解
+  if (sceneRef.value) {
+    sceneRef.value.startMeltdown()
+  }
+  
+  // 5秒后结束
+  setTimeout(() => {
+    isMeltdownPhase.value = false
+    isFinished.value = true
+  }, 5000)
+}
+
+// 重新开始
+const restart = () => {
+  isFinished.value = false
+  currentRpm.value = 0
+  sceneKey.value++  // 触发场景重新加载
 }
 
 // 按钮颜色（黑色到暗红色）
@@ -237,6 +288,37 @@ const goBack = () => {
 .accelerate-btn:active {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(150, 30, 30, 0.4);
+}
+
+.accelerate-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  animation: pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 0.5; }
+  to { opacity: 0.9; }
+}
+
+.restart-btn {
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  background: #1a1a1a;
+  border: 2px solid #22c55e;
+  color: #22c55e;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.restart-btn:hover {
+  background: #22c55e;
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
 /* RPM 进度条 */

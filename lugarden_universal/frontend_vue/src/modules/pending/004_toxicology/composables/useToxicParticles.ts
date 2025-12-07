@@ -151,6 +151,11 @@ export function useToxicParticles(scene: THREE.Scene, camera?: THREE.Perspective
     const tiltAngle = rpmRatio * MAX_TILT  // 当前倾斜角度
     
     particles.value.forEach(p => {
+      // 正在消散的粒子跳过位置更新（让消散效果自由控制）
+      if (p.weight < 0.5 && p.opacity < 0.9) {
+        return
+      }
+      
       const tubeAngle = (p.tubeIndex / TUBE_COUNT) * Math.PI * 2 + globalRotation
       
       // 试管锚点位置（圆盘孔位置，跟随旋转）
@@ -223,19 +228,34 @@ export function useToxicParticles(scene: THREE.Scene, camera?: THREE.Perspective
           const b = 1 - darkness * 0.9
           material.color.setRGB(r, g, b)
           
-        } else if (p.weight <= 0.3) {
-          // 低权重：上浮并消散
-          p.targetY = 0.05
-          p.localY += (p.targetY - p.localY) * deltaTime * centrifugeForce * 0.5
+        } else if (p.weight < 0.5) {
+          // 中低权重：蒸发消散效果（类似夏天）
+          const evaporateIntensity = rpmRatio * (1 - p.weight / 0.5)  // 权重越低消散越快
           
-          if (p.localY < 0.15) {
-            p.opacity = Math.max(0, p.opacity - deltaTime * rpmRatio * 2)
-            p.scale = Math.max(0, p.scale - deltaTime * rpmRatio)
-          }
+          // 颤抖 + 随机漂移
+          p.mesh.position.x += (Math.random() - 0.5) * 0.02 * evaporateIntensity
+          p.mesh.position.y += (Math.random() - 0.5) * 0.02 * evaporateIntensity
           
-          // 上浮时变红
+          // 向上腾空
+          p.mesh.position.y += 0.01 * evaporateIntensity
+          // 朝相机飘（Z轴正向）
+          p.mesh.position.z += 0.015 * evaporateIntensity
+          
+          // 旋转（像烟雾飘散）
+          p.mesh.rotation.x += (Math.random() - 0.5) * 0.05 * evaporateIntensity
+          p.mesh.rotation.y += (Math.random() - 0.5) * 0.05 * evaporateIntensity
+          p.mesh.rotation.z += (Math.random() - 0.5) * 0.03 * evaporateIntensity
+          
+          // 渐隐
+          p.opacity = Math.max(0, p.opacity - deltaTime * rpmRatio * 1.5)
+          // 缩小
+          p.scale = Math.max(0.1, p.scale - deltaTime * rpmRatio * 0.8)
+          
+          // 更新材质
           const material = p.mesh.material as THREE.MeshBasicMaterial
-          material.color.setHex(0xff6666)
+          material.opacity = p.opacity
+          material.color.setHex(0xff6666)  // 变红
+          p.mesh.scale.setScalar(p.scale)
           
         } else {
           // 中等权重：缓慢下沉
@@ -334,7 +354,8 @@ export function useToxicParticles(scene: THREE.Scene, camera?: THREE.Perspective
     floatingTube = tubeIndex
     floatTargets.clear()
     
-    const tubeParticles = particles.value.filter(p => p.tubeIndex === tubeIndex)
+    // 只展示还可见的粒子（过滤掉已消散的）
+    const tubeParticles = particles.value.filter(p => p.tubeIndex === tubeIndex && p.opacity > 0.1)
     
     // 获取相机位置，计算弹射方向
     const camPos = camera?.position.clone() || new THREE.Vector3(0, 0, 10)

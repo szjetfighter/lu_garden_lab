@@ -86,18 +86,18 @@
         <!-- 毒理学报告 入口 -->
         <div 
           class="unified-content-card rounded-base animate-fadeInUp cursor-pointer flex flex-col h-full"
-          style="animation-delay: 0.4s; background: linear-gradient(145deg, #1a1a1a, #0a0a0a); border: 1px solid #333;"
+          style="animation-delay: 0.4s;"
           @click="enterToxicology"
         >
           <div class="flex-1">
-            <h2 class="text-2xl font-bold mb-2" style="color: #00ff00; text-shadow: 0 0 10px rgba(0,255,0,0.5);">毒理学报告</h2>
-            <div class="text-base mb-4 whitespace-pre-line leading-loose" style="color: #666;">
-              冯铗《一剂》· 离心提纯实验
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">毒理学报告</h2>
+            <div class="text-base mb-4 whitespace-pre-line leading-loose text-gray-600 italic">
+              为熬死老家伙们做长久的准备
             </div>
           </div>
           <div class="flex justify-between items-center mt-4">
-            <p class="text-xs m-0" style="color: #ff0000;">状态: ☣️ 实验中</p>
-            <button class="btn-primary" style="background: #00ff00; color: #000;">
+            <p class="text-xs m-0 text-gray-400">状态：无授权</p>
+            <button class="btn-primary">
               进入
             </button>
           </div>

@@ -1,7 +1,7 @@
 {
   "meta": {
     "operator": "Semantic Centrifuge / Lu Jiaming",
-    [cite_start]"source": "Feng Jia: One Dose [cite: 1]",
+    "source": "Feng Jia: One Dose",
     "protocol": "Centrifugal Separation",
     "description": "RPM thresholds assigned based on toxicity, industrial density, and pathological intensity."
   },

@@ -18,7 +18,7 @@ const emit = defineEmits<{
 const authorContent = {
   name: '冯铗',
   bio: `▉▉ ▉▉▉▉ ▉▉ ▉▉ ▉▉▉▉▉ ▉ ▉▉▉`,
-  notice: '陆家明：尚未获得诗人授权，属于先斩后奏'
+  notice: '陆家明：先斩后奏，现已解锁陆家花园专属豌豆射手'
 }
 </script>
 

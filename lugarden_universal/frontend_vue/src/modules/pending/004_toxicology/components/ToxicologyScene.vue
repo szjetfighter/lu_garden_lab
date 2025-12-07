@@ -127,12 +127,12 @@ onMounted(() => {
       const elapsed = (performance.now() - meltdownStartTime) / 1000  // 秒
       const progress = Math.min(1, elapsed / 5)  // 5秒内 0→1
       
-      // 前40%（2秒）：继续旋转
+      // 0-2秒（0-40%）：继续旋转+震动
       if (progress < 0.4) {
         globalRotation += (9000 * Math.PI * 2 / 60) * delta
         updateParticles(globalRotation, 1)
       }
-      // 后60%（3秒）：粒子由 updateMeltdown 完全控制，不再跟随旋转
+      // 2-5秒（40-100%）：机器崩解+字符弹出，粒子由 updateMeltdown 完全控制
       
       // 更新崩解效果
       updateParticleMeltdown(progress)

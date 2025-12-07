@@ -31,8 +31,19 @@
           :is-meltdown="isMeltdownPhase"
         />
         
-        <!-- RPM 进度条（崩解/结束时隐藏） -->
-        <div v-if="!isMeltdownPhase && !isFinished" class="rpm-progress-bar">
+        <!-- RPM 进度条 -->
+        <div 
+          v-if="!isFinished" 
+          class="rpm-progress-bar"
+          :class="{ 
+            shaking: isMeltdownPhase && meltdownProgress < 0.4,
+            dissolving: isMeltdownPhase && meltdownProgress >= 0.2
+          }"
+          :style="isMeltdownPhase && meltdownProgress >= 0.2 ? {
+            opacity: Math.max(0, 1 - (meltdownProgress - 0.2) / 0.2),
+            transform: `translateX(-50%) scale(${1 + (meltdownProgress - 0.2) * 0.5})`
+          } : {}"
+        >
           <div class="rpm-track">
             <div class="rpm-fill" :style="{ width: (currentRpm / 9000 * 100) + '%' }"></div>
           </div>
@@ -43,6 +54,17 @@
             </span>
           </div>
         </div>
+        
+        <!-- 查看毒理报告按钮（崩解结束1秒后渐入） -->
+        <Transition name="fade">
+          <button 
+            v-if="showReportButton"
+            class="view-report-btn"
+            @click="isReportOpen = true"
+          >
+            查看毒理报告
+          </button>
+        </Transition>
       </div>
 
       <!-- 控制面板 -->
@@ -79,6 +101,12 @@
         @dismiss="isMeltdown = false"
       />
 
+      <!-- 毒理报告弹窗 -->
+      <ToxicologyReportModal 
+        :is-open="isReportOpen"
+        @close="isReportOpen = false"
+      />
+
     </div>
   </div>
 </template>
@@ -89,6 +117,7 @@ import { useRouter } from 'vue-router'
 import ClinicalMonitor from '../components/ClinicalMonitor.vue'
 import ToxicologyScene from '../components/ToxicologyScene.vue'
 import AboutAuthor from '../components/AboutAuthor.vue'
+import ToxicologyReportModal from '../components/ToxicologyReportModal.vue'
 import BackButton from '@/shared/components/BackButton.vue'
 
 const router = useRouter()
@@ -101,6 +130,10 @@ const isAboutOpen = ref(false)
 const isMeltdownPhase = ref(false)  // 崩解阶段
 const isFinished = ref(false)  // 结束状态
 const sceneKey = ref(0)  // 用于重新加载场景
+const meltdownProgress = ref(0)  // 崩解进度 0→1
+const showReportButton = ref(false)  // 显示查看报告按钮
+const isReportOpen = ref(false)  // 报告弹窗
+let meltdownStartTime = 0
 
 // 加速控制
 let accelerateInterval: number | null = null
@@ -142,6 +175,9 @@ const stopAccelerate = () => {
 const triggerMeltdown = () => {
   isMeltdownPhase.value = true
   isAccelerating.value = false
+  meltdownProgress.value = 0
+  meltdownStartTime = performance.now()
+  
   if (accelerateInterval) {
     clearInterval(accelerateInterval)
     accelerateInterval = null
@@ -152,17 +188,31 @@ const triggerMeltdown = () => {
     sceneRef.value.startMeltdown()
   }
   
-  // 5秒后结束
-  setTimeout(() => {
-    isMeltdownPhase.value = false
-    isFinished.value = true
-  }, 5000)
+  // 更新进度
+  const updateProgress = () => {
+    const elapsed = (performance.now() - meltdownStartTime) / 1000
+    meltdownProgress.value = Math.min(1, elapsed / 5)  // 5秒
+    
+    if (meltdownProgress.value < 1) {
+      requestAnimationFrame(updateProgress)
+    } else {
+      isMeltdownPhase.value = false
+      isFinished.value = true
+      // 1秒后显示查看报告按钮
+      setTimeout(() => {
+        showReportButton.value = true
+      }, 1000)
+    }
+  }
+  requestAnimationFrame(updateProgress)
 }
 
 // 重新开始
 const restart = () => {
   isFinished.value = false
   currentRpm.value = 0
+  showReportButton.value = false
+  isReportOpen.value = false
   sceneKey.value++  // 触发场景重新加载
 }
 
@@ -374,6 +424,53 @@ const goBack = () => {
 .tick-unit {
   font-size: 0.4rem;
   opacity: 0.7;
+}
+
+/* 震动动画 */
+.rpm-progress-bar.shaking {
+  animation: shake 0.1s infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(-50%) translate(0, 0); }
+  25% { transform: translateX(-50%) translate(-3px, 1px); }
+  50% { transform: translateX(-50%) translate(2px, -1px); }
+  75% { transform: translateX(-50%) translate(-1px, 2px); }
+}
+
+/* 查看报告按钮 */
+.view-report-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 1rem 2rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #f0f0f0;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.2em;
+  transition: all 0.3s ease;
+}
+
+.view-report-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 渐入动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.8s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .reset-btn {

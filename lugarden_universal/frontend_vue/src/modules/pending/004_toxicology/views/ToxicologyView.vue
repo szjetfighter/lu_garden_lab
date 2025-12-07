@@ -38,10 +38,10 @@
           </div>
           <div class="rpm-ticks">
             <span v-for="n in 10" :key="n" class="tick" :class="{ active: currentRpm >= (n - 1) * 1000 }">
-              {{ (n - 1) * 1000 }}
+              <span class="tick-value">{{ (n - 1) * 1000 }}</span>
+              <span class="tick-unit">RPM</span>
             </span>
           </div>
-          <div class="rpm-current">{{ currentRpm }} RPM</div>
         </div>
       </div>
 
@@ -353,8 +353,10 @@ const goBack = () => {
 }
 
 .rpm-ticks .tick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-family: 'Courier New', monospace;
-  font-size: 0.6rem;
   color: #444;
   transition: color 0.2s;
 }
@@ -363,13 +365,15 @@ const goBack = () => {
   color: #aa4444;
 }
 
-.rpm-current {
-  text-align: center;
-  margin-top: 4px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.875rem;
+.tick-value {
+  font-size: 0.6rem;
   font-weight: 600;
-  color: #aa4444;
+  line-height: 1.2;
+}
+
+.tick-unit {
+  font-size: 0.4rem;
+  opacity: 0.7;
 }
 
 .reset-btn {

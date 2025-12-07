@@ -208,7 +208,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ToxicologyEntry',
     component: () => import('@/modules/pending/004_toxicology/views/ToxicologyEntry.vue'),
     meta: {
-      title: '毒理学报告 - 陆家花园',
+      title: '毒理报告 - 陆家花园',
       description: '为熬死老家伙们做长久的准备',
       requiresAuth: false
     }
@@ -219,7 +219,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ToxicologyReport',
     component: () => import('@/modules/pending/004_toxicology/views/ToxicologyView.vue'),
     meta: {
-      title: '毒理学报告 - 离心机',
+      title: '毒理报告 - 离心机',
       description: '为熬死老家伙们做长久的准备',
       requiresAuth: false
     }

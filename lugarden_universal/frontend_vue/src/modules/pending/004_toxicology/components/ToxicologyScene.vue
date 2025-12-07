@@ -31,6 +31,7 @@ const {
 const { 
   loadPoem, 
   applyCentrifuge, 
+  update: updateParticles,
   reset: resetParticles,
   getResidue,
   getExtractionRate
@@ -69,8 +70,11 @@ onMounted(() => {
     const angularVelocity = (props.rpm * Math.PI * 2) / 60
     globalRotation += angularVelocity * delta
     
-    // 更新粒子
+    // 更新粒子离心效果
     applyCentrifuge(props.rpm, delta)
+    
+    // 更新粒子位置（跟随旋转）
+    updateParticles(globalRotation)
     
     // 更新设备（同步旋转和指示灯）
     updateDevice(globalRotation, props.rpm / 9000)

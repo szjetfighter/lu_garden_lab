@@ -19,6 +19,7 @@ import { fileURLToPath } from 'url';
 import { getShareConfig, isCrawler, injectShareMeta } from './src/config/shareConfig.js';
 import dotenv from 'dotenv';
 import { getPrismaClient } from './src/persistence/prismaClient.js';
+import { initDatabases } from './src/persistence/dbInit.js';
 
 // ================================
 // 日志时间戳增强
@@ -723,7 +724,10 @@ app.get('*', (req, res) => {
 });
 
 // 启动
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  // 初始化数据库WAL模式
+  await initDatabases();
+  
   console.log(`🚀 "陆家花园"已在 http://localhost:${PORT} 盛开 (Vue前端)`);
   console.log(`🔑 后台管理入口: http://localhost:${PORT}/admin`);
   console.log(`📁 静态文件目录: ${STATIC_DIR}`);

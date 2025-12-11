@@ -49,7 +49,7 @@
 
 ### **阶段A：设计**
 
-#### - [ ] 任务A.1：创建 Schema 设计文档（草稿）
+#### - [x] 任务A.1：创建 Schema 设计文档（草稿）✅
 - **核心思想**: 定义 ShuiCollection 和 ShuiPoem 的表结构
 - 交付物：
   - `documentation/database/lugarden_schema_shui.md`（草稿）
@@ -61,15 +61,15 @@
 - **风险评估**: 低风险，纯文档工作
 - 预期改动文件：
   - `documentation/database/lugarden_schema_shui.md`（新建）
-- 实际改动文件: 
-- 完成状态：
+- 实际改动文件: `documentation/database/lugarden_schema_shui.md`
+- 完成状态：✅ 2025-12-11
 - 执行步骤：
-   - [ ] 步骤A.1.1：创建 Schema 设计文档
-   - [ ] 步骤A.1.2：定义 ShuiCollection 表结构
-   - [ ] 步骤A.1.3：定义 ShuiPoem 表结构
-   - [ ] 步骤A.1.4：定义关系和约束
+   - [x] 步骤A.1.1：创建 Schema 设计文档
+   - [x] 步骤A.1.2：定义 ShuiCollection 表结构
+   - [x] 步骤A.1.3：定义 ShuiPoem 表结构
+   - [x] 步骤A.1.4：定义关系和约束
 
-#### - [ ] 任务A.2：定义 JSON 数据结构
+#### - [x] 任务A.2：定义 JSON 数据结构 ✅
 - **核心思想**: 定义数据治理输出的 JSON 格式
 - 交付物：
   - `poeject_shui_universe/data/collections.json` 结构定义
@@ -80,17 +80,17 @@
 - **风险评估**: 低风险，纯设计工作
 - 预期改动文件：
   - 无（仅设计，实际文件在数据治理阶段创建）
-- 实际改动文件: 
-- 完成状态：
+- 实际改动文件: 与B阶段合并执行
+- 完成状态：✅ 2025-12-11
 - 执行步骤：
-   - [ ] 步骤A.2.1：定义 collections.json 结构
-   - [ ] 步骤A.2.2：定义 poems.json 结构
+   - [x] 步骤A.2.1：定义 collections.json 结构
+   - [x] 步骤A.2.2：定义 poems.json 结构（含tokens字段）
 
 ---
 
 ### **阶段B：数据治理 - 文本解析**
 
-#### - [ ] 任务B.1：解析诗集文本结构
+#### - [x] 任务B.1：解析诗集文本结构 ✅
 - **核心思想**: 分析 `十二个故事集·肖水.txt` 的文本结构，确定解析规则
 - 交付物：
   - 解析规则文档（可在本 TODO 中记录）
@@ -101,14 +101,18 @@
 - **风险评估**: 低风险
 - 预期改动文件：
   - 本 TODO 文件（记录解析规则）
-- 实际改动文件: 
-- 完成状态：
+- 实际改动文件: `poeject_shui_universe/scripts/parse-poems.js`
+- 完成状态：✅ 2025-12-11
+- 解析规则：
+  - 故事集边界：`XXX故事集`标题行
+  - 诗歌边界：日期行`YYYY.M.D`
+  - 十之八九故事集特殊处理：5节分为5首
 - 执行步骤：
-   - [ ] 步骤B.1.1：分析故事集边界模式
-   - [ ] 步骤B.1.2：分析诗歌边界模式
-   - [ ] 步骤B.1.3：记录解析规则
+   - [x] 步骤B.1.1：分析故事集边界模式
+   - [x] 步骤B.1.2：分析诗歌边界模式
+   - [x] 步骤B.1.3：记录解析规则
 
-#### - [ ] 任务B.2：生成 collections.json
+#### - [x] 任务B.2：生成 collections.json ✅
 - **核心思想**: 提取12个故事集的元数据
 - 交付物：
   - `poeject_shui_universe/data/collections.json`（初稿）
@@ -118,15 +122,15 @@
 - **风险评估**: 低风险
 - 预期改动文件：
   - `poeject_shui_universe/data/collections.json`（新建）
-- 实际改动文件: 
-- 完成状态：
+- 实际改动文件: `poeject_shui_universe/data/collections.json`
+- 完成状态：✅ 2025-12-11
 - 执行步骤：
-   - [ ] 步骤B.2.1：提取12个故事集名称
-   - [ ] 步骤B.2.2：提取日期范围
-   - [ ] 步骤B.2.3：提取地域信息
-   - [ ] 步骤B.2.4：生成 collections.json
+   - [x] 步骤B.2.1：提取12个故事集名称
+   - [x] 步骤B.2.2：提取日期范围
+   - [x] 步骤B.2.3：提取地域信息
+   - [x] 步骤B.2.4：生成 collections.json
 
-#### - [ ] 任务B.3：生成 poems.json
+#### - [x] 任务B.3：生成 poems.json ✅
 - **核心思想**: 解析所有诗歌，生成结构化数据
 - 交付物：
   - `poeject_shui_universe/data/poems.json`（初稿）
@@ -139,13 +143,15 @@
   - `poeject_shui_universe/data/poems.json`（新建）
   - `poeject_shui_universe/scripts/parse-poems.js`（新建，可选）
 - 实际改动文件: 
-- 完成状态：
+  - `poeject_shui_universe/data/poems.json`（109首诗）
+  - `poeject_shui_universe/scripts/parse-poems.js`
+- 完成状态：✅ 2025-12-11
 - 执行步骤：
-   - [ ] 步骤B.3.1：编写解析脚本或手动解析
-   - [ ] 步骤B.3.2：处理每个故事集的诗歌
-   - [ ] 步骤B.3.3：生成 poems.json
+   - [x] 步骤B.3.1：编写解析脚本或手动解析
+   - [x] 步骤B.3.2：处理每个故事集的诗歌
+   - [x] 步骤B.3.3：生成 poems.json
 
-#### - [ ] 任务B.4：用户复核数据
+#### - [x] 任务B.4：用户复核数据 ✅
 - **核心思想**: 人工检查解析结果，确保正确性
 - 交付物：
   - `collections.json`（复核后）
@@ -160,32 +166,44 @@
   - `poeject_shui_universe/data/collections.json`（修正）
   - `poeject_shui_universe/data/poems.json`（修正）
 - 实际改动文件: 
-- 完成状态：
+  - `poeject_shui_universe/data/poems.json`（合并NLP tokens）
+  - `poeject_shui_universe/data/shui_NPL.json`（NLP分词数据）
+  - `poeject_shui_universe/scripts/merge-npl-tokens.js`
+  - `poeject_shui_universe/scripts/audit-poems.js`
+- 完成状态：✅ 2025-12-11
+- 复核结果：
+  - 12个故事集 ✅
+  - 109首诗（含十之八九5节）✅
+  - 全部字段完整 ✅
+  - NLP tokens已合并 ✅
 - 执行步骤：
-   - [ ] 步骤B.4.1：检查故事集数量和名称
-   - [ ] 步骤B.4.2：抽查诗歌内容完整性
-   - [ ] 步骤B.4.3：修正发现的问题
-   - [ ] 步骤B.4.4：标记 JSON 为"已复核"
+   - [x] 步骤B.4.1：检查故事集数量和名称
+   - [x] 步骤B.4.2：抽查诗歌内容完整性
+   - [x] 步骤B.4.3：修正发现的问题（十之八九拆分为5首）
+   - [x] 步骤B.4.4：合并NLP tokens到poems.json
+   - [x] 步骤B.4.5：执行审核脚本验证数据质量
 
 ---
 
 ### **阶段C：契约化**
 
-#### - [ ] 任务C.1：更新 Schema 设计文档（定稿）
-- **核心思想**: 根据数据治理结果，更新 Schema.md 为定稿
+#### - [ ] 任务C.1：创建 Schema 设计文档（定稿）
+- **核心思想**: 根据数据治理结果，创建正式的Schema定稿文档
 - 交付物：
-  - `documentation/database/lugarden_schema_shui.md`（定稿）
+  - `documentation/database/lugarden_schema_251211-shui-universe.md`（定稿）
+  - 参考格式：`lugarden_schema_251127-scene-character.md`
 - 验收标准：
   - 反映数据治理中发现的调整需求
   - 移除"草稿"标记
 - **风险评估**: 低风险
 - 预期改动文件：
-  - `documentation/database/lugarden_schema_shui.md`
+  - `documentation/database/lugarden_schema_251211-shui-universe.md`（新建）
 - 实际改动文件: 
 - 完成状态：
 - 执行步骤：
-   - [ ] 步骤C.1.1：应用数据治理中发现的调整
-   - [ ] 步骤C.1.2：更新文档状态为"定稿"
+   - [ ] 步骤C.1.1：基于草稿创建定稿文档
+   - [ ] 步骤C.1.2：更新统计信息（109首诗、含tokens字段）
+   - [ ] 步骤C.1.3：更新文档状态为"定稿"
 
 #### - [ ] 任务C.2：更新 Prisma Schema
 - **核心思想**: 将定稿设计转化为 Prisma 契约
@@ -352,7 +370,21 @@
 ---
 
 ## 当前状态
-⏳ 待开始 - 等待用户确认后执行任务A.1
+✅ 阶段A/B已完成 - 待执行阶段C契约化
+
+### 实际完成情况 (2025-12-11)
+- **A.1** Schema设计文档 ✅ → `lugarden_schema_shui.md`（草稿）
+- **A.2** JSON数据结构定义 ✅
+- **B.1** 解析诗集文本结构 ✅ → 109首诗（含十之八九5节）
+- **B.2** 生成collections.json ✅ → 12个故事集
+- **B.3** 生成poems.json ✅ → 109首诗
+- **B.4** 用户复核数据 ✅ → 合并NLP tokens，审核通过
+
+**额外完成**：
+- NLP分词数据 → `shui_NPL.json`（已合并到poems.json的tokens字段）
+- 解析脚本 → `scripts/parse-poems.js`
+- 合并脚本 → `scripts/merge-npl-tokens.js`
+- 审核脚本 → `scripts/audit-poems.js`
 
 ---
 

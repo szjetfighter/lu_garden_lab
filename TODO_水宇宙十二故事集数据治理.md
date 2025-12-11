@@ -231,10 +231,10 @@
 
 ### **阶段D：迁移与导入**
 
-#### - [ ] 任务D.1：执行数据库迁移
+#### - [x] 任务D.1：执行数据库迁移 ✅
 - **核心思想**: 在数据库中创建新表
 - 交付物：
-  - `prisma/lugarden/migrations/.../migration.sql`
+  - `prisma/lugarden/migrations/20251211091618_add_shui_universe/migration.sql`
 - 验收标准：
   - 迁移脚本生成成功
   - 迁移执行成功
@@ -242,37 +242,37 @@
 - **风险评估**: 低风险，增量式变更
 - 预期改动文件：
   - `prisma/lugarden/migrations/...`（自动生成）
-- 实际改动文件: 
-- 完成状态：
+- 实际改动文件: `prisma/lugarden/migrations/20251211091618_add_shui_universe/`
+- 完成状态：✅ 2025-12-11
 - 执行步骤：
-   - [ ] 步骤D.1.1：执行 `npx prisma migrate dev --name add_shui_tables`
-   - [ ] 步骤D.1.2：检查生成的迁移脚本
-   - [ ] 步骤D.1.3：确认数据库表创建成功
+   - [x] 步骤D.1.1：执行 `npx prisma migrate dev --name add_shui_universe`
+   - [x] 步骤D.1.2：检查生成的迁移脚本
+   - [x] 步骤D.1.3：确认数据库表创建成功
 
-#### - [ ] 任务D.2：编写数据导入脚本
+#### - [x] 任务D.2：编写数据导入脚本 ✅
 - **核心思想**: 将 JSON 数据导入数据库
 - 交付物：
-  - `poeject_shui_universe/scripts/import-data.js`
+  - `poeject_shui_universe/scripts/import-to-db.js`
 - 验收标准：
   - 读取 collections.json 和 poems.json
   - 使用 Prisma Client 批量插入
   - 处理重复数据（幂等性）
 - **风险评估**: 低风险
 - 预期改动文件：
-  - `poeject_shui_universe/scripts/import-data.js`（新建）
-- 实际改动文件: 
-- 完成状态：
+  - `poeject_shui_universe/scripts/import-to-db.js`（新建）
+- 实际改动文件: `poeject_shui_universe/scripts/import-to-db.js`
+- 完成状态：✅ 2025-12-11
 - 执行步骤：
-   - [ ] 步骤D.2.1：创建导入脚本骨架
-   - [ ] 步骤D.2.2：实现 Collection 数据导入逻辑
-   - [ ] 步骤D.2.3：实现 Poem 数据导入逻辑
-   - [ ] 步骤D.2.4：添加错误处理和日志
+   - [x] 步骤D.2.1：创建导入脚本
+   - [x] 步骤D.2.2：实现 Collection 数据导入逻辑
+   - [x] 步骤D.2.3：实现 Poem 数据导入逻辑
+   - [x] 步骤D.2.4：添加Universe创建和验证
 
-#### - [ ] 任务D.3：执行数据导入
+#### - [x] 任务D.3：执行数据导入 ✅
 - **核心思想**: 运行脚本，将数据写入数据库
 - 交付物：
   - 数据库中 12 条 Collection 记录
-  - 数据库中 120+ 条 Poem 记录
+  - 数据库中 109 条 Poem 记录
 - 验收标准：
   - 导入脚本执行成功
   - 数据条数与 JSON 一致
@@ -280,12 +280,12 @@
 - **风险评估**: 低风险
 - 预期改动文件：
   - 无（数据库变更）
-- 实际改动文件: 
-- 完成状态：
+- 实际改动文件: 数据库lugarden.db
+- 完成状态：✅ 2025-12-11
 - 执行步骤：
-   - [ ] 步骤D.3.1：执行导入脚本
-   - [ ] 步骤D.3.2：检查数据条数
-   - [ ] 步骤D.3.3：抽查外键关系
+   - [x] 步骤D.3.1：执行导入脚本
+   - [x] 步骤D.3.2：验证数据条数（12故事集+109首诗）
+   - [x] 步骤D.3.3：外键关系正确
 
 ---
 
@@ -372,7 +372,7 @@
 ---
 
 ## 当前状态
-✅ 阶段A/B/C已完成 - 待执行阶段D迁移与导入
+✅ 阶段A/B/C/D已完成 - 待执行阶段E验证
 
 ### 实际完成情况 (2025-12-11)
 - **A.1** Schema设计文档 ✅ → `lugarden_schema_shui.md`（草稿）
@@ -383,6 +383,9 @@
 - **B.4** 用户复核数据 ✅ → 合并NLP tokens，审核通过
 - **C.1** Schema定稿 ✅ → `lugarden_schema_251211-shui-universe.md`（v3.4, 27张表）
 - **C.2** Prisma Schema ✅ → `schema.prisma`（新增ShuiCollection、ShuiPoem，validate通过）
+- **D.1** 数据库迁移 ✅ → `20251211091618_add_shui_universe`
+- **D.2** 导入脚本 ✅ → `import-to-db.js`
+- **D.3** 数据导入 ✅ → 12故事集 + 109首诗 + 1宇宙(universe_shui)
 
 **额外完成**：
 - NLP分词数据 → `shui_NPL.json`（已合并到poems.json的tokens字段）

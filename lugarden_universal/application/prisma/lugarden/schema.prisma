@@ -63,6 +63,10 @@ model Universe {
   maoxiaodouStanzaSceneLinks MaoxiaodouStanzaSceneLink[]
   maoxiaodouSceneCharacterLinks MaoxiaodouSceneCharacterLink[]
   
+  // 水宇宙
+  shuiCollections ShuiCollection[]
+  shuiPoems ShuiPoem[]
+  
   // 跨宇宙关联关系
   crossUniverseSourceLinks CrossUniverseContentLink[] @relation("CrossUniverseSource")
   crossUniverseTargetLinks CrossUniverseContentLink[] @relation("CrossUniverseTarget")
@@ -355,4 +359,37 @@ model MaoxiaodouMetadata {
   relationships String? // JSON
   universeId String
   universe Universe @relation(fields: [universeId], references: [id])
+}
+
+// ========== 水宇宙 (2025-12-11) ==========
+
+model ShuiCollection {
+  id          String     @id
+  name        String
+  nameEn      String
+  dedication  String?
+  dateStart   String
+  dateEnd     String
+  regions     String?    // JSON array
+  poemCount   Int
+  description String?
+  universeId  String
+  universe    Universe   @relation(fields: [universeId], references: [id])
+  poems       ShuiPoem[]
+  @@unique([universeId, nameEn])
+}
+
+model ShuiPoem {
+  id           String          @id
+  collectionId String
+  title        String
+  content      String
+  date         String
+  location     String?
+  index        Int
+  tokens       String?         // JSON array - NLP分词结果
+  universeId   String
+  collection   ShuiCollection  @relation(fields: [collectionId], references: [id])
+  universe     Universe        @relation(fields: [universeId], references: [id])
+  @@unique([universeId, collectionId, title])
 }

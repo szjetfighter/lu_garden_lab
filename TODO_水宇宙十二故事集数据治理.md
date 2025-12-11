@@ -187,7 +187,7 @@
 
 ### **阶段C：契约化**
 
-#### - [ ] 任务C.1：创建 Schema 设计文档（定稿）
+#### - [x] 任务C.1：创建 Schema 设计文档（定稿）✅
 - **核心思想**: 根据数据治理结果，创建正式的Schema定稿文档
 - 交付物：
   - `documentation/database/lugarden_schema_251211-shui-universe.md`（定稿）
@@ -198,12 +198,14 @@
 - **风险评估**: 低风险
 - 预期改动文件：
   - `documentation/database/lugarden_schema_251211-shui-universe.md`（新建）
-- 实际改动文件: 
-- 完成状态：
+- 实际改动文件: `documentation/database/lugarden_schema_251211-shui-universe.md`
+- 完成状态：✅ 2025-12-11
 - 执行步骤：
-   - [ ] 步骤C.1.1：基于草稿创建定稿文档
-   - [ ] 步骤C.1.2：更新统计信息（109首诗、含tokens字段）
-   - [ ] 步骤C.1.3：更新文档状态为"定稿"
+   - [x] 步骤C.1.1：复制251127版本为基础
+   - [x] 步骤C.1.2：更新版本号为v3.4，表数量为27张
+   - [x] 步骤C.1.3：添加水宇宙实体定义（ShuiCollection、ShuiPoem）
+   - [x] 步骤C.1.4：添加水宇宙Prisma Schema（含tokens字段）
+   - [x] 步骤C.1.5：更新文档状态为"定稿"
 
 #### - [ ] 任务C.2：更新 Prisma Schema
 - **核心思想**: 将定稿设计转化为 Prisma 契约
@@ -370,7 +372,7 @@
 ---
 
 ## 当前状态
-✅ 阶段A/B已完成 - 待执行阶段C契约化
+✅ 阶段A/B/C.1已完成 - 待执行C.2 Prisma Schema更新
 
 ### 实际完成情况 (2025-12-11)
 - **A.1** Schema设计文档 ✅ → `lugarden_schema_shui.md`（草稿）
@@ -379,6 +381,7 @@
 - **B.2** 生成collections.json ✅ → 12个故事集
 - **B.3** 生成poems.json ✅ → 109首诗
 - **B.4** 用户复核数据 ✅ → 合并NLP tokens，审核通过
+- **C.1** Schema定稿 ✅ → `lugarden_schema_251211-shui-universe.md`（v3.4, 27张表）
 
 **额外完成**：
 - NLP分词数据 → `shui_NPL.json`（已合并到poems.json的tokens字段）

@@ -1,0 +1,156 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "source": "十二个故事集·肖水.txt",
+    "createdAt": "2025-12-11",
+    "status": "draft",
+    "totalCollections": 12,
+    "universeId": "shui"
+  },
+  "collections": [
+    {
+      "id": "shui_collection_bohai",
+      "name": "渤海故事集",
+      "nameEn": "bohai",
+      "dedication": null,
+      "dateStart": "2015.11",
+      "dateEnd": "2015.12",
+      "regions": ["韩国", "青岛", "沧州", "北京", "天津"],
+      "poemCount": 10,
+      "description": "环渤海地区的流离故事",
+      "universeId": "shui"
+    },
+    {
+      "id": "shui_collection_taiyuan",
+      "name": "太原故事集",
+      "nameEn": "taiyuan",
+      "dedication": null,
+      "dateStart": "2015.12",
+      "dateEnd": "2015.12",
+      "regions": ["太原", "崇善寺", "多福寺", "文瀛公园"],
+      "poemCount": 10,
+      "description": "山西太原及周边的人物命运",
+      "universeId": "shui"
+    },
+    {
+      "id": "shui_collection_jiangdong",
+      "name": "江东故事集",
+      "nameEn": "jiangdong",
+      "dedication": null,
+      "dateStart": "2016.1",
+      "dateEnd": "2016.6",
+      "regions": ["泰山", "重庆", "杭州", "厦门", "青海湖"],
+      "poemCount": 10,
+      "description": "江南与西南的漫游",
+      "universeId": "shui"
+    },
+    {
+      "id": "shui_collection_nanling",
+      "name": "南岭故事集",
+      "nameEn": "nanling",
+      "dedication": null,
+      "dateStart": "2016.9",
+      "dateEnd": "2016.9",
+      "regions": ["侍郎坦", "湘粤古道", "骆氏宗祠", "郴州"],
+      "poemCount": 10,
+      "description": "湖南南部的乡土记忆",
+      "universeId": "shui"
+    },
+    {
+      "id": "shui_collection_shanghai",
+      "name": "上海故事集",
+      "nameEn": "shanghai",
+      "dedication": null,
+      "dateStart": "2016.10",
+      "dateEnd": "2017.11",
+      "regions": ["上海", "文化花园", "复兴岛", "十六铺", "放生桥"],
+      "poemCount": 10,
+      "description": "上海都市生活图景",
+      "universeId": "shui"
+    },
+    {
+      "id": "shui_collection_yunque",
+      "name": "云雀故事集",
+      "nameEn": "yunque",
+      "dedication": null,
+      "dateStart": "2019.6",
+      "dateEnd": "2019.7",
+      "regions": ["南通", "上海", "杭州", "深圳"],
+      "poemCount": 10,
+      "description": "跨地域的情感流转",
+      "universeId": "shui"
+    },
+    {
+      "id": "shui_collection_molu",
+      "name": "末路故事集",
+      "nameEn": "molu",
+      "dedication": null,
+      "dateStart": "2018.12",
+      "dateEnd": "2020.1",
+      "regions": ["南京", "武汉", "衡阳", "西安", "北京"],
+      "poemCount": 10,
+      "description": "末路与告别",
+      "universeId": "shui"
+    },
+    {
+      "id": "shui_collection_nanxi",
+      "name": "南溪故事集",
+      "nameEn": "nanxi",
+      "dedication": "献给湖南省郴州市北湖区南溪乡",
+      "dateStart": "2020.2",
+      "dateEnd": "2020.2",
+      "regions": ["湖南郴州", "南溪乡"],
+      "poemCount": 10,
+      "description": "诗人故乡的人物群像",
+      "universeId": "shui"
+    },
+    {
+      "id": "shui_collection_zidu",
+      "name": "自渡故事集",
+      "nameEn": "zidu",
+      "dedication": null,
+      "dateStart": "2020.11",
+      "dateEnd": "2020.12",
+      "regions": [],
+      "poemCount": 10,
+      "description": "疫情时期的普通人命运",
+      "universeId": "shui"
+    },
+    {
+      "id": "shui_collection_shizhiba",
+      "name": "十之八九故事集",
+      "nameEn": "shizhiba",
+      "dedication": null,
+      "dateStart": "2020.4",
+      "dateEnd": "2020.4",
+      "regions": ["重庆", "福州", "厦门", "青岛", "广州", "杭州"],
+      "poemCount": 1,
+      "description": "长篇叙事诗，5节，多段人生交织",
+      "universeId": "shui"
+    },
+    {
+      "id": "shui_collection_dangzhou",
+      "name": "当昼有人客故事集",
+      "nameEn": "dangzhou",
+      "dedication": null,
+      "dateStart": "2020.5",
+      "dateEnd": "2020.9",
+      "regions": [],
+      "poemCount": 4,
+      "description": "长篇叙事诗，情感记忆",
+      "universeId": "shui"
+    },
+    {
+      "id": "shui_collection_piruzhao",
+      "name": "譬如朝露故事集",
+      "nameEn": "piruzhao",
+      "dedication": null,
+      "dateStart": "2024.8",
+      "dateEnd": "2024.8",
+      "regions": [],
+      "poemCount": 10,
+      "description": "死亡与告别主题",
+      "universeId": "shui"
+    }
+  ]
+}

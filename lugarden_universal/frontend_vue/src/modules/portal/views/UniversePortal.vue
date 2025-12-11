@@ -29,6 +29,7 @@
           :key="universe.id"
           :universe="universe"
           :index="index"
+          :background-image="getCardBackground(universe)"
           @click="navigateToUniverse"
           @enter="navigateToUniverse"
         />
@@ -75,6 +76,11 @@ import { UniverseCard } from '@/modules/portal/components'
 import { usePortalStore } from '@/modules/portal/stores'
 import type { Universe } from '@/modules/portal/types'
 
+// 卡片背景图
+import portalMao from '@/modules/portal/assets/images/portal-mao@0.33x.png'
+import portalZhou from '@/modules/portal/assets/images/portal-zhou@0.33x.png'
+import portalPending from '@/modules/portal/assets/images/portal-pending@0.33x.png'
+
 // 路由
 const router = useRouter()
 
@@ -88,6 +94,15 @@ const toastType = ref<'success' | 'error' | 'warning' | 'info'>('info')
 
 // 当前年份
 const currentYear = computed(() => new Date().getFullYear())
+
+// 获取卡片背景图
+const getCardBackground = (universe: Universe): string => {
+  const bgMap: Record<string, string> = {
+    'zhou': portalZhou,
+    'maoxiaodou': portalMao
+  }
+  return bgMap[universe.id] || portalPending
+}
 
 // 计算属性
 const error = computed(() => ({

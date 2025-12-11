@@ -1,10 +1,12 @@
 <template>
   <div 
     class="universe-card animate-fadeInUp"
-    :class="{ 'card-disabled': !isActive }"
-    :style="{ animationDelay: `${index * 0.1}s` }"
+    :class="{ 'card-disabled': !isActive, 'has-bg-image': backgroundImage }"
+    :style="cardStyle"
     @click="handleCardClick"
   >
+    <!-- 内容遮罩层 -->
+    <div class="content-overlay">
       <!-- 内容区域 - 使用flex-1占据剩余空间 -->
       <div class="flex-1">
         <div class="flex justify-between items-start mb-4">
@@ -27,6 +29,7 @@
           {{ buttonText }}
         </button>
       </div>
+    </div>
   </div>
 </template>
 
@@ -39,17 +42,29 @@ interface Props {
   universe: Universe
   disabled?: boolean
   index?: number
+  backgroundImage?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   disabled: false,
-  index: 0
+  index: 0,
+  backgroundImage: ''
 })
 
 // 事件定义
 const emit = defineEmits<UniverseCardEvents>()
 
 // 计算属性
+const cardStyle = computed(() => {
+  const style: Record<string, string> = {
+    animationDelay: `${props.index * 0.1}s`
+  }
+  if (props.backgroundImage) {
+    style['--card-bg-image'] = `url(${props.backgroundImage})`
+  }
+  return style
+})
+
 const isActive = computed(() => {
   return props.universe.status === 'published' && !props.disabled
 })
@@ -90,6 +105,7 @@ const handleEnterClick = () => {
 
 /* 宇宙卡片样式 - 与Zhou统一的玻璃态设计 */
 .universe-card {
+  /* 默认背景（无图片时） */
   /* 玻璃态背景 - 与Zhou的unified-content-card一致 */
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 250, 252, 0.6) 100%);
   backdrop-filter: blur(10px);
@@ -100,7 +116,7 @@ const handleEnterClick = () => {
     0 2px 8px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   border-radius: var(--radius-base); /* 8px */
-  padding: var(--spacing-lg); /* 1.5rem = 24px */
+  padding: var(--spacing-base); /* 1rem = 16px */
   cursor: pointer;
   transition: all var(--duration-normal) var(--ease-out);
   min-height: 200px;
@@ -109,6 +125,29 @@ const handleEnterClick = () => {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+/* 带背景图的卡片样式 - 玻璃态 + 底图叠加 */
+.universe-card.has-bg-image {
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(248, 250, 252, 0.1) 100%),
+    var(--card-bg-image) center/cover no-repeat;
+}
+
+/* 内容遮罩层 - 默认透明 */
+.content-overlay {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* 有背景图时 - 给内容遮罩层加磨砂效果 */
+.universe-card.has-bg-image .content-overlay {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 6px;
+  padding: 1rem;
 }
 
 .universe-card:hover:not(.card-disabled) {

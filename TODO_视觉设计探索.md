@@ -56,6 +56,26 @@
   - [x] 步骤A.1.8：调整卡片padding从--spacing-lg到--spacing-base（24px→16px）
   - [x] 步骤A.1.9：视觉效果验证和参数微调
 
+#### - [x] 任务A.2：各宇宙MainProjectSelection背景图扩展
+- **核心思想**: 将背景图功能扩展到各宇宙的子模块选择页面，保持视觉一致性
+- 交付物：
+  - zhou/mao/pending三个模块的MainProjectSelection背景图支持
+- 验收标准：
+  - 周与春秋练习卡片显示module-lianxi背景图
+  - 摸诗卡片显示module-moshi背景图
+  - NEW ARRIVAL卡片显示module-newarrival背景图
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `src/modules/zhou/views/MainProjectSelection.vue` - 添加背景图支持，按项目名称匹配
+  - `src/modules/mao/views/MainProjectSelection.vue` - 添加背景图支持
+  - `src/modules/pending/views/MainProjectSelection.vue` - 添加背景图支持（仅NEW ARRIVAL）
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.2.1：zhou模块添加content-overlay和背景图CSS
+  - [x] 步骤A.2.2：mao模块添加content-overlay和背景图CSS
+  - [x] 步骤A.2.3：pending模块添加content-overlay和背景图CSS
+  - [x] 步骤A.2.4：修复zhou项目ID问题，改用项目名称匹配
+
 ---
 
 ## 技术实现记录

@@ -39,19 +39,22 @@
           <div 
             v-for="(project, index) in zhouStore.universeData.projects" 
             :key="project.id"
-            class="unified-content-card rounded-base animate-fadeInUp flex flex-col h-full"
-            :style="{ animationDelay: `${0.1 * index}s` }"
+            class="project-card unified-content-card rounded-base animate-fadeInUp flex flex-col h-full"
+            :class="{ 'has-bg-image': getProjectBackground(project.name) }"
+            :style="getCardStyle(project.name, index)"
             @click="selectProject(project)"
           >
-            <div class="flex-1">
-              <h2 class="text-2xl font-bold mb-2 text-gray-800">{{ project.name }}</h2>
-              <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">{{ project.description }}</div>
-            </div>
-            <div class="flex justify-between items-center mt-4">
-              <p class="text-xs text-gray-500 m-0">作者: {{ project.poet || '未指定' }}</p>
-              <button class="btn-primary">
-                进入
-              </button>
+            <div class="content-overlay">
+              <div class="flex-1">
+                <h2 class="text-2xl font-bold mb-2 text-gray-800">{{ project.name }}</h2>
+                <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">{{ project.description }}</div>
+              </div>
+              <div class="flex justify-between items-center mt-4">
+                <p class="text-xs text-gray-500 m-0">作者: {{ project.poet || '未指定' }}</p>
+                <button class="btn-primary">
+                  进入
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -77,8 +80,31 @@ import ErrorState from '@/shared/components/ErrorState.vue'
 import BackButton from '@/shared/components/BackButton.vue'
 import AboutExpandableCard from '@/modules/zhou/001_lianxi/components/AboutExpandableCard.vue'
 
+// 模块背景图
+import moduleLianxi from '@/modules/zhou/assets/image/module-lianxi@0.33x.png'
+
 const router = useRouter()
 const zhouStore = useZhouStore()
+
+// 获取项目背景图（按名称匹配）
+const getProjectBackground = (projectName: string): string => {
+  const bgMap: Record<string, string> = {
+    '周与春秋练习': moduleLianxi
+  }
+  return bgMap[projectName] || ''
+}
+
+// 获取卡片样式
+const getCardStyle = (projectName: string, index: number) => {
+  const style: Record<string, string> = {
+    animationDelay: `${0.1 * index}s`
+  }
+  const bg = getProjectBackground(projectName)
+  if (bg) {
+    style['--card-bg-image'] = `url(${bg})`
+  }
+  return style
+}
 
 // 周与春秋宇宙入口页面
 // 选择进入哪个子模块/项目
@@ -126,5 +152,29 @@ async function retryLoad(): Promise<void> {
 /* 组件特有的样式 */
 .loading-spinner {
   animation: spin 1s linear infinite;
+}
+
+/* 项目卡片背景图 */
+.project-card.has-bg-image {
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(248, 250, 252, 0.1) 100%),
+    var(--card-bg-image) center/cover no-repeat;
+  padding: var(--spacing-base);
+}
+
+/* 内容遮罩层 - 默认透明 */
+.content-overlay {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* 有背景图时的磨砂效果 */
+.project-card.has-bg-image .content-overlay {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 6px;
+  padding: 1rem;
 }
 </style>

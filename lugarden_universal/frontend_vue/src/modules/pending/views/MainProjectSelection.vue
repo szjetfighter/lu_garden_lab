@@ -23,21 +23,23 @@
       <div class="grid grid-responsive">
         <!-- NEW ARRIVAL 入口 -->
         <div 
-          class="unified-content-card rounded-base animate-fadeInUp cursor-pointer flex flex-col h-full"
-          style="animation-delay: 0.1s"
+          class="project-card unified-content-card rounded-base animate-fadeInUp cursor-pointer flex flex-col h-full has-bg-image"
+          :style="{ animationDelay: '0.1s', '--card-bg-image': `url(${moduleNewarrival})` }"
           @click="enterNewArrival"
         >
-          <div class="flex-1">
-            <h2 class="text-2xl font-bold mb-2 text-gray-800">NEW ARRIVAL</h2>
-            <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">
-              贩卖机，卖空气
+          <div class="content-overlay">
+            <div class="flex-1">
+              <h2 class="text-2xl font-bold mb-2 text-gray-800">NEW ARRIVAL</h2>
+              <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">
+                贩卖机，卖空气
+              </div>
             </div>
-          </div>
-          <div class="flex justify-between items-center mt-4">
-            <p class="text-xs text-gray-500 m-0">状态: 已撤回</p>
-            <button class="btn-primary">
-              进入
-            </button>
+            <div class="flex justify-between items-center mt-4">
+              <p class="text-xs text-gray-500 m-0">状态: 已撤回</p>
+              <button class="btn-primary">
+                进入
+              </button>
+            </div>
           </div>
         </div>
 
@@ -111,6 +113,9 @@
 import { useRouter } from 'vue-router'
 import BackButton from '@/shared/components/BackButton.vue'
 
+// 模块背景图
+import moduleNewarrival from '@/modules/pending/assets/image/module-newarrival@0.33x.png'
+
 const router = useRouter()
 
 // 先锋实验宇宙入口页面
@@ -141,3 +146,29 @@ const enterToxicology = () => {
   router.push('/pending/004_toxicology')
 }
 </script>
+
+<style scoped>
+/* 项目卡片背景图 */
+.project-card.has-bg-image {
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(248, 250, 252, 0.1) 100%),
+    var(--card-bg-image) center/cover no-repeat;
+  padding: var(--spacing-base);
+}
+
+/* 内容遮罩层 - 默认透明 */
+.content-overlay {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* 有背景图时的磨砂效果 */
+.project-card.has-bg-image .content-overlay {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 6px;
+  padding: 1rem;
+}
+</style>

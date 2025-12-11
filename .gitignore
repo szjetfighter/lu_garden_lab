@@ -72,6 +72,10 @@ lugarden_universal/application/data/auth.db-journal
 lugarden_universal/application/data/auth.db.bak
 lugarden_universal/application/data/*.db.bak
 
+# SQLite WAL模式临时文件（运行时生成，不应提交）
+*.db-shm
+*.db-wal
+
 # 前端构建产物（VPS部署时本地构建，不应提交）
 lugarden_universal/frontend_vue/dist/
 

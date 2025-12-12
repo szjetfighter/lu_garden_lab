@@ -128,9 +128,16 @@ const handleEnterClick = () => {
 }
 
 /* 带背景图的卡片样式 - 玻璃态 + 底图叠加 */
+/* 对角线渐变遮罩：右下角透明(背景图清晰) → 左上角不透明(背景图被遮盖) */
 .universe-card.has-bg-image {
   background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(248, 250, 252, 0.1) 100%),
+    linear-gradient(
+      to top left,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 30%,
+      rgba(255, 255, 255, 0.6) 60%,
+      rgba(255, 255, 255, 0.8) 100%
+    ),
     var(--card-bg-image) center/cover no-repeat;
 }
 

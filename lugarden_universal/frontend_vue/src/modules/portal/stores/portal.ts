@@ -174,7 +174,7 @@ export const usePortalStore = defineStore('portal', () => {
               id: 'shui',
               name: '水宇宙',
               description: '时间的长河，历史的潮汐',
-              status: 'published',
+              status: 'draft', // 开发中，暂不显示
               meta: '海图 · 故事 · 潮汐',
               version: '1.0.0',
               lastUpdated: '2025-12-12'
@@ -223,7 +223,7 @@ export const usePortalStore = defineStore('portal', () => {
             id: 'shui',
             name: '水宇宙',
             description: '时间的长河，历史的潮汐',
-            status: 'published',
+            status: 'draft', // 开发中，暂不显示
             meta: '海图 · 故事 · 潮汐',
             version: '1.0.0',
             lastUpdated: '2025-12-12'

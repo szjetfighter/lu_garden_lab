@@ -22,18 +22,34 @@
         @retry="portalStore.retryLoad"
       />
       
-      <!-- 宇宙列表 -->
-      <div v-else class="universes-grid">
-        <UniverseCard
+      <!-- Swiper宇宙卡片 -->
+      <Swiper
+        v-else
+        :modules="swiperModules"
+        :direction="isMobile ? 'vertical' : 'horizontal'"
+        :slides-per-view="'auto'"
+        :space-between="isMobile ? 16 : 24"
+        :centered-slides="true"
+        :pagination="{ clickable: true }"
+        :mousewheel="true"
+        :keyboard="{ enabled: true }"
+        :grab-cursor="true"
+        class="universes-swiper"
+        :class="{ 'swiper-vertical-mode': isMobile }"
+      >
+        <SwiperSlide 
           v-for="(universe, index) in universes" 
           :key="universe.id"
-          :universe="universe"
-          :index="index"
-          :background-image="getCardBackground(universe)"
-          @click="navigateToUniverse"
-          @enter="navigateToUniverse"
-        />
-      </div>
+        >
+          <UniverseCard
+            :universe="universe"
+            :index="index"
+            :background-image="getCardBackground(universe)"
+            @click="navigateToUniverse"
+            @enter="navigateToUniverse"
+          />
+        </SwiperSlide>
+      </Swiper>
     </main>
 
     <!-- 版权与备案信息 -->
@@ -69,18 +85,38 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Pagination, Mousewheel, Keyboard } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
+
 import { ErrorState, NotificationToast, UserNavigation } from '@/shared/components'
 import { UniverseCard } from '@/modules/portal/components'
 import { usePortalStore } from '@/modules/portal/stores'
 import type { Universe } from '@/modules/portal/types'
 
+// Swiper配置
+const swiperModules = [Pagination, Mousewheel, Keyboard]
+const isMobile = ref(window.innerWidth < 768)
+
+const handleResize = () => {
+  isMobile.value = window.innerWidth < 768
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
 // 卡片背景图
 import portalMao from '@/modules/portal/assets/images/portal-mao@0.33x.png'
 import portalZhou from '@/modules/portal/assets/images/portal-zhou@0.33x.png'
 import portalPending from '@/modules/portal/assets/images/portal-pending@0.33x.png'
-
 import portalShui from '@/modules/portal/assets/images/portal-shui@0.33x.png'
 
 // 路由
@@ -199,15 +235,53 @@ onMounted(async () => {
   margin: 0 auto;
 }
 
-.universes-grid {
-  display: grid;
-  gap: 2rem;
-  justify-content: center;
-  /* 单个宇宙：居中显示，限制宽度 */
-  grid-template-columns: repeat(auto-fit, minmax(400px, 500px));
-  /* 最大2列 */
-  max-width: min(100%, 1040px);
-  margin: 0 auto;
+/* Swiper样式 */
+.universes-swiper {
+  width: 100%;
+  padding: 1rem 0 3rem;
+}
+
+.universes-swiper :deep(.swiper-slide) {
+  width: auto;
+  height: auto;
+}
+
+.universes-swiper :deep(.swiper-slide) > * {
+  width: 420px;
+  max-width: 85vw;
+  height: auto !important;
+}
+
+/* 非活动卡片样式 */
+.universes-swiper :deep(.swiper-slide) {
+  opacity: 0.4;
+  transform: scale(0.92);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.universes-swiper :deep(.swiper-slide-active) {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* 分页器样式 */
+.universes-swiper :deep(.swiper-pagination) {
+  bottom: 0.5rem;
+}
+
+.universes-swiper :deep(.swiper-pagination-bullet) {
+  width: 8px;
+  height: 8px;
+  background: var(--text-tertiary);
+  opacity: 0.3;
+  transition: all 0.3s ease;
+}
+
+.universes-swiper :deep(.swiper-pagination-bullet-active) {
+  opacity: 1;
+  background: var(--color-primary-500);
+  width: 20px;
+  border-radius: 4px;
 }
 
 /* 版权与备案信息 */
@@ -266,9 +340,32 @@ onMounted(async () => {
     font-size: 1rem;
   }
   
-  .universes-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+  /* 手机端垂直模式 */
+  .universes-swiper {
+    height: 55vh;
+    padding: 0;
+  }
+  
+  .universes-swiper :deep(.swiper-slide) > * {
+    width: 88vw;
+    max-width: none;
+  }
+  
+  /* 垂直模式分页器在右侧 */
+  .universes-swiper.swiper-vertical-mode :deep(.swiper-pagination) {
+    right: 0.5rem;
+    left: auto;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .universes-swiper.swiper-vertical-mode :deep(.swiper-pagination-bullet-active) {
+    width: 8px;
+    height: 20px;
   }
   
   .site-footer {

@@ -171,7 +171,7 @@ async function retryLoad(): Promise<void> {
 
 /* 有背景图时的磨砂效果 */
 .project-card.has-bg-image .content-overlay {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 6px;

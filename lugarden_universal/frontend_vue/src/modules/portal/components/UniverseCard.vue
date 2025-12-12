@@ -143,7 +143,7 @@ const handleEnterClick = () => {
 
 /* 有背景图时 - 给内容遮罩层加磨砂效果 */
 .universe-card.has-bg-image .content-overlay {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 6px;

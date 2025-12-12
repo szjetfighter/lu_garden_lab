@@ -154,10 +154,16 @@ async function retryLoad(): Promise<void> {
   animation: spin 1s linear infinite;
 }
 
-/* 项目卡片背景图 */
+/* 项目卡片背景图 - 对角线渐变遮罩 */
 .project-card.has-bg-image {
   background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(248, 250, 252, 0.1) 100%),
+    linear-gradient(
+      to top left,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 30%,
+      rgba(255, 255, 255, 0.6) 60%,
+      rgba(255, 255, 255, 1) 100%
+    ),
     var(--card-bg-image) center/cover no-repeat;
   padding: var(--spacing-base);
 }
@@ -167,14 +173,37 @@ async function retryLoad(): Promise<void> {
   display: flex;
   flex-direction: column;
   flex: 1;
+  position: relative;
+  border-radius: 6px;
+  padding: 1rem;
 }
 
-/* 有背景图时的磨砂效果 */
-.project-card.has-bg-image .content-overlay {
-  background: rgba(255, 255, 255, 0.5);
+/* 伪元素做磨砂遮罩背景 - 对角线渐变消失 */
+.project-card.has-bg-image .content-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 1);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 6px;
-  padding: 1rem;
+  z-index: -1;
+  mask-image: linear-gradient(
+    to bottom right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    rgba(0, 0, 0, 0.7) 60%,
+    black 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    rgba(0, 0, 0, 0.7) 60%,
+    black 100%
+  );
 }
 </style>

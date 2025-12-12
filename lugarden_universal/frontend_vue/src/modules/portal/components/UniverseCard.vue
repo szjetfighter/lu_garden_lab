@@ -15,7 +15,11 @@
             {{ statusText }}
           </span>
         </div>
-        <p class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">{{ universe.description }}</p>
+        <p 
+          ref="descriptionRef"
+          class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose"
+          :style="{ fontSize: adaptiveFontSize + 'px' }"
+        >{{ universe.description }}</p>
       </div>
       
       <!-- 底部区域 - Meta文字与按钮左右对齐 -->
@@ -34,8 +38,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import type { Universe, UniverseCardEvents } from '@/modules/portal/types'
+import { FontSizeCalculator } from '@/shared/services/FontSizeCalculator'
 
 // Props定义
 interface Props {
@@ -53,6 +58,39 @@ const props = withDefaults(defineProps<Props>(), {
 
 // 事件定义
 const emit = defineEmits<UniverseCardEvents>()
+
+// 自适应字号
+const descriptionRef = ref<HTMLElement | null>(null)
+const adaptiveFontSize = ref(16) // 基准字号
+
+const calcDescriptionFontSize = () => {
+  if (!descriptionRef.value) return
+  
+  const containerWidth = descriptionRef.value.parentElement?.clientWidth || 300
+  const padding = 32 // 卡片内边距
+  const availableWidth = containerWidth - padding
+  
+  const result = FontSizeCalculator.calcAdaptiveFontSize(
+    props.universe.description,
+    availableWidth,
+    {
+      baseFontSize: 16,
+      minFontSize: 14,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontWeight: 'normal'
+    }
+  )
+  
+  adaptiveFontSize.value = result.fontSize
+}
+
+onMounted(() => {
+  calcDescriptionFontSize()
+})
+
+watch(() => props.universe.description, () => {
+  calcDescriptionFontSize()
+})
 
 // 计算属性
 const cardStyle = computed(() => {
@@ -111,9 +149,9 @@ const handleEnterClick = () => {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   /* border: 1px solid rgba(255, 255, 255, 0.3); */
-  box-shadow: 
+  /* box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
-    0 2px 8px rgba(0, 0, 0, 0.05);
+    0 2px 8px rgba(0, 0, 0, 0.05); */
   border-radius: var(--radius-base); /* 8px */
   padding: var(--spacing-base); /* 1rem = 16px */
   cursor: pointer;

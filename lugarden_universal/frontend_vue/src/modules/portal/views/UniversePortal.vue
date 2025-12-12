@@ -5,7 +5,7 @@
       <div class="header-content">
         <div class="title-section">
       <h1 class="portal-title">陆家花园</h1>
-      <p class="portal-subtitle">诗歌宇宙的探索入口</p>
+      <p class="portal-subtitle">陆家明的诗歌宇宙探索</p>
         </div>
         
         <!-- 用户导航 -->
@@ -198,7 +198,7 @@ onMounted(async () => {
 
 /* 头部样式 - 简洁诗意 */
 .portal-header {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   margin-top: 2rem;
 }
 
@@ -247,6 +247,21 @@ onMounted(async () => {
 .universes-swiper {
   width: 100%;
   padding: 1rem 0 3rem;
+  /* 边缘渐隐效果 - PC横向/手机纵向 */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 2.5%,
+    black 97.5%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 2.5%,
+    black 97.5%,
+    transparent 100%
+  );
 }
 
 .universes-swiper :deep(.swiper-slide) {

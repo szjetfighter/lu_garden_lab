@@ -76,6 +76,29 @@
   - [x] 步骤A.2.3：pending模块添加content-overlay和背景图CSS
   - [x] 步骤A.2.4：修复zhou项目ID问题，改用项目名称匹配
 
+#### - [x] 任务A.3：对角线渐变遮罩优化
+- **核心思想**: 实现背景框和内容遮罩的对角线渐变效果，左上角融入背景，右下角展示背景图
+- 交付物：
+  - 背景框对角线渐变遮罩（右下0→左上1）
+  - 内容遮罩伪元素实现对角线渐变消失效果
+  - 统一去除造成偏移的装饰样式
+- 验收标准：
+  - 背景框遮罩与卡片边缘严丝合缝
+  - 左上角文字区域融入背景，右下角背景图清晰
+  - 所有卡片样式统一
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `src/modules/portal/components/UniverseCard.vue` - 背景框对角线渐变、内容遮罩伪元素、去除border和inset shadow
+  - `src/assets/styles/components.css` - 统一unified-content-card去除border和inset shadow
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.3.1：统一内容遮罩层透明度为0.5
+  - [x] 步骤A.3.2：背景框遮罩改为对角线渐变（右下0→左上1）
+  - [x] 步骤A.3.3：内容遮罩改为::before伪元素，使用mask-image实现对角线渐变消失
+  - [x] 步骤A.3.4：去除inset 0 1px 0内阴影（消除1px偏移）
+  - [x] 步骤A.3.5：去除border: 1px solid（消除剩余偏移）
+  - [x] 步骤A.3.6：统一components.css的unified-content-card样式
+
 ---
 
 ## 技术实现记录

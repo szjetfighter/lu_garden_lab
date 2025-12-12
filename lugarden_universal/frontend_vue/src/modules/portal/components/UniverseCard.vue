@@ -110,11 +110,10 @@ const handleEnterClick = () => {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 250, 252, 0.6) 100%);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  /* border: 1px solid rgba(255, 255, 255, 0.3); */
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
-    0 2px 8px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    0 2px 8px rgba(0, 0, 0, 0.05);
   border-radius: var(--radius-base); /* 8px */
   padding: var(--spacing-base); /* 1rem = 16px */
   cursor: pointer;
@@ -190,8 +189,7 @@ const handleEnterClick = () => {
   transform: translateY(-2px);
   box-shadow: 
     0 12px 40px rgba(0, 0, 0, 0.15),
-    0 4px 12px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .universe-card.card-disabled {

@@ -136,7 +136,7 @@ const handleEnterClick = () => {
       rgba(255, 255, 255, 0) 0%,
       rgba(255, 255, 255, 0.3) 30%,
       rgba(255, 255, 255, 0.6) 60%,
-      rgba(255, 255, 255, 0.8) 100%
+      rgba(255, 255, 255, 1) 100%
     ),
     var(--card-bg-image) center/cover no-repeat;
 }
@@ -148,13 +148,42 @@ const handleEnterClick = () => {
   flex: 1;
 }
 
-/* 有背景图时 - 给内容遮罩层加磨砂效果 */
+/* 有背景图时 - 内容遮罩对角线渐变消失 */
+/* 用伪元素做遮罩背景，文字不受影响 */
 .universe-card.has-bg-image .content-overlay {
+  position: relative;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+/* 伪元素做磨砂遮罩背景 */
+.universe-card.has-bg-image .content-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 6px;
-  padding: 1rem;
+  z-index: -1;
+  /* 对角线渐变可见度：左上不可见 → 右下可见 */
+  mask-image: linear-gradient(
+    to bottom right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    rgba(0, 0, 0, 0.7) 60%,
+    black 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    rgba(0, 0, 0, 0.7) 60%,
+    black 100%
+  );
 }
 
 .universe-card:hover:not(.card-disabled) {

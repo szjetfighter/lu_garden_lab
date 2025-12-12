@@ -224,6 +224,35 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false
     }
   },
+  // 水宇宙 (Shui Universe)
+  {
+    path: '/shui',
+    name: 'ShuiMainProjectSelection',
+    component: () => import('@/modules/shui/views/MainProjectSelection.vue'),
+    meta: {
+      title: '水 - 陆家花园',
+      description: '时间的长河，历史的潮汐',
+      requiresAuth: false
+    }
+  },
+  {
+    path: '/shui/project/001_12tales',
+    name: 'ShuiSubProjectSelection',
+    component: () => import('@/modules/shui/001_12tales/views/SubProjectSelection.vue'),
+    meta: {
+      title: '十二个故事集 - 水宇宙',
+      requiresAuth: false
+    }
+  },
+  {
+    path: '/shui/project/001_12tales/map',
+    name: 'ShuiMap',
+    component: () => import('@/modules/shui/001_12tales/views/ShuiMap.vue'),
+    meta: {
+      title: '海图与潮汐 - 十二个故事集',
+      requiresAuth: false
+    }
+  },
   // 404 重定向
   {
     path: '/:pathMatch(.*)*',
@@ -284,7 +313,7 @@ router.beforeEach((to, from, next) => {
       return next('/zhou')
     }
   }
-  
+
   if (to.meta.requiresChapter) {
     // 检查是否已选择章节 - 如果直接访问需要章节的页面，重定向到项目选择
     const chapter = to.params.chapter
@@ -293,7 +322,7 @@ router.beforeEach((to, from, next) => {
       return next('/zhou')
     }
   }
-  
+
   if (to.meta.requiresQuizComplete) {
     // 允许直接访问结果页面，由组件内部处理数据获取和验证
     // 这样用户可以直接访问结果页面URL分享

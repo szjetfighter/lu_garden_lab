@@ -21,7 +21,7 @@ export const usePortalStore = defineStore('portal', () => {
       apiServices = getApiServices({
         onLoadingChange: (loading: boolean) => {
           console.log('[Portal API] Loading状态变化:', loading, '当前手动状态:', state.loading)
-          
+
           // 防护机制：避免API回调与手动状态控制冲突
           // 只有当前不在手动控制loading状态时，才接受API回调的状态变化
           if (!state.loading || loading === false) {
@@ -63,6 +63,7 @@ export const usePortalStore = defineStore('portal', () => {
     zhou: '/zhou',
     maoxiaodou: '/maoxiaodou',  // 毛小豆宇宙入口
     pending: '/pending',  // 先锋实验宇宙入口
+    shui: '/shui', // 水宇宙入口
   }
 
   // ================================
@@ -137,17 +138,17 @@ export const usePortalStore = defineStore('portal', () => {
 
       const api = initializeApiServices()
       const portalService = api.getPortalService()
-      
+
       try {
         // 尝试调用真实API
-        const response = await portalService.getUniverseList({ 
+        const response = await portalService.getUniverseList({
           refresh,
-          includeAnalytics: false 
+          includeAnalytics: false
         })
-        
+
         if (response.status === 'success' && response.universes) {
           state.universes = response.universes
-          
+
           // pending宇宙特殊处理：
           // pending宇宙的内容具有先锋性、实验性，可能涉及敏感内容或授权待定的素材，
           // 因此不宜写入生产数据库，以保持其灵活性和可随时调整的特性。
@@ -164,16 +165,31 @@ export const usePortalStore = defineStore('portal', () => {
               lastUpdated: '2025-12-05'
             })
           }
+
+          // 水宇宙特殊处理（临时）：
+          // 确保在后端数据准备好之前也能看到入口
+          const hasShui = state.universes.some(u => u.id === 'shui')
+          if (!hasShui) {
+            state.universes.push({
+              id: 'shui',
+              name: '水宇宙',
+              description: '时间的长河，历史的潮汐',
+              status: 'published',
+              meta: '海图 · 故事 · 潮汐',
+              version: '1.0.0',
+              lastUpdated: '2025-12-12'
+            })
+          }
         } else {
           throw new Error(response.message || '获取宇宙列表失败')
         }
       } catch (apiError) {
         // 如果API调用失败，使用硬编码数据作为降级方案
         console.warn('API调用失败，使用硬编码数据作为降级方案:', apiError)
-        
+
         // 模拟API调用延迟
         await simulateApiCall()
-        
+
         // 硬编码数据（降级方案）
         state.universes = [
           {
@@ -202,6 +218,15 @@ export const usePortalStore = defineStore('portal', () => {
             meta: '隐匿 · 油腻 · 宠溺',
             version: '0.1.0',
             lastUpdated: '2025-12-05'
+          },
+          {
+            id: 'shui',
+            name: '水宇宙',
+            description: '时间的长河，历史的潮汐',
+            status: 'published',
+            meta: '海图 · 故事 · 潮汐',
+            version: '1.0.0',
+            lastUpdated: '2025-12-12'
           }
         ]
       }
@@ -214,7 +239,7 @@ export const usePortalStore = defineStore('portal', () => {
 
     } catch (error) {
       console.error('加载宇宙列表失败:', error)
-      
+
       if (isApiError(error)) {
         state.error.hasError = true
         state.error.message = error.message
@@ -374,7 +399,7 @@ export const usePortalStore = defineStore('portal', () => {
   // 预加载宇宙数据
   async function preloadUniverseData(): Promise<void> {
     console.log('[Portal] 预加载宇宙数据开始, isDataStale:', isDataStale(), 'currentLoading:', state.loading)
-    
+
     // 如果数据过期，需要加载
     if (isDataStale()) {
       console.log('[Portal] 数据过期，开始加载')
@@ -382,14 +407,14 @@ export const usePortalStore = defineStore('portal', () => {
     } else {
       // 数据不过期，但需要确保loading状态正确
       console.log('[Portal] 数据新鲜，确保loading状态正确')
-      
+
       // 防护机制：如果当前是loading状态但数据已存在，重置loading状态
       if (state.loading && state.universes.length > 0) {
         console.log('[Portal] 检测到状态冲突，重置loading状态')
         state.loading = false
       }
     }
-    
+
     console.log('[Portal] 预加载完成, finalLoading:', state.loading, 'universes:', state.universes.length)
   }
 

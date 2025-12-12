@@ -1,7 +1,18 @@
 import { Router } from 'express';
 import { universeService } from '../services/universeService.js';
+import { shuiService } from '../services/shuiService.js';
 
 const router = Router();
+
+// GET /api/universes/shui/collections - 获取水宇宙的所有故事集
+router.get('/shui/collections', async (req, res, next) => {
+  try {
+    const collections = await shuiService.getAllCollections();
+    return res.json(collections);
+  } catch (error) {
+    return next(error);
+  }
+});
 
 // GET /api/universes - 获取所有已发布的宇宙列表
 // 100%复制原有public.js的逻辑，通过服务层调用

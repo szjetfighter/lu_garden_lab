@@ -81,6 +81,8 @@ import portalMao from '@/modules/portal/assets/images/portal-mao@0.33x.png'
 import portalZhou from '@/modules/portal/assets/images/portal-zhou@0.33x.png'
 import portalPending from '@/modules/portal/assets/images/portal-pending@0.33x.png'
 
+import portalShui from '@/modules/portal/assets/images/portal-shui@0.33x.png'
+
 // 路由
 const router = useRouter()
 
@@ -99,7 +101,8 @@ const currentYear = computed(() => new Date().getFullYear())
 const getCardBackground = (universe: Universe): string => {
   const bgMap: Record<string, string> = {
     'zhou': portalZhou,
-    'maoxiaodou': portalMao
+    'maoxiaodou': portalMao,
+    'shui': portalShui
   }
   return bgMap[universe.id] || portalPending
 }

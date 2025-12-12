@@ -14,6 +14,24 @@ router.get('/shui/collections', async (req, res, next) => {
   }
 });
 
+// GET /api/universes/shui/map - 海图数据
+router.get('/shui/map', async (req, res, next) => {
+  try { return res.json(await shuiService.getAllCollectionsWithPoems()); }
+  catch (error) { return next(error); }
+});
+
+// GET /api/universes/shui/collections/:id
+router.get('/shui/collections/:collectionId', async (req, res, next) => {
+  try { return res.json(await shuiService.getCollectionWithPoems(req.params.collectionId)); }
+  catch (error) { return error.statusCode === 404 ? res.status(404).json({ error: error.message }) : next(error); }
+});
+
+// GET /api/universes/shui/poems/:id
+router.get('/shui/poems/:poemId', async (req, res, next) => {
+  try { return res.json(await shuiService.getPoemById(req.params.poemId)); }
+  catch (error) { return error.statusCode === 404 ? res.status(404).json({ error: error.message }) : next(error); }
+});
+
 // GET /api/universes - 获取所有已发布的宇宙列表
 // 100%复制原有public.js的逻辑，通过服务层调用
 router.get('/', async (req, res, next) => {

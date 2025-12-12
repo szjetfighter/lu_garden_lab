@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国地图区域高亮互动</title>
+    <!-- 引入 ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #0f1c3c; /*以此深色背景衬托地图*/
+            color: #fff;
+            font-family: "Microsoft YaHei", sans-serif;
+            overflow: hidden;
+        }
+        #main {
+            width: 100vw;
+            height: 100vh;
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading" class="loading">正在加载地图数据...</div>
+    <div id="main"></div>
+
+    <script>
+        // 1. 定义需要高亮的6个区域及其大致经纬度坐标
+        // 注意：江东、南岭、渤海为泛指区域，此处取大致中心点
+        const highlightData = [
+            { name: '上海', value: [121.4737, 31.2304], desc: '国际经济、金融、贸易中心' },
+            { name: '太原', value: [112.5489, 37.8706], desc: '山西省省会，历史悠久' },
+            { name: '南溪', value: [104.97, 28.85], desc: '四川宜宾南溪区，长江首城' }, // 取四川南溪坐标
+            { name: '渤海', value: [120.00, 38.50], desc: '中国内海，环渤海经济圈' }, // 取海域中心
+            { name: '江东', value: [118.80, 31.60], desc: '历史上指长江以东地区（大致南京/马鞍山一带）' }, // 取历史概念大致位置
+            { name: '南岭', value: [112.90, 25.10], desc: '湖南与广东分界山脉' } // 取山脉大致位置
+        ];
+
+        // 2. 初始化 ECharts 实例
+        const chartDom = document.getElementById('main');
+        const myChart = echarts.init(chartDom);
+        const loadingDiv = document.getElementById('loading');
+
+        // 3. 获取中国地图 GeoJSON 数据 (使用阿里云 DataV 数据源)
+        fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
+            .then(response => response.json())
+            .then(geoJson => {
+                loadingDiv.style.display = 'none';
+                
+                // 注册地图
+                echarts.registerMap('china', geoJson);
+
+                // 配置项
+                const option = {
+                    backgroundColor: '#0f1c3c', // 背景色
+                    title: {
+                        text: '特定区域高亮互动地图',
+                        subtext: '渤海 · 上海 · 太原 · 江东 · 南岭 · 南溪',
+                        left: 'center',
+                        top: 20,
+                        textStyle: {
+                            color: '#fff',
+                            fontSize: 24
+                        },
+                        subtextStyle: {
+                            color: '#aaa',
+                            fontSize: 14
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: function (params) {
+                            // 鼠标悬停时的提示框内容
+                            if (params.seriesType === 'effectScatter') {
+                                return `
+                                    <div style="font-weight:bold; font-size:16px;">${params.name}</div>
+                                    <div style="font-size:12px; color:#ddd;">${params.data.desc}</div>
+                                    <div style="font-size:12px; color:#888;">坐标: ${params.value[0]}, ${params.value[1]}</div>
+                                `;
+                            }
+                            return params.name;
+                        }
+                    },
+                    geo: {
+                        map: 'china',
+                        roam: true, // 允许缩放和平移
+                        zoom: 1.2,
+                        label: {
+                            show: false // 不显示省份文字，避免杂乱
+                        },
+                        itemStyle: {
+                            areaColor: '#323c48', // 地图板块颜色
+                            borderColor: '#111',  // 边框颜色
+                            borderWidth: 1
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                areaColor: '#2a333d' // 鼠标悬停在省份上的颜色
+                            }
+                        }
+                    },
+                    series: [
+                        {
+                            name: '高亮区域',
+                            type: 'effectScatter', // 带有涟漪特效的散点图
+                            coordinateSystem: 'geo',
+                            data: highlightData,
+                            symbolSize: 20, // 点的大小
+                            showEffectOn: 'render', // 渲染完成后显示特效
+                            rippleEffect: {
+                                brushType: 'stroke', // 波纹绘制方式
+                                scale: 3 // 波纹扩散范围
+                            },
+                            label: {
+                                show: true,
+                                position: 'right', // 文字显示在点的右侧
+                                formatter: '{b}', // 显示名称
+                                fontSize: 14,
+                                color: '#fff',
+                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                padding: [4, 8],
+                                borderRadius: 4
+                            },
+                            itemStyle: {
+                                color: '#f4e925', // 点的颜色 (亮黄色)
+                                shadowBlur: 10,
+                                shadowColor: '#333'
+                            },
+                            zlevel: 1
+                        }
+                    ]
+                };
+
+                // 设置配置项
+                myChart.setOption(option);
+
+                // 4. 添加点击交互事件
+                myChart.on('click', function (params) {
+                    if (params.componentType === 'series') {
+                        alert(`您点击了区域：【${params.name}】\n简介：${params.data.desc}`);
+                        // 这里可以替换为跳转页面或其他逻辑
+                        // window.location.href = '...'; 
+                    }
+                });
+            })
+            .catch(error => {
+                loadingDiv.innerText = '地图数据加载失败，请检查网络或跨域设置。';
+                console.error('Error loading map:', error);
+            });
+
+        // 窗口大小改变时自适应
+        window.addEventListener('resize', () => {
+            myChart.resize();
+        });
+    </script>
+</body>
+</html>

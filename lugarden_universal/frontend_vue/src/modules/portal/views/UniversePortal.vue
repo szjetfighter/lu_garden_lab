@@ -25,11 +25,13 @@
       <!-- Swiper宇宙卡片 -->
       <Swiper
         v-else
+        :key="isMobile ? 'mobile' : 'desktop'"
         :modules="swiperModules"
         :direction="isMobile ? 'vertical' : 'horizontal'"
         :slides-per-view="'auto'"
         :space-between="isMobile ? 16 : 24"
         :centered-slides="true"
+        :centered-slides-bounds="isMobile"
         :pagination="{ clickable: true }"
         :mousewheel="true"
         :keyboard="{ enabled: true }"
@@ -235,7 +237,13 @@ onMounted(async () => {
   margin: 0 auto;
 }
 
-/* Swiper样式 */
+/* Swiper样式 - 强制继承页面背景 */
+.universes-swiper,
+.universes-swiper :deep(.swiper-wrapper),
+.universes-swiper :deep(.swiper-slide) {
+  background: var(--bg-primary) !important;
+}
+
 .universes-swiper {
   width: 100%;
   padding: 1rem 0 3rem;
@@ -342,13 +350,15 @@ onMounted(async () => {
   
   /* 手机端垂直模式 */
   .universes-swiper {
-    height: 55vh;
-    padding: 0;
+    /* 最小280px，理想50vh，最大45%屏幕高度 */
+    height: clamp(320px, 50vh, 480px);
+    padding: 1rem 0;
   }
   
   .universes-swiper :deep(.swiper-slide) > * {
-    width: 88vw;
+    width: 85vw;
     max-width: none;
+    margin-left: 1rem; /* 平衡右侧分页器 */
   }
   
   /* 垂直模式分页器在右侧 */

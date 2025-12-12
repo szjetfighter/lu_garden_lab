@@ -99,6 +99,32 @@
   - [x] 步骤A.3.5：去除border: 1px solid（消除剩余偏移）
   - [x] 步骤A.3.6：统一components.css的unified-content-card样式
 
+#### - [x] 任务A.4：对角线渐变效果统一推广与参数优化
+- **核心思想**: 将对角线渐变效果推广到所有Selection卡片，并优化遮罩参数
+- 交付物：
+  - 所有Selection卡片统一对角线渐变效果
+  - pending模块新增3张背景图（whoiszd、fourseasons、toxicology）
+  - 内容遮罩透明度优化为1（完全不透明白色）
+  - 背景框遮罩左上角优化为0.9
+- 验收标准：
+  - Portal、zhou、mao、pending四个模块视觉效果统一
+  - 左上角保留微透效果（0.9），右下角背景图清晰
+- **风险评估**: 低风险
+- 实际改动文件:
+  - `src/modules/portal/components/UniverseCard.vue` - 内容遮罩透明度1、背景框0.9
+  - `src/modules/zhou/views/MainProjectSelection.vue` - 对角线渐变效果、背景框0.9
+  - `src/modules/mao/views/MainProjectSelection.vue` - 对角线渐变效果、背景框0.9
+  - `src/modules/pending/views/MainProjectSelection.vue` - 对角线渐变效果、新增3张背景图、背景框0.9
+  - `src/modules/pending/assets/image/` - 新增whoiszd、fourseasons、toxicology背景图
+- 完成状态：✅ 已完成
+- 执行步骤：
+  - [x] 步骤A.4.1：内容遮罩透明度改为1（完全不透明白色）
+  - [x] 步骤A.4.2：pending模块添加whoiszd、fourseasons、toxicology背景图
+  - [x] 步骤A.4.3：pending全部4个卡片启用对角线渐变效果
+  - [x] 步骤A.4.4：zhou模块CSS改为对角线渐变效果
+  - [x] 步骤A.4.5：mao模块CSS改为对角线渐变效果
+  - [x] 步骤A.4.6：背景框遮罩左上角统一优化为0.9
+
 ---
 
 ## 技术实现记录

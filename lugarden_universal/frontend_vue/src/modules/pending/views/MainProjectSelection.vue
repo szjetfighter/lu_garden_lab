@@ -165,7 +165,7 @@ const enterToxicology = () => {
       rgba(255, 255, 255, 0) 0%,
       rgba(255, 255, 255, 0.3) 30%,
       rgba(255, 255, 255, 0.6) 60%,
-      rgba(255, 255, 255, 1) 100%
+      rgba(255, 255, 255, 0.9) 100%
     ),
     var(--card-bg-image) center/cover no-repeat;
   padding: var(--spacing-base);

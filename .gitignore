@@ -48,6 +48,7 @@ lugarden_universal/application/generated/
 # AI IDE 配置 - 本地个人偏好
 .cursor/
 .kiro/
+.agent/
 
 # blend等素材库
 *.blend/

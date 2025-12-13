@@ -149,9 +149,9 @@ const handleEnterClick = () => {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   /* border: 1px solid rgba(255, 255, 255, 0.3); */
-  /* box-shadow: 
+  box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
-    0 2px 8px rgba(0, 0, 0, 0.05); */
+    0 2px 8px rgba(0, 0, 0, 0.05);
   border-radius: var(--radius-base); /* 8px */
   padding: var(--spacing-base); /* 1rem = 16px */
   cursor: pointer;

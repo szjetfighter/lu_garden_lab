@@ -33,38 +33,52 @@
         />
       </div>
       
-      <!-- 项目列表 -->
+      <!-- 项目列表 - Swiper -->
       <div v-else>
-        <div class="grid grid-responsive">
-          <div 
+        <Swiper
+          :key="isMobile ? 'mobile' : 'desktop'"
+          :modules="swiperModules"
+          :direction="isMobile ? 'vertical' : 'horizontal'"
+          :slides-per-view="'auto'"
+          :space-between="isMobile ? 16 : 24"
+          :centered-slides="true"
+          :centered-slides-bounds="isMobile"
+          :pagination="{ clickable: true }"
+          :mousewheel="true"
+          :keyboard="{ enabled: true }"
+          :grab-cursor="true"
+          class="projects-swiper"
+          :class="{ 'swiper-vertical-mode': isMobile }"
+        >
+          <SwiperSlide 
             v-for="(project, index) in zhouStore.universeData.projects" 
             :key="project.id"
-            class="project-card unified-content-card rounded-base animate-fadeInUp flex flex-col h-full"
-            :class="{ 'has-bg-image': getProjectBackground(project.name) }"
-            :style="getCardStyle(project.name, index)"
-            @click="selectProject(project)"
           >
-            <div class="content-overlay">
-              <div class="flex-1">
-                <h2 class="text-2xl font-bold mb-2 text-gray-800">{{ project.name }}</h2>
-                <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">{{ project.description }}</div>
-              </div>
-              <div class="flex justify-between items-center mt-4">
-                <p class="text-xs text-gray-500 m-0">作者: {{ project.poet || '未指定' }}</p>
-                <button class="btn-primary">
-                  进入
-                </button>
+            <div 
+              class="project-card unified-content-card rounded-base flex flex-col h-full animate-fadeInUp"
+              :class="{ 'has-bg-image': getProjectBackground(project.name) }"
+              :style="getCardStyle(project.name, index)"
+              @click="selectProject(project)"
+            >
+              <div class="content-overlay">
+                <div class="flex-1">
+                  <h2 class="text-2xl font-bold mb-2 text-gray-800">{{ project.name }}</h2>
+                  <div class="text-base text-gray-600 mb-4 whitespace-pre-line leading-loose">{{ project.description }}</div>
+                </div>
+                <div class="flex justify-between items-center mt-4">
+                  <p class="text-xs text-gray-500 m-0">作者: {{ project.poet || '未指定' }}</p>
+                  <button class="btn-primary">
+                    进入
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </SwiperSlide>
+        </Swiper>
         
-        <!-- About可展开卡片 (A/B测试位置1) -->
-        <!-- 使用相同的grid-responsive布局，确保与项目卡片宽度一致 -->
-        <div class="mt-6 grid grid-responsive">
-          <div class="animate-fadeInUp" style="animation-delay: 0.3s;">
-            <AboutExpandableCard />
-          </div>
+        <!-- About可展开卡片 -->
+        <div class="mt-6 max-w-md mx-auto px-4">
+          <AboutExpandableCard />
         </div>
       </div>
     </div>
@@ -72,8 +86,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Pagination, Mousewheel, Keyboard } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
 import { useZhouStore } from '@/modules/zhou/stores/zhou'
 import type { ZhouProject } from '@/modules/zhou/types/zhou'
 import ErrorState from '@/shared/components/ErrorState.vue'
@@ -85,6 +103,14 @@ import moduleLianxi from '@/modules/zhou/assets/image/module-lianxi@0.33x.png'
 
 const router = useRouter()
 const zhouStore = useZhouStore()
+
+// Swiper配置
+const swiperModules = [Pagination, Mousewheel, Keyboard]
+const isMobile = ref(window.innerWidth < 768)
+
+const handleResize = () => {
+  isMobile.value = window.innerWidth < 768
+}
 
 // 获取项目背景图（按名称匹配）
 const getProjectBackground = (projectName: string): string => {
@@ -114,10 +140,17 @@ onMounted(async () => {
   // 检测移动设备
   zhouStore.detectMobileDevice()
   
+  // 监听窗口resize
+  window.addEventListener('resize', handleResize)
+  
   // 如果还未初始化或数据过期，加载宇宙内容
   if (!zhouStore.appState.initialized || shouldRefreshData()) {
     await zhouStore.loadUniverseContent()
   }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
 })
 
 // 判断是否需要刷新数据（可选的缓存策略）
@@ -149,6 +182,95 @@ async function retryLoad(): Promise<void> {
 </script>
 
 <style scoped>
+/* Swiper样式 - 与Portal统一 */
+.projects-swiper {
+  width: 100%;
+  padding: 1rem 0 3rem;
+  /* 边缘渐隐效果 */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 2.5%,
+    black 97.5%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 2.5%,
+    black 97.5%,
+    transparent 100%
+  );
+}
+
+.projects-swiper :deep(.swiper-slide) {
+  width: auto;
+  height: auto;
+  opacity: 0.4;
+  transform: scale(0.92);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.projects-swiper :deep(.swiper-slide-active) {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.projects-swiper :deep(.swiper-slide) > * {
+  width: 420px;
+  max-width: 85vw;
+}
+
+/* 分页器样式 */
+.projects-swiper :deep(.swiper-pagination) {
+  bottom: 0.5rem;
+}
+
+.projects-swiper :deep(.swiper-pagination-bullet) {
+  width: 8px;
+  height: 8px;
+  background: var(--text-tertiary);
+  opacity: 0.3;
+  transition: all 0.3s ease;
+}
+
+.projects-swiper :deep(.swiper-pagination-bullet-active) {
+  opacity: 1;
+  background: var(--color-primary-500);
+  width: 20px;
+  border-radius: 4px;
+}
+
+/* 手机端垂直模式 */
+@media (max-width: 768px) {
+  .projects-swiper.swiper-vertical-mode {
+    height: clamp(320px, 50vh, 480px);
+    padding: 1rem 0;
+  }
+  
+  .projects-swiper :deep(.swiper-slide) > * {
+    width: 85vw;
+    max-width: none;
+    margin-left: 1rem;
+  }
+  
+  .projects-swiper.swiper-vertical-mode :deep(.swiper-pagination) {
+    right: 0.5rem;
+    left: auto;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .projects-swiper.swiper-vertical-mode :deep(.swiper-pagination-bullet-active) {
+    width: 8px;
+    height: 20px;
+  }
+}
+
 /* 组件特有的样式 */
 .loading-spinner {
   animation: spin 1s linear infinite;

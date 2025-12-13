@@ -365,7 +365,6 @@ onMounted(async () => {
   
   /* 手机端垂直模式 */
   .universes-swiper {
-    /* 最小280px，理想50vh，最大45%屏幕高度 */
     height: clamp(320px, 50vh, 480px);
     padding: 1rem 0;
   }

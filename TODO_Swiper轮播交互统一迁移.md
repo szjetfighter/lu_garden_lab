@@ -83,6 +83,57 @@
   - [x] 步骤A.2.7：引入FontSizeCalculator实现description自适应字号
   - [x] 步骤A.2.8：调整标题与Swiper间距为2rem
 
+### **阶段12-13_B：各宇宙MainProjectSelection迁移**
+
+#### - [x] 任务B.1：Zhou MainProjectSelection改为Swiper
+
+- **核心思想**: 统一周与春秋宇宙的项目选择交互体验
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/zhou/views/MainProjectSelection.vue`
+- 完成状态：✅ 已完成
+
+#### - [x] 任务B.2：Mao MainProjectSelection改为Swiper
+
+- **核心思想**: 统一毛小豆宇宙的项目选择交互体验
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/mao/views/MainProjectSelection.vue`
+- 完成状态：✅ 已完成
+
+#### - [x] 任务B.3：Pending MainProjectSelection改为Swiper
+
+- **核心思想**: 统一匿腻溺宇宙的项目选择交互体验
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/pending/views/MainProjectSelection.vue`
+- 完成状态：✅ 已完成
+
+#### - [x] 任务B.4：补齐样式与Portal统一
+
+- **核心思想**: 确保三宇宙Swiper视觉效果与Portal完全一致
+- 补齐内容:
+  - 非活动slide透明度0.4 + scale(0.92)
+  - 分页器样式（圆点+激活态变长）
+  - 手机端垂直分页器位置
+  - 容器高度clamp(320px, 50vh, 480px)
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/zhou/views/MainProjectSelection.vue`
+  - `lugarden_universal/frontend_vue/src/modules/mao/views/MainProjectSelection.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/views/MainProjectSelection.vue`
+- 完成状态：✅ 已完成
+
+#### - [x] 任务B.5：补齐入场动画 + 恢复首页卡片阴影
+
+- **核心思想**: 统一卡片入场动画效果
+- 补齐内容:
+  - 三宇宙卡片添加 `animate-fadeInUp` 入场动画
+  - Pending卡片添加错落延迟（0.1s递增）
+  - 恢复首页UniverseCard的box-shadow
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/zhou/views/MainProjectSelection.vue`
+  - `lugarden_universal/frontend_vue/src/modules/mao/views/MainProjectSelection.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/views/MainProjectSelection.vue`
+  - `lugarden_universal/frontend_vue/src/modules/portal/components/UniverseCard.vue`
+- 完成状态：✅ 已完成
+
 ---
 
 ## 测试与验收

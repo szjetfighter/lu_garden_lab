@@ -27,8 +27,7 @@
         :slides-per-view="'auto'"
         :space-between="isMobile ? 16 : 24"
         :centered-slides="true"
-        :centered-slides-bounds="isMobile"
-        :pagination="{ clickable: true }"
+                :pagination="{ clickable: true }"
         :mousewheel="true"
         :keyboard="{ enabled: true }"
         :grab-cursor="true"
@@ -169,7 +168,7 @@ const enterMoshi = () => {
 /* 手机端垂直模式 */
 @media (max-width: 768px) {
   .projects-swiper.swiper-vertical-mode {
-    height: clamp(320px, 50vh, 480px);
+    height: clamp(320px, 65vh, 620px);
     padding: 1rem 0;
   }
   

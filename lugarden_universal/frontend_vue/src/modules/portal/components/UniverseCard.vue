@@ -1,7 +1,7 @@
 <template>
   <div 
-    class="universe-card animate-fadeInUp"
-    :class="{ 'card-disabled': !isActive, 'has-bg-image': backgroundImage }"
+    class="universe-card unified-card-with-bg animate-fadeInUp"
+    :class="{ 'card-disabled': !isActive }"
     :style="cardStyle"
     @click="handleCardClick"
   >
@@ -136,100 +136,9 @@ const handleEnterClick = () => {
 </script>
 
 <style scoped>
-/* 卡片包装器 - 确保flex布局生效 */
-.universe-card-wrapper {
-  height: 100%;
-}
+/* 卡片样式已迁移至全局 unified-card-with-bg */
 
-/* 宇宙卡片样式 - 与Zhou统一的玻璃态设计 */
-.universe-card {
-  /* 默认背景（无图片时） */
-  /* 玻璃态背景 - 与Zhou的unified-content-card一致 */
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 250, 252, 0.6) 100%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  /* border: 1px solid rgba(255, 255, 255, 0.3); */
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    0 2px 8px rgba(0, 0, 0, 0.05);
-  border-radius: var(--radius-base); /* 8px */
-  padding: var(--spacing-base); /* 1rem = 16px */
-  cursor: pointer;
-  transition: all var(--duration-normal) var(--ease-out);
-  min-height: 200px;
-  
-  /* Flex布局 - 与Zhou完全一致 */
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* 带背景图的卡片样式 - 玻璃态 + 底图叠加 */
-/* 对角线渐变遮罩：右下角透明(背景图清晰) → 左上角不透明(背景图被遮盖) */
-.universe-card.has-bg-image {
-  background: 
-    linear-gradient(
-      to top left,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.3) 30%,
-      rgba(255, 255, 255, 0.6) 60%,
-      rgba(255, 255, 255, 0.9) 100%
-    ),
-    var(--card-bg-image) center/cover no-repeat;
-}
-
-/* 内容遮罩层 - 默认透明 */
-.content-overlay {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-/* 有背景图时 - 内容遮罩对角线渐变消失 */
-/* 用伪元素做遮罩背景，文字不受影响 */
-.universe-card.has-bg-image .content-overlay {
-  position: relative;
-  border-radius: 6px;
-  padding: 1rem;
-}
-
-/* 伪元素做磨砂遮罩背景 */
-.universe-card.has-bg-image .content-overlay::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 6px;
-  z-index: -1;
-  /* 对角线渐变可见度：左上不可见 → 右下可见 */
-  mask-image: linear-gradient(
-    to bottom right,
-    transparent 0%,
-    rgba(0, 0, 0, 0.3) 30%,
-    rgba(0, 0, 0, 0.7) 60%,
-    black 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to bottom right,
-    transparent 0%,
-    rgba(0, 0, 0, 0.3) 30%,
-    rgba(0, 0, 0, 0.7) 60%,
-    black 100%
-  );
-}
-
-.universe-card:hover:not(.card-disabled) {
-  transform: translateY(-2px);
-  box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.15),
-    0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
+/* UniverseCard特有样式 */
 .universe-card.card-disabled {
   opacity: 0.7;
   cursor: not-allowed;

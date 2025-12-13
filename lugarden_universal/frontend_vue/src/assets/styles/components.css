@@ -106,6 +106,75 @@
     0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
+/* 统一带背景图的卡片样式 */
+.unified-card-with-bg {
+  background: 
+    linear-gradient(
+      to top left,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 30%,
+      rgba(255, 255, 255, 0.6) 60%,
+      rgba(255, 255, 255, 0.9) 100%
+    ),
+    var(--card-bg-image) center/cover no-repeat;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.unified-card-with-bg:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* 带背景图卡片的内容遮罩层 */
+.unified-card-with-bg .content-overlay {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+/* 磨砂遮罩伪元素 - 对角线渐变 */
+.unified-card-with-bg .content-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 6px;
+  z-index: -1;
+  mask-image: linear-gradient(
+    to bottom right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    rgba(0, 0, 0, 0.7) 60%,
+    black 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    rgba(0, 0, 0, 0.7) 60%,
+    black 100%
+  );
+}
+
 /* ================================
    状态组件样式
 ================================ */

@@ -106,10 +106,10 @@ const swiperModules = [Pagination, Mousewheel, Keyboard]
 const isMobile = ref(window.innerWidth < 768)
 const swiperProgress = ref(0)
 
-// 监听滑动进度，让装饰图标跟随滑动
-const onSwiperProgress = (swiper: any, progress: number) => {
+// 监听滑动进度，让装饰图标跟随滑动（二值状态：第一张显示，其他隐藏）
+const onSwiperProgress = (_swiper: any, progress: number) => {
   if (isMobile.value) {
-    swiperProgress.value = progress
+    swiperProgress.value = progress > 0.01 ? 1 : 0
   }
 }
 

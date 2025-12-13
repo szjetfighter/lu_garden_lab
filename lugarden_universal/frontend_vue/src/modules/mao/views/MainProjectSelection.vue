@@ -27,17 +27,19 @@
         :slides-per-view="'auto'"
         :space-between="isMobile ? 16 : 24"
         :centered-slides="true"
-                :pagination="{ clickable: true }"
+        :pagination="{ clickable: true }"
         :mousewheel="true"
         :keyboard="{ enabled: true }"
         :grab-cursor="true"
         class="projects-swiper"
         :class="{ 'swiper-vertical-mode': isMobile }"
+        :style="{ '--swiper-progress': swiperProgress }"
+        @progress="onSwiperProgress"
       >
         <!-- 摸诗入口 -->
         <SwiperSlide>
           <div 
-            class="project-card unified-content-card rounded-base cursor-pointer flex flex-col h-full has-bg-image animate-fadeInUp"
+            class="project-card unified-card-with-bg animate-fadeInUp"
             :style="{ '--card-bg-image': `url(${moduleMoshi})` }"
             @click="enterMoshi"
           >
@@ -79,6 +81,14 @@ const router = useRouter()
 // Swiper配置
 const swiperModules = [Pagination, Mousewheel, Keyboard]
 const isMobile = ref(window.innerWidth < 768)
+const swiperProgress = ref(0)
+
+// 监听滑动进度，让装饰图标跟随滑动（二值状态：第一张显示，其他隐藏）
+const onSwiperProgress = (_swiper: any, progress: number) => {
+  if (isMobile.value) {
+    swiperProgress.value = progress > 0.01 ? 1 : 0
+  }
+}
 
 const handleResize = () => {
   isMobile.value = window.innerWidth < 768
@@ -172,6 +182,24 @@ const enterMoshi = () => {
     padding: 1rem 0;
   }
   
+  /* Swiper容器顶部装饰图标 - 跟随滑动 */
+  .projects-swiper::before {
+    content: '';
+    position: absolute;
+    top: calc(3% - var(--swiper-progress, 0) * 50%);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: auto;
+    aspect-ratio: 1280 / 510;
+    background: url('/mao-banner.svg') no-repeat center;
+    background-size: contain;
+    opacity: calc(0.15 - var(--swiper-progress, 0) * 0.15);
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity 0.1s ease;
+  }
+  
   .projects-swiper :deep(.swiper-slide) > * {
     width: 85vw;
     max-width: none;
@@ -195,60 +223,5 @@ const enterMoshi = () => {
   }
 }
 
-/* 项目卡片背景图 - 对角线渐变遮罩 */
-.project-card.has-bg-image {
-  background: 
-    linear-gradient(
-      to top left,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.3) 30%,
-      rgba(255, 255, 255, 0.6) 60%,
-      rgba(255, 255, 255, 0.9) 100%
-    ),
-    var(--card-bg-image) center/cover no-repeat;
-  padding: 1.5rem;
-}
-
-/* 内容遮罩层 - 默认透明（与UniverseCard统一） */
-.content-overlay {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-/* 有背景图时 - 内容遮罩层样式（与UniverseCard统一） */
-.project-card.has-bg-image .content-overlay {
-  position: relative;
-  border-radius: 6px;
-  padding: 1rem;
-}
-
-/* 伪元素做磨砂遮罩背景 - 对角线渐变消失 */
-.project-card.has-bg-image .content-overlay::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 6px;
-  z-index: -1;
-  mask-image: linear-gradient(
-    to bottom right,
-    transparent 0%,
-    rgba(0, 0, 0, 0.3) 30%,
-    rgba(0, 0, 0, 0.7) 60%,
-    black 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to bottom right,
-    transparent 0%,
-    rgba(0, 0, 0, 0.3) 30%,
-    rgba(0, 0, 0, 0.7) 60%,
-    black 100%
-  );
-}
+/* 卡片样式已迁移至全局 unified-card-with-bg */
 </style>

@@ -25,19 +25,21 @@
       <!-- Swiper宇宙卡片 -->
       <Swiper
         v-else
+        ref="swiperRef"
         :key="isMobile ? 'mobile' : 'desktop'"
         :modules="swiperModules"
         :direction="isMobile ? 'vertical' : 'horizontal'"
         :slides-per-view="'auto'"
         :space-between="isMobile ? 16 : 24"
         :centered-slides="true"
-        :centered-slides-bounds="isMobile"
         :pagination="{ clickable: true }"
         :mousewheel="true"
         :keyboard="{ enabled: true }"
         :grab-cursor="true"
         class="universes-swiper"
         :class="{ 'swiper-vertical-mode': isMobile }"
+        :style="{ '--swiper-progress': swiperProgress }"
+        @progress="onSwiperProgress"
       >
         <SwiperSlide 
           v-for="(universe, index) in universes" 
@@ -102,6 +104,14 @@ import type { Universe } from '@/modules/portal/types'
 // Swiper配置
 const swiperModules = [Pagination, Mousewheel, Keyboard]
 const isMobile = ref(window.innerWidth < 768)
+const swiperProgress = ref(0)
+
+// 监听滑动进度，让装饰图标跟随滑动
+const onSwiperProgress = (swiper: any, progress: number) => {
+  if (isMobile.value) {
+    swiperProgress.value = progress
+  }
+}
 
 const handleResize = () => {
   isMobile.value = window.innerWidth < 768
@@ -365,8 +375,26 @@ onMounted(async () => {
   
   /* 手机端垂直模式 */
   .universes-swiper {
-    height: clamp(320px, 50vh, 480px);
+    height: clamp(320px, 65vh, 620px);
     padding: 1rem 0;
+  }
+  
+  /* Swiper容器顶部装饰图标 - 跟随滑动 */
+  .universes-swiper::before {
+    content: '';
+    position: absolute;
+    top: calc(3% - var(--swiper-progress, 0) * 50%);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: auto;
+    aspect-ratio: 1280 / 510;
+    background: url('/lu-banner.svg') no-repeat center;
+    background-size: contain;
+    opacity: calc(0.15 - var(--swiper-progress, 0) * 0.15);
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity 0.1s ease;
   }
   
   .universes-swiper :deep(.swiper-slide) > * {
@@ -390,6 +418,27 @@ onMounted(async () => {
   .universes-swiper.swiper-vertical-mode :deep(.swiper-pagination-bullet-active) {
     width: 8px;
     height: 20px;
+  }
+  
+  /* 占位slide样式 */
+  .placeholder-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .placeholder-content {
+    width: 85vw;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.3;
+  }
+  
+  .placeholder-icon {
+    width: 80px;
+    height: auto;
   }
   
   .site-footer {

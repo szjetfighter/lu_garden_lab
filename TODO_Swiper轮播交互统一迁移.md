@@ -134,6 +134,21 @@
   - `lugarden_universal/frontend_vue/src/modules/portal/components/UniverseCard.vue`
 - 完成状态：✅ 已完成
 
+#### - [x] 任务B.6：Portal Swiper容器扩大 + 装饰图
+
+- **核心思想**: 扩大Portal手机端Swiper容器，用装饰图填充空白区域
+- **技术探索记录**:
+  - `centeredSlidesBounds` 在容器高度 > 2倍卡片高度时，首尾卡片无法激活（Swiper设计限制）
+  - 解决方案：移除 `centeredSlidesBounds`，改为纯居中显示 + 装饰图填充空白
+- 改动内容:
+  - 手机端容器高度：`50vh` → `65vh`（clamp 320px-620px）
+  - 移除 `centeredSlidesBounds`，卡片始终居中显示
+  - 添加 `lu-banner.svg` 伪元素装饰图，跟随滑动进度淡出
+  - 监听 `@progress` 事件，通过CSS变量控制装饰图位置和透明度
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/portal/views/UniversePortal.vue`
+- 完成状态：✅ 已完成
+
 ---
 
 ## 测试与验收

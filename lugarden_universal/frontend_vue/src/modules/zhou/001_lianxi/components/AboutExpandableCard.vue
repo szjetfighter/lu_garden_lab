@@ -6,17 +6,23 @@
  */
 
 import { ref } from 'vue'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/24/outline'
+import { ChevronDownIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 
 // 导入Feature配图 (0.3x压缩版本)
 import image1 from '@/modules/zhou/001_lianxi/assets/images/zhou_image1@0.3x.png'
 import image2 from '@/modules/zhou/001_lianxi/assets/images/zhou_image2@0.3x.png'
 import image3 from '@/modules/zhou/001_lianxi/assets/images/zhou_image3@0.3x.png'
 
-const isExpanded = ref(false)
+const isModalOpen = ref(false)
 
-const toggleExpand = () => {
-  isExpanded.value = !isExpanded.value
+const openModal = () => {
+  isModalOpen.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+const closeModal = () => {
+  isModalOpen.value = false
+  document.body.style.overflow = ''
 }
 
 // PPT简短版内容
@@ -49,70 +55,62 @@ const content = {
 </script>
 
 <template>
-  <div 
-    class="about-expandable-card rounded-base"
-    :class="{ 'unified-content-card': isExpanded, 'collapsed-transparent': !isExpanded }"
-  >
+  <div class="about-card-trigger">
     <!-- 可点击的标题区域 -->
     <button 
       class="card-header"
-      @click="toggleExpand"
+      @click="openModal"
     >
       <span class="card-title">About 周与春秋练习</span>
-      <component 
-        :is="isExpanded ? ChevronUpIcon : ChevronDownIcon" 
-        class="w-5 h-5 chevron-icon"
-      />
+      <ChevronDownIcon class="w-5 h-5 chevron-icon" />
     </button>
 
-    <!-- 可展开的内容区域 -->
-    <Transition name="expand">
-      <div v-if="isExpanded" class="card-content">
-        <div class="content-inner">
-          <h3 class="content-headline">{{ content.headline }}</h3>
-          <p class="content-tagline">{{ content.tagline }}</p>
-          <p class="content-keywords">{{ content.keywords }}</p>
-          
-          <p class="content-intro">{{ content.intro }}</p>
-          
-          <div class="features-section">
-            <div 
-              v-for="feature in content.features" 
-              :key="feature.id"
-              class="feature-item"
-            >
-              <h4 class="feature-title">{{ feature.title }}</h4>
-              <p class="feature-desc">{{ feature.description }}</p>
-              <img 
-                v-if="feature.image" 
-                :src="feature.image" 
-                :alt="feature.title" 
-                class="feature-image"
-                loading="lazy"
-              />
+    <!-- Modal弹窗 - 使用Teleport渲染到body，不干扰Swiper -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+          <div class="modal-content unified-content-card" @click.stop>
+            <!-- 关闭按钮 -->
+            <button class="modal-close" @click="closeModal">
+              <XMarkIcon class="w-6 h-6" />
+            </button>
+            
+            <div class="content-inner">
+              <h3 class="content-headline">{{ content.headline }}</h3>
+              <p class="content-tagline">{{ content.tagline }}</p>
+              <p class="content-keywords">{{ content.keywords }}</p>
+              
+              <p class="content-intro">{{ content.intro }}</p>
+              
+              <div class="features-section">
+                <div 
+                  v-for="feature in content.features" 
+                  :key="feature.id"
+                  class="feature-item"
+                >
+                  <h4 class="feature-title">{{ feature.title }}</h4>
+                  <p class="feature-desc">{{ feature.description }}</p>
+                  <img 
+                    v-if="feature.image" 
+                    :src="feature.image" 
+                    :alt="feature.title" 
+                    class="feature-image"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </Transition>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <style scoped>
-/* 基础样式 */
-.about-expandable-card {
-  min-height: auto;
-  padding: 0;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-/* 折叠时完全透明 */
-.collapsed-transparent {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  backdrop-filter: none;
+/* 触发按钮样式 */
+.about-card-trigger {
+  width: 100%;
 }
 
 .card-header {
@@ -133,17 +131,64 @@ const content = {
 
 .card-title {
   font-size: 0.875rem;
-  color: #6b7280;  /* text-gray-500，与"作者"文字一致 */
+  color: #6b7280;
   letter-spacing: 0.02em;
 }
 
 .chevron-icon {
-  color: #6b7280;  /* 与标题颜色一致 */
+  color: #6b7280;
   transition: transform 0.3s ease;
 }
 
-.card-content {
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
+/* Modal遮罩层 - 参考AboutModal.vue */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+/* Modal内容 - 参考AboutModal.vue */
+.modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 32rem;
+  max-height: 80vh;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* 关闭按钮 - 参考AboutModal.vue */
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.2);
+  color: #333;
 }
 
 .content-inner {
@@ -219,22 +264,25 @@ const content = {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 展开动画 */
-.expand-enter-active,
-.expand-leave-active {
-  transition: all 0.3s ease;
-  overflow: hidden;
+/* Modal动画 - 参考AboutModal.vue */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
 }
 
-.expand-enter-from,
-.expand-leave-to {
+.modal-enter-active .modal-content,
+.modal-leave-active .modal-content {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
   opacity: 0;
-  max-height: 0;
 }
 
-.expand-enter-to,
-.expand-leave-from {
-  opacity: 1;
-  max-height: 500px;
+.modal-enter-from .modal-content,
+.modal-leave-to .modal-content {
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
 }
 </style>

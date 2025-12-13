@@ -68,10 +68,16 @@ const authorContent = {
   max-width: 32rem;
   max-height: 80vh;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 1rem;
   padding: 2rem;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.about-modal-content::-webkit-scrollbar {
+  display: none;
 }
 
 .close-button {

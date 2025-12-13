@@ -73,13 +73,12 @@
                 </div>
               </div>
             </div>
+          <!-- About卡片 - 紧随项目卡片 -->
+            <div class="about-card-wrapper mt-4">
+              <AboutExpandableCard />
+            </div>
           </SwiperSlide>
         </Swiper>
-        
-        <!-- About可展开卡片 -->
-        <div class="mt-6 max-w-md mx-auto px-4">
-          <AboutExpandableCard />
-        </div>
       </div>
     </div>
   </div>
@@ -303,4 +302,9 @@ async function retryLoad(): Promise<void> {
 }
 
 /* 卡片样式已迁移至全局 unified-card-with-bg */
+
+/* About卡片样式 */
+.about-card-wrapper {
+  width: 100%;
+}
 </style>

@@ -73,6 +73,8 @@ const authorContent = {
   max-width: 32rem;
   max-height: 80vh;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 1rem;
   padding: 2rem;

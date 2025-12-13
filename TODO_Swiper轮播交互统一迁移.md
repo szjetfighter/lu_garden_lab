@@ -149,6 +149,77 @@
   - `lugarden_universal/frontend_vue/src/modules/portal/views/UniversePortal.vue`
 - 完成状态：✅ 已完成
 
+#### - [x] 任务B.7-B.8：Zhou/Mao/Pending 65vh统一 + 卡片样式统一
+
+- **核心思想**: 三宇宙与Portal统一65vh高度，卡片padding统一为1.5rem
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/zhou/views/MainProjectSelection.vue`
+  - `lugarden_universal/frontend_vue/src/modules/mao/views/MainProjectSelection.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/views/MainProjectSelection.vue`
+- 完成状态：✅ 已完成
+
+#### - [x] 任务B.9：创建unified-card-with-bg全局类
+
+- **核心思想**: 提取重复的带背景图卡片样式到全局类，消除代码重复
+- 改动内容:
+  - 在 `components.css` 创建 `.unified-card-with-bg` 全局类
+  - Zhou/Mao/Pending 使用新类，删除重复样式
+  - UniverseCard 也重构使用 `unified-card-with-bg`
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/assets/styles/components.css`
+  - `lugarden_universal/frontend_vue/src/modules/zhou/views/MainProjectSelection.vue`
+  - `lugarden_universal/frontend_vue/src/modules/mao/views/MainProjectSelection.vue`
+  - `lugarden_universal/frontend_vue/src/modules/pending/views/MainProjectSelection.vue`
+  - `lugarden_universal/frontend_vue/src/modules/portal/components/UniverseCard.vue`
+- 完成状态：✅ 已完成
+
+#### - [x] 任务B.10：四宇宙banner装饰图
+
+- **核心思想**: 为四个宇宙添加各自的banner装饰图，跟随滑动淡出
+- 改动内容:
+  - 添加 `lu-banner.svg`、`zhou-banner.svg`、`mao-banner.svg`、`pending-banner.svg`
+  - banner滚动逻辑简化为二值状态：第一张显示，其他隐藏
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/public/lu-banner.svg`
+  - `lugarden_universal/frontend_vue/public/zhou-banner.svg`
+  - `lugarden_universal/frontend_vue/public/mao-banner.svg`
+  - `lugarden_universal/frontend_vue/public/pending-banner.svg`
+  - 各模块MainProjectSelection.vue
+- 完成状态：✅ 已完成
+
+#### - [x] 任务B.11：About卡片改为Modal弹窗
+
+- **核心思想**: 解决About卡片放入Swiper后无法拖动的问题
+- **技术探索记录**:
+  - 尝试 `touch-action: pan-y` - 失败
+  - 尝试 `swiper-no-swiping` 类 - 失败
+  - 最终方案：展开内容改为Modal弹窗，使用Teleport渲染到body
+- 改动内容:
+  - About卡片放入Swiper紧随项目卡片
+  - 点击About打开Modal弹窗显示内容
+  - 参考 `AboutModal.vue` 样式
+- 实际改动文件:
+  - `lugarden_universal/frontend_vue/src/modules/zhou/views/MainProjectSelection.vue`
+  - `lugarden_universal/frontend_vue/src/modules/zhou/001_lianxi/components/AboutExpandableCard.vue`
+- 完成状态：✅ 已完成
+
+#### - [x] 任务B.12：所有Modal隐藏滚动条
+
+- **核心思想**: 统一所有Modal的滚动条样式，隐藏但保留滚动功能
+- 改动内容:
+  - 添加 `scrollbar-width: none`、`-ms-overflow-style: none`
+  - 添加 `::-webkit-scrollbar { display: none }`
+- 实际改动文件:
+  - `AboutExpandableCard.vue`
+  - `AboutModal.vue`
+  - `PoemViewer.vue`
+  - `ToxicologyReportModal.vue`
+  - `AboutAuthor.vue` (fourseasons)
+  - `AboutAuthor.vue` (toxicology)
+  - `ProductModal.vue`
+  - `MyWorksView.vue`
+- 完成状态：✅ 已完成
+
 ---
 
 ## 测试与验收

@@ -178,6 +178,8 @@ watch([() => props.isOpen, allLines], ([isOpen]) => {
   max-width: 28rem;
   max-height: 80vh;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   background: rgba(30, 30, 35, 0.7);
   backdrop-filter: blur(30px) saturate(150%);
   -webkit-backdrop-filter: blur(30px) saturate(150%);

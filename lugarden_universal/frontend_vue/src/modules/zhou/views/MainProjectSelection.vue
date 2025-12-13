@@ -275,7 +275,7 @@ async function retryLoad(): Promise<void> {
   animation: spin 1s linear infinite;
 }
 
-/* 项目卡片背景图 - 对角线渐变遮罩 */
+/* 项目卡片背景图 - 对角线渐变遮罩（与UniverseCard统一） */
 .project-card.has-bg-image {
   background: 
     linear-gradient(
@@ -286,14 +286,18 @@ async function retryLoad(): Promise<void> {
       rgba(255, 255, 255, 0.9) 100%
     ),
     var(--card-bg-image) center/cover no-repeat;
-  padding: var(--spacing-base);
+  padding: 1.5rem;
 }
 
-/* 内容遮罩层 - 默认透明 */
+/* 内容遮罩层 - 默认透明（与UniverseCard统一） */
 .content-overlay {
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+
+/* 有背景图时 - 内容遮罩层样式（与UniverseCard统一） */
+.project-card.has-bg-image .content-overlay {
   position: relative;
   border-radius: 6px;
   padding: 1rem;
